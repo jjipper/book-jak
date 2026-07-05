@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>북작 디자인 시스템 프리뷰</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  body { margin: 0; }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 32px 20px 64px; }
+  .sec { margin-bottom: 32px; }
+  .sec > .label {
+    font-size: 12px; letter-spacing: 1.5px; color: var(--color-text-hint);
+    font-weight: 500; margin-bottom: 12px; text-transform: uppercase;
+  }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .stack { display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body class="bookjak">
+<div class="wrap">
+
+  <!-- 로고 + 시그니처 -->
+  <div class="sec">
+    <div class="row" style="align-items:flex-end;">
+      <span class="bj-riso" style="width:36px;height:36px;">
+        <span class="bj-riso__a" style="width:36px;height:36px;background:var(--color-action);"></span>
+        <span class="bj-riso__b" style="width:36px;height:36px;background:var(--p-riso-blue);"></span>
+      </span>
+      <span class="bj-display bj-display--xl">북작</span>
+      <span class="bj-caption" style="margin-bottom:4px;">취향으로 북적이는 곳</span>
+    </div>
+  </div>
+
+  <!-- 결과 카드 예시 -->
+  <div class="sec">
+    <div class="label">결과 카드 (조합 예시)</div>
+    <div class="bj-card">
+      <div class="row" style="justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div class="bj-display bj-display--lg">프로 잠수부</div>
+          <div class="bj-caption" style="margin-top:2px;">책 펴는 순간 현실에서 잠수 탐. 호출 금지.</div>
+        </div>
+        <span class="bj-badge bj-badge--rare">희귀 4.1%</span>
+      </div>
+
+      <div class="bj-illust" style="height:120px; margin:16px 0; display:flex; align-items:center; justify-content:center;">
+        <span class="bj-caption">캐릭터 일러스트 자리 (형광 리소 3색)</span>
+      </div>
+
+      <div class="stack">
+        <div class="bj-stat">
+          <div class="bj-stat__head"><span>몰입력</span><span class="bj-stat__value">92</span></div>
+          <div class="bj-stat__track"><div class="bj-stat__fill" style="width:92%;"></div></div>
+        </div>
+        <div class="bj-stat">
+          <div class="bj-stat__head"><span>허세력</span><span class="bj-stat__value">34</span></div>
+          <div class="bj-stat__track"><div class="bj-stat__fill" style="width:34%;"></div></div>
+        </div>
+      </div>
+
+      <button class="bj-btn bj-btn--primary bj-btn--block" style="margin-top:16px;">결과 공유</button>
+    </div>
+  </div>
+
+  <!-- 버튼 -->
+  <div class="sec">
+    <div class="label">버튼</div>
+    <div class="row">
+      <button class="bj-btn bj-btn--primary">테스트 시작</button>
+      <button class="bj-btn">더 보기</button>
+      <button class="bj-btn bj-btn--ghost">건너뛰기</button>
+    </div>
+  </div>
+
+  <!-- 뱃지 -->
+  <div class="sec">
+    <div class="label">희소도 뱃지</div>
+    <div class="row">
+      <span class="bj-badge bj-badge--common">흔함 9.4%</span>
+      <span class="bj-badge bj-badge--rare">희귀 4.1%</span>
+      <span class="bj-badge bj-badge--epic">최희귀 2.1%</span>
+    </div>
+  </div>
+
+  <!-- 진단 선택지 -->
+  <div class="sec">
+    <div class="label">진단 선택지</div>
+    <div class="stack">
+      <button class="bj-choice is-active">A. 끝까지 못 참고 몰입한다</button>
+      <button class="bj-choice">B. 곱씹으며 천천히 읽는다</button>
+      <button class="bj-choice">C. 읽다 놓고 못 읽는다</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

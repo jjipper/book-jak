@@ -1,0 +1,128 @@
+/* ==========================================================================
+   북작 (BOOKJAK) — Design Tokens
+   취향으로 북적이는 곳 · 리소 힙-키치 시스템
+   --------------------------------------------------------------------------
+   구조: 2단 토큰
+   [1] Primitive  : 실제 색/크기 값. 컴포넌트에서 직접 쓰지 말 것.
+   [2] Semantic   : 역할 기반 토큰. 컴포넌트는 오직 이것만 참조.
+   토큰 색을 바꾸고 싶으면 [2]의 매핑만 교체하면 전체가 따라옵니다.
+   ========================================================================== */
+
+:root {
+  /* ======================================================================
+     [1] PRIMITIVE TOKENS  (원시값 — 직접 참조 금지)
+     ====================================================================== */
+
+  /* --- 베이스 / 무채색 --- */
+  --p-cream:        #F4EFE4;  /* 페이지 배경 */
+  --p-cream-deep:   #EBE4D4;  /* 눌린 배경 / 구분면 */
+  --p-white:        #FFFFFF;  /* 카드 표면 */
+  --p-ink:          #1A1A2E;  /* 본문 텍스트 (따뜻한 잉크) */
+  --p-ink-70:       #4A4A5C;  /* 보조 텍스트 */
+  --p-ink-45:       #888892;  /* 힌트 텍스트 */
+  --p-gray-line:    #DED8CA;  /* 헤어라인 테두리 (크림 위) */
+  --p-gray-track:   #E7E1D3;  /* 스탯바 트랙 등 빈 채널 */
+
+  /* --- UI 포인트: 주황 (단일) --- */
+  --p-orange-600:   #D8461F;  /* hover / pressed */
+  --p-orange-500:   #F0562E;  /* 기본 액션 색 */
+  --p-orange-100:   #FBE5DC;  /* 연한 배경 틴트 (선택지 활성 등) */
+  --p-orange-text:  #993C1D;  /* 주황 틴트 위 텍스트 */
+
+  /* --- 일러스트 전용: 형광 리소 3색 (UI 사용 금지) --- */
+  --p-riso-orange:  #FF5A1F;
+  --p-riso-yellow:  #FFE800;
+  --p-riso-blue:    #2B4CFF;
+
+  /* --- 희소도 등급 (뱃지 전용, 무채/포인트 조합) --- */
+  --p-rarity-common:   #EBE4D4;  /* 흔함 배경 */
+  --p-rarity-common-t: #5F5E5A;  /* 흔함 텍스트 */
+  --p-rarity-rare:     #FBE5DC;  /* 희귀 배경 */
+  --p-rarity-rare-t:   #993C1D;  /* 희귀 텍스트 */
+  --p-rarity-epic:     #1A1A2E;  /* 최희귀 배경 */
+  --p-rarity-epic-t:   #FFFFFF;  /* 최희귀 텍스트 */
+
+  /* --- 타이포 (패밀리) --- */
+  --p-font-display: "와일드각", "Pretendard", sans-serif;  /* 별명·로고·희소도 */
+  --p-font-body:    "Pretendard", -apple-system, sans-serif; /* 그 외 전부 */
+  --p-font-mono:    ui-monospace, "SF Mono", monospace;
+
+  /* --- 스케일 --- */
+  --p-space-1: 4px;
+  --p-space-2: 8px;
+  --p-space-3: 12px;
+  --p-space-4: 16px;
+  --p-space-5: 24px;
+  --p-space-6: 32px;
+  --p-space-7: 48px;
+
+  --p-radius-sm:   8px;
+  --p-radius-md:   12px;  /* 컨트롤 (버튼, 인풋) */
+  --p-radius-lg:   16px;  /* 카드 */
+  --p-radius-pill: 999px; /* 뱃지 */
+
+  /* ======================================================================
+     [2] SEMANTIC TOKENS  (의미값 — 컴포넌트는 이것만 참조)
+     ====================================================================== */
+
+  /* --- 표면 --- */
+  --color-bg:            var(--p-cream);       /* 페이지 배경 */
+  --color-bg-sunken:     var(--p-cream-deep);  /* 눌린 영역 */
+  --color-surface:       var(--p-white);       /* 카드 */
+
+  /* --- 텍스트 --- */
+  --color-text:          var(--p-ink);
+  --color-text-muted:    var(--p-ink-70);
+  --color-text-hint:     var(--p-ink-45);
+  --color-text-on-action:var(--p-white);       /* 주황 위 텍스트 */
+
+  /* --- 테두리 --- */
+  --color-border:        var(--p-gray-line);
+  --color-border-strong: var(--p-ink);
+
+  /* --- 오버레이 (바텀시트 등) --- */
+  --color-overlay: color-mix(in srgb, var(--p-ink) 45%, transparent);
+
+  /* --- 액션 (UI 단일 포인트) --- */
+  --color-action:        var(--p-orange-500);
+  --color-action-hover:  var(--p-orange-600);
+  --color-action-tint:   var(--p-orange-100);  /* 선택지 활성 배경 */
+  --color-action-on-tint:var(--p-orange-text); /* 틴트 위 텍스트 */
+
+  /* --- 데이터 시각화 (스탯바 등) --- */
+  --color-track:         var(--p-gray-track);
+  --color-fill:          var(--p-orange-500);
+
+  /* --- 타이포 역할 --- */
+  --font-display: var(--p-font-display);
+  --font-body:    var(--p-font-body);
+  --font-mono:    var(--p-font-mono);
+
+  /* --- 스페이싱 / 라운드 (별칭) --- */
+  --space-xs: var(--p-space-1);
+  --space-sm: var(--p-space-2);
+  --space-md: var(--p-space-3);
+  --space-lg: var(--p-space-4);
+  --space-xl: var(--p-space-5);
+  --space-2xl:var(--p-space-6);
+  --space-3xl:var(--p-space-7);
+
+  --radius-control: var(--p-radius-md);
+  --radius-card:    var(--p-radius-lg);
+  --radius-badge:   var(--p-radius-pill);
+  --radius-sm:      var(--p-radius-sm);
+
+  /* --- 시그니처: 리소 미스레지스트레이션 오프셋 --- */
+  --riso-offset: 3px;  /* 로고/포인트 요소의 색 어긋남 정도 */
+}
+
+/* ==========================================================================
+   폰트 등록 — 실제 파일 경로는 프로젝트에 맞게 교체하세요.
+   와일드각: 눈누(김씨폰트공방) / Pretendard: 오픈소스
+   ========================================================================== */
+@font-face {
+  font-family: "와일드각";
+  src: url("/fonts/Wildgak.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
