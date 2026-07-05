@@ -1,0 +1,317 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>독서유형 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --ink:#0c0d12;
+    --accent:#2dd4bf;
+    --accent-soft:#2dd4bf33;
+    --habitat-1:#06222b;
+    --habitat-2:#0a3540;
+    --card:#15171f;
+    --card-line:#262a36;
+    --text:#f4f6fb;
+    --muted:#8b91a3;
+  }
+  html,body{ background:radial-gradient(1200px 800px at 50% -10%, #1c2030 0%, #0a0b10 60%); min-height:100%; }
+  body{
+    font-family:"Noto Sans KR", sans-serif;
+    color:var(--text);
+    display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 48px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- CARD ---------- */
+  .card{
+    width:380px; max-width:100%;
+    background:var(--card);
+    border-radius:24px;
+    border:1px solid var(--card-line);
+    overflow:hidden;
+    position:relative;
+    box-shadow:0 24px 60px -20px #000, 0 0 0 1px #ffffff08 inset,
+               0 0 80px -30px var(--accent);
+    transition:box-shadow .5s ease;
+  }
+
+  /* top bar */
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:14px 18px;
+    position:relative; z-index:3;
+  }
+  .rarity-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:11.5px; font-weight:700; letter-spacing:.02em;
+    padding:6px 11px; border-radius:999px;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border:1px solid var(--accent);
+  }
+  .rarity-badge .gem{ width:8px; height:8px; border-radius:2px; background:var(--accent); transform:rotate(45deg); box-shadow:0 0 8px var(--accent); }
+  .code{
+    font-family:"Black Han Sans", sans-serif;
+    font-size:18px; letter-spacing:.12em;
+    color:var(--muted);
+  }
+
+  /* habitat / illustration */
+  .habitat{
+    position:relative; height:178px;
+    background:linear-gradient(170deg, var(--habitat-2), var(--habitat-1));
+    overflow:hidden;
+    transition:background .5s ease;
+  }
+  .glow{
+    position:absolute; left:50%; top:54%; transform:translate(-50%,-50%);
+    width:200px; height:200px; border-radius:50%;
+    background:radial-gradient(circle, var(--accent) 0%, transparent 68%);
+    opacity:.32; filter:blur(6px);
+  }
+  .avatar{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    font-size:84px; z-index:2;
+    filter:drop-shadow(0 8px 18px #00000080);
+    animation:bob 5s ease-in-out infinite;
+  }
+  @keyframes bob{ 0%,100%{ transform:translate(-50%,-50%);} 50%{ transform:translate(-50%,-58%);} }
+  .particles{ position:absolute; inset:0; z-index:1; }
+  .p{ position:absolute; bottom:-10px; border-radius:50%; background:var(--accent); opacity:.5; animation:rise linear infinite; }
+  @keyframes rise{ 0%{ transform:translateY(0) translateX(0); opacity:0; } 10%{opacity:.6;} 90%{opacity:.4;} 100%{ transform:translateY(-200px) translateX(var(--drift,0)); opacity:0; } }
+  .scanline{ position:absolute; inset:0; background:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 7px); z-index:1; pointer-events:none; }
+
+  /* identity */
+  .identity{ padding:18px 20px 6px; text-align:center; }
+  .name{
+    font-family:"Black Han Sans", sans-serif;
+    font-size:32px; line-height:1.1; letter-spacing:-.01em;
+    color:var(--text);
+  }
+  .tagline{
+    margin-top:9px; font-size:13.5px; line-height:1.5; color:var(--muted);
+    font-weight:500; padding:0 6px;
+  }
+
+  /* sections */
+  .sec{ padding:14px 20px 0; }
+  .sec-h{
+    font-size:11px; font-weight:700; letter-spacing:.14em;
+    color:var(--accent); margin-bottom:10px;
+    display:flex; align-items:center; gap:7px;
+  }
+  .sec-h::after{ content:""; flex:1; height:1px; background:linear-gradient(90deg,var(--accent-soft),transparent); }
+
+  /* stats */
+  .stat{ display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+  .stat-label{ width:48px; font-size:12px; color:var(--muted); font-weight:500; flex-shrink:0; }
+  .track{ flex:1; height:8px; background:#000000050; border-radius:99px; overflow:hidden; box-shadow:inset 0 0 0 1px #ffffff0a; }
+  .fill{ height:100%; border-radius:99px; background:linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #fff)); box-shadow:0 0 10px -1px var(--accent); width:0; transition:width 1s cubic-bezier(.2,.7,.3,1); }
+  .stat-val{ width:26px; text-align:right; font-size:12.5px; font-weight:700; color:var(--text); flex-shrink:0; }
+
+  /* brain stacked bar */
+  .brain-bar{ display:flex; height:22px; border-radius:8px; overflow:hidden; box-shadow:inset 0 0 0 1px #ffffff0a; }
+  .brain-seg{ height:100%; }
+  .brain-legend{ display:grid; grid-template-columns:1fr 1fr; gap:5px 14px; margin-top:11px; }
+  .leg{ display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--muted); }
+  .leg .dot{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+  .leg b{ color:var(--text); font-weight:700; }
+
+  /* footer */
+  .foot{
+    margin-top:18px; padding:13px 20px;
+    border-top:1px dashed var(--card-line);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .brand{ font-family:"Black Han Sans",sans-serif; font-size:14px; letter-spacing:.18em; color:var(--text); }
+  .foot-sub{ font-size:10.5px; color:var(--muted); letter-spacing:.1em; }
+
+  /* ---------- TYPE SWITCHER ---------- */
+  .switch{ display:flex; gap:8px; margin-top:24px; flex-wrap:wrap; justify-content:center; max-width:380px; }
+  .chip{
+    font-family:"Noto Sans KR",sans-serif; font-size:13px; font-weight:700;
+    padding:9px 14px; border-radius:999px; cursor:pointer;
+    background:#1a1d27; color:var(--muted); border:1px solid #2a2e3a;
+    transition:all .2s ease;
+  }
+  .chip:hover{ color:var(--text); border-color:#3a3f4d; }
+  .chip.on{ color:#0a0b10; background:var(--accent); border-color:var(--accent); }
+  .hint{ margin-top:16px; font-size:11.5px; color:#5a6072; letter-spacing:.03em; }
+
+  @media (prefers-reduced-motion: reduce){
+    .avatar,.p{ animation:none !important; }
+    .fill{ transition:none; }
+  }
+</style>
+
+<div class="card" id="card">
+  <div class="topbar">
+    <span class="rarity-badge"><span class="gem"></span><span id="rarity">전체의 4.1% · 희귀 등급</span></span>
+    <span class="code" id="code">FIEW</span>
+  </div>
+
+  <div class="habitat" id="habitat">
+    <div class="scanline"></div>
+    <div class="particles" id="particles"></div>
+    <div class="glow"></div>
+    <div class="avatar" id="avatar">🤿</div>
+  </div>
+
+  <div class="identity">
+    <div class="name" id="name">프로 잠수부</div>
+    <div class="tagline" id="tagline">"책 펴는 순간 현실에서 잠수 탐. 호출 금지."</div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h">독서 스탯</div>
+    <div id="stats"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-h">🧠 독서 뇌구조</div>
+    <div class="brain-bar" id="brainBar"></div>
+    <div class="brain-legend" id="brainLegend"></div>
+  </div>
+
+  <div class="foot">
+    <span class="brand">BOOK</span>
+    <span class="foot-sub">나의 독서유형</span>
+  </div>
+</div>
+
+<div class="switch" id="switch"></div>
+<div class="hint">유형을 눌러 색이 바뀌는 걸 확인해보세요 · 인스타에 올리는 요약 카드 버전이에요</div>
+
+<script>
+const TYPES = {
+  FIEW:{
+    name:"프로 잠수부", emoji:"🤿", code:"FIEW",
+    rarity:"전체의 4.1% · 희귀 등급",
+    tagline:'"책 펴는 순간 현실에서 잠수 탐. 호출 금지."',
+    accent:"#2dd4bf", h1:"#06222b", h2:"#0a3540", particle:"bubble",
+    stats:[["몰입력",94],["감수성",96],["완독력",61],["인내심",22],["허세력",40]],
+    brain:[["현실도피",36],["감정이입",28],["다음 권 결제",19],["밤샘 후회",12],["책 냄새 흡입",5]]
+  },
+  TCGR:{
+    name:"세상을 해부하는 사람", emoji:"🔬", code:"TCGR",
+    rarity:"전체의 5.7% · 흔한 편",
+    tagline:'"재밌게 읽다가 결국 다 분석함. 작가 의도까지 부검 완료."',
+    accent:"#a3e635", h1:"#0e1a0c", h2:"#16240f", particle:"cross",
+    stats:[["몰입력",75],["감수성",50],["완독력",82],["인내심",89],["허세력",63]],
+    brain:[["분석",31],["비판적 읽기",27],["성장",21],["메모",16],["토론 욕구",5]]
+  },
+  FCGR:{
+    name:"한 문장에 머무는 사람", emoji:"🌙", code:"FCGR",
+    rarity:"전체의 6.2% · 흔한 편",
+    tagline:'"같은 페이지 세 번 읽음. 진도 안 나가는 게 아니라 음미 중."',
+    accent:"#f0a6c0", h1:"#1a1426", h2:"#241932", particle:"mote",
+    stats:[["몰입력",72],["감수성",94],["완독력",68],["인내심",90],["허세력",35]],
+    brain:[["음미",30],["밑줄",27],["자기성찰",22],["필사",16],["한숨",5]]
+  },
+  TIGR:{
+    name:"지식 사냥꾼", emoji:"⚔️", code:"TIGR",
+    rarity:"전체의 9.4% · 가장 흔함",
+    tagline:'"책장은 가득, 완독률은 글쎄. 사는 게 곧 읽는 거 아님?"',
+    accent:"#fbbf24", h1:"#1f1608", h2:"#2b1f0c", particle:"ember",
+    stats:[["몰입력",74],["감수성",36],["완독력",48],["인내심",58],["허세력",80]],
+    brain:[["정보욕",32],["일단 구매",27],["발췌독",21],["자기계발",15],["죄책감",5]]
+  }
+};
+
+function hexA(hex,a){ return hex + a; }
+
+function render(key){
+  const t = TYPES[key];
+  const root = document.documentElement.style;
+  root.setProperty("--accent", t.accent);
+  root.setProperty("--accent-soft", hexA(t.accent,"33"));
+  root.setProperty("--habitat-1", t.h1);
+  root.setProperty("--habitat-2", t.h2);
+
+  document.getElementById("rarity").textContent = t.rarity;
+  document.getElementById("code").textContent = t.code;
+  document.getElementById("avatar").textContent = t.emoji;
+  document.getElementById("name").textContent = t.name;
+  document.getElementById("tagline").textContent = t.tagline;
+
+  // stats
+  const sw = document.getElementById("stats");
+  sw.innerHTML = "";
+  t.stats.forEach(([label,val])=>{
+    const row = document.createElement("div");
+    row.className = "stat";
+    row.innerHTML = `<span class="stat-label">${label}</span>
+      <span class="track"><span class="fill"></span></span>
+      <span class="stat-val">${val}</span>`;
+    sw.appendChild(row);
+    requestAnimationFrame(()=>{ row.querySelector(".fill").style.width = val + "%"; });
+  });
+
+  // brain
+  const bar = document.getElementById("brainBar");
+  const leg = document.getElementById("brainLegend");
+  bar.innerHTML = ""; leg.innerHTML = "";
+  const shades = [1, .82, .64, .46, .3];
+  t.brain.forEach(([label,pct],i)=>{
+    const seg = document.createElement("div");
+    seg.className = "brain-seg";
+    seg.style.width = pct + "%";
+    seg.style.background = t.accent;
+    seg.style.opacity = shades[i];
+    bar.appendChild(seg);
+
+    const l = document.createElement("div");
+    l.className = "leg";
+    l.innerHTML = `<span class="dot" style="background:${t.accent};opacity:${shades[i]}"></span>
+      ${label} <b>${pct}%</b>`;
+    leg.appendChild(l);
+  });
+
+  buildParticles(t);
+
+  // chips
+  document.querySelectorAll(".chip").forEach(c=>{
+    c.classList.toggle("on", c.dataset.key === key);
+  });
+}
+
+function buildParticles(t){
+  const box = document.getElementById("particles");
+  box.innerHTML = "";
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce) return;
+  const n = 14;
+  for(let i=0;i<n;i++){
+    const p = document.createElement("span");
+    p.className = "p";
+    const size = 3 + Math.random()*7;
+    p.style.width = size+"px"; p.style.height = size+"px";
+    p.style.left = (Math.random()*100)+"%";
+    p.style.background = t.accent;
+    p.style.setProperty("--drift",(Math.random()*40-20)+"px");
+    p.style.animationDuration = (4+Math.random()*4)+"s";
+    p.style.animationDelay = (-Math.random()*6)+"s";
+    if(t.particle==="cross"){ p.style.borderRadius="1px"; p.style.transform="rotate(45deg)"; }
+    if(t.particle==="ember"){ p.style.boxShadow="0 0 6px "+t.accent; }
+    if(t.particle==="mote"){ p.style.opacity=".35"; }
+    box.appendChild(p);
+  }
+}
+
+// build chips
+const sw = document.getElementById("switch");
+Object.keys(TYPES).forEach(k=>{
+  const c = document.createElement("button");
+  c.className = "chip";
+  c.dataset.key = k;
+  c.textContent = TYPES[k].emoji + " " + TYPES[k].name;
+  c.onclick = ()=>render(k);
+  sw.appendChild(c);
+});
+
+render("FIEW");
+</script>

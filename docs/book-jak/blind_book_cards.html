@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BOOK — 블라인드 책 카드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  :root{
+    --ink:#0c0d12;
+    --card:#15171f;
+    --card-line:#262a36;
+    --text:#f4f6fb;
+    --muted:#8b91a3;
+    --accent:#c084fc;
+    --accent-soft:#c084fc22;
+    --bg1:#0a0b10;
+  }
+  html,body{
+    min-height:100%;
+    background:radial-gradient(1400px 900px at 50% -5%, #1a1530 0%, #0a0b10 55%);
+    font-family:"Noto Sans KR",sans-serif;
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+  }
+  body{
+    display:flex; flex-direction:column; align-items:center;
+    padding:28px 16px 60px;
+  }
+
+  /* ─── TOP NAV ─── */
+  .topnav{
+    width:100%; max-width:420px;
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:22px;
+  }
+  .brand{font-family:"Black Han Sans",sans-serif; font-size:20px; letter-spacing:.18em;}
+  .phase-badge{
+    font-size:11px; font-weight:700; letter-spacing:.1em;
+    padding:5px 11px; border-radius:999px;
+    background:var(--accent-soft); color:var(--accent);
+    border:1px solid var(--accent);
+  }
+
+  /* ─── PROGRESS ─── */
+  .progress-wrap{width:100%; max-width:420px; margin-bottom:28px;}
+  .progress-label{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:11.5px; color:var(--muted); margin-bottom:8px;
+  }
+  .progress-track{height:4px; background:#1e2130; border-radius:99px; overflow:hidden;}
+  .progress-fill{height:100%; border-radius:99px; background:linear-gradient(90deg,var(--accent),#818cf8); transition:width .6s cubic-bezier(.2,.8,.3,1);}
+
+  /* ─── CARD STACK ─── */
+  .stack{position:relative; width:360px; max-width:100%; height:540px;}
+
+  /* ghost cards behind */
+  .ghost{
+    position:absolute; left:50%; border-radius:22px;
+    background:var(--card); border:1px solid var(--card-line);
+    transition:all .4s ease; pointer-events:none;
+  }
+  .ghost-2{
+    width:330px; height:510px;
+    transform:translateX(-50%) translateY(16px) scale(.96);
+    opacity:.45;
+  }
+  .ghost-1{
+    width:345px; height:525px;
+    transform:translateX(-50%) translateY(8px) scale(.98);
+    opacity:.7;
+  }
+
+  /* main card */
+  .card{
+    position:absolute; left:50%; top:0;
+    width:360px; max-width:100%;
+    transform:translateX(-50%);
+    background:var(--card);
+    border-radius:22px;
+    border:1px solid var(--card-line);
+    overflow:hidden;
+    box-shadow:0 28px 70px -20px #000, 0 0 0 1px #ffffff07 inset,
+               0 0 90px -35px var(--accent);
+    transition:box-shadow .5s ease;
+    cursor:grab;
+    user-select:none;
+  }
+  .card.dragging{cursor:grabbing; transition:none;}
+  .card.swipe-left{
+    animation:swipeLeft .42s cubic-bezier(.4,0,.6,1) forwards;
+  }
+  .card.swipe-right{
+    animation:swipeRight .42s cubic-bezier(.4,0,.6,1) forwards;
+  }
+  @keyframes swipeLeft{
+    to{transform:translateX(calc(-50% - 420px)) rotate(-18deg); opacity:0;}
+  }
+  @keyframes swipeRight{
+    to{transform:translateX(calc(-50% + 420px)) rotate(18deg); opacity:0;}
+  }
+
+  /* drag hint overlay */
+  .drag-hint{
+    position:absolute; inset:0; z-index:20;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:22px; pointer-events:none;
+    opacity:0; transition:opacity .15s;
+  }
+  .drag-hint.left{background:linear-gradient(135deg,#ef444433,transparent); }
+  .drag-hint.right{background:linear-gradient(-135deg,#22c55e33,transparent);}
+  .drag-hint-label{
+    font-family:"Black Han Sans",sans-serif; font-size:26px; letter-spacing:.08em;
+    padding:10px 20px; border-radius:12px;
+  }
+  .drag-hint.left .drag-hint-label{color:#ef4444; border:2px solid #ef4444;}
+  .drag-hint.right .drag-hint-label{color:#22c55e; border:2px solid #22c55e;}
+
+  /* ─── BOOK COVER AREA ─── */
+  .cover-area{
+    position:relative; height:200px;
+    overflow:hidden; background:#0d0f18;
+  }
+  /* blind state */
+  .cover-blind{
+    position:absolute; inset:0; z-index:2;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px;
+    background:linear-gradient(160deg,#1a1d2e,#0d0f18);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .cover-blind .lock-icon{font-size:40px; filter:drop-shadow(0 0 16px var(--accent));}
+  .cover-blind .blind-text{
+    font-size:12px; font-weight:700; letter-spacing:.14em;
+    color:var(--accent); opacity:.8;
+  }
+  /* actual cover (hidden until reveal) */
+  .cover-real{
+    position:absolute; inset:0; z-index:1;
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; transform:scale(1.08);
+    transition:opacity .7s ease .1s, transform .7s ease .1s;
+  }
+  .cover-real.revealed{opacity:1; transform:scale(1);}
+  .cover-blind.revealed{opacity:0; transform:scale(.9); pointer-events:none;}
+
+  .cover-shimmer{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(110deg,transparent 0 30px,#ffffff04 30px 31px);
+    z-index:3; pointer-events:none;
+  }
+  .cover-scan{
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(0deg,#ffffff05 0 1px,transparent 1px 8px);
+    z-index:3; pointer-events:none;
+  }
+
+  /* cover emoji/placeholder */
+  .cover-emoji{
+    font-size:72px;
+    filter:drop-shadow(0 4px 20px rgba(0,0,0,.6));
+  }
+  .cover-title-reveal{
+    position:absolute; bottom:0; left:0; right:0;
+    padding:10px 16px 12px;
+    background:linear-gradient(0deg,#0d0f18ee,transparent);
+    z-index:4;
+    opacity:0; transform:translateY(8px);
+    transition:opacity .5s ease .4s, transform .5s ease .4s;
+  }
+  .cover-title-reveal.show{opacity:1; transform:translateY(0);}
+  .cover-title-reveal .book-title-text{
+    font-family:"Black Han Sans",sans-serif;
+    font-size:17px; letter-spacing:.03em;
+    color:#fff; line-height:1.2;
+  }
+  .cover-title-reveal .book-author-text{
+    font-size:11.5px; color:var(--muted); margin-top:3px;
+  }
+
+  /* ─── CARD BODY ─── */
+  .card-body{padding:20px 20px 0;}
+
+  /* tags */
+  .tag-row{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:14px;}
+  .tag{
+    font-size:11px; font-weight:700; letter-spacing:.06em;
+    padding:5px 10px; border-radius:999px;
+    background:var(--accent-soft); color:var(--accent);
+    border:1px solid var(--accent)33;
+  }
+  .tag.mood{background:#818cf822; color:#a5b4fc; border-color:#818cf833;}
+  .tag.genre{background:#2dd4bf22; color:#5eead4; border-color:#2dd4bf33;}
+
+  /* desc */
+  .book-desc{
+    font-size:14.5px; line-height:1.75; color:var(--text);
+    margin-bottom:16px;
+  }
+  .book-desc em{
+    font-style:normal; color:var(--accent); font-weight:700;
+  }
+
+  /* meta row */
+  .meta-row{
+    display:flex; gap:18px; padding:12px 0;
+    border-top:1px solid var(--card-line);
+    border-bottom:1px solid var(--card-line);
+    margin-bottom:16px;
+  }
+  .meta-item{display:flex; flex-direction:column; gap:3px;}
+  .meta-key{font-size:10.5px; color:var(--muted); font-weight:700; letter-spacing:.1em;}
+  .meta-val{font-size:13px; font-weight:700; color:var(--text);}
+
+  /* hint */
+  .book-hint{
+    font-size:12px; color:var(--muted); line-height:1.6;
+    padding:10px 14px;
+    background:#1a1d2e;
+    border-radius:10px;
+    border-left:2px solid var(--accent)88;
+    margin-bottom:20px;
+  }
+  .book-hint::before{content:"💬 "; }
+
+  /* ─── RATING PANEL ─── */
+  .rating-panel{
+    padding:0 20px 20px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+
+  /* star rating */
+  .stars-label{font-size:11.5px; font-weight:700; color:var(--muted); letter-spacing:.1em; margin-bottom:6px;}
+  .stars{display:flex; gap:6px;}
+  .star{
+    font-size:28px; cursor:pointer;
+    filter:grayscale(1) opacity(.35);
+    transition:filter .15s, transform .15s;
+    line-height:1;
+  }
+  .star:hover, .star.lit{filter:none; transform:scale(1.15);}
+  .star.lit{animation:starPop .2s ease;}
+  @keyframes starPop{50%{transform:scale(1.35);}}
+
+  /* reaction tags */
+  .reactions-label{font-size:11.5px; font-weight:700; color:var(--muted); letter-spacing:.1em; margin-bottom:8px;}
+  .reactions{display:flex; gap:8px; flex-wrap:wrap;}
+  .rxn{
+    font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:999px;
+    cursor:pointer;
+    background:#1a1d2e; color:var(--muted);
+    border:1px solid var(--card-line);
+    transition:all .18s ease;
+    user-select:none;
+  }
+  .rxn:hover{border-color:var(--accent)55; color:var(--text);}
+  .rxn.on{
+    background:var(--accent-soft); color:var(--accent);
+    border-color:var(--accent);
+    box-shadow:0 0 14px -4px var(--accent);
+  }
+
+  /* CTA */
+  .cta-row{display:flex; gap:10px;}
+  .btn-skip{
+    flex:1; padding:13px; border-radius:13px; border:1px solid var(--card-line);
+    background:transparent; color:var(--muted);
+    font-family:"Noto Sans KR",sans-serif; font-size:14px; font-weight:700;
+    cursor:pointer; transition:all .18s;
+  }
+  .btn-skip:hover{border-color:#3a3f4d; color:var(--text);}
+  .btn-rate{
+    flex:2; padding:13px; border-radius:13px; border:none;
+    background:var(--accent); color:#0a0b10;
+    font-family:"Noto Sans KR",sans-serif; font-size:14px; font-weight:900;
+    cursor:pointer; transition:all .18s;
+    box-shadow:0 4px 20px -6px var(--accent);
+  }
+  .btn-rate:hover{filter:brightness(1.1);}
+  .btn-rate:disabled{opacity:.4; cursor:not-allowed; filter:none; box-shadow:none;}
+
+  /* ─── REVEAL STATE ─── */
+  .reveal-block{
+    padding:0 20px 20px;
+    display:none; flex-direction:column; gap:12px;
+  }
+  .reveal-block.show{display:flex;}
+  .reveal-title{
+    font-family:"Black Han Sans",sans-serif; font-size:22px; letter-spacing:.02em;
+    color:var(--text); line-height:1.2;
+  }
+  .reveal-author{font-size:13px; color:var(--muted); margin-top:2px;}
+  .reveal-msg{
+    font-size:13px; line-height:1.7; color:var(--muted);
+    padding:10px 14px; background:#1a1d2e; border-radius:10px;
+  }
+  .reveal-msg b{color:var(--text);}
+  .btn-next{
+    padding:14px; border-radius:13px; border:none;
+    background:linear-gradient(135deg,var(--accent),#818cf8);
+    color:#0a0b10; font-family:"Noto Sans KR",sans-serif;
+    font-size:15px; font-weight:900;
+    cursor:pointer; transition:filter .18s;
+    box-shadow:0 6px 24px -8px var(--accent);
+  }
+  .btn-next:hover{filter:brightness(1.1);}
+
+  /* ─── RATING PANEL hide/show ─── */
+  .rating-panel.hide{display:none;}
+
+  /* ─── SWIPE GUIDE ─── */
+  .swipe-guide{
+    display:flex; gap:20px; align-items:center;
+    margin-top:20px; font-size:12px; color:var(--muted);
+  }
+  .swipe-item{display:flex; align-items:center; gap:6px;}
+  .swipe-item span{font-size:16px;}
+
+  /* ─── DONE STATE ─── */
+  .done-screen{
+    display:none; flex-direction:column; align-items:center;
+    text-align:center; gap:16px; margin-top:40px;
+  }
+  .done-screen.show{display:flex;}
+  .done-icon{font-size:64px;}
+  .done-title{font-family:"Black Han Sans",sans-serif; font-size:28px; letter-spacing:.04em;}
+  .done-sub{font-size:14px; color:var(--muted); line-height:1.7; max-width:300px;}
+  .done-cta{
+    margin-top:8px; padding:14px 32px; border-radius:13px; border:none;
+    background:var(--accent); color:#0a0b10;
+    font-family:"Noto Sans KR",sans-serif; font-size:15px; font-weight:900;
+    cursor:pointer; transition:filter .18s;
+    box-shadow:0 6px 24px -8px var(--accent);
+  }
+  .done-cta:hover{filter:brightness(1.1);}
+
+  /* ─── UTIL ─── */
+  @media (prefers-reduced-motion: reduce){
+    .card,.star,.cover-blind,.cover-real,.cover-title-reveal{ transition:none; animation:none; }
+  }
+</style>
+
+<!-- ─── TOP NAV ─── -->
+<div class="topnav">
+  <span class="brand">BOOK</span>
+  <span class="phase-badge">PHASE 2 · 블라인드 탐색</span>
+</div>
+
+<!-- ─── PROGRESS ─── -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="progressText">0 / 5 완료</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- ─── CARD STACK ─── -->
+<div class="stack" id="stack">
+  <!-- ghost cards -->
+  <div class="ghost ghost-2" id="ghost2"></div>
+  <div class="ghost ghost-1" id="ghost1"></div>
+  <!-- main card is injected here -->
+</div>
+
+<!-- drag hints (outside card so they don't overflow clip) -->
+<div class="swipe-guide">
+  <div class="swipe-item"><span>←</span> 관심 없음</div>
+  <div class="swipe-item"><span>·</span></div>
+  <div class="swipe-item">읽고 싶어요 <span>→</span></div>
+</div>
+
+<!-- ─── DONE SCREEN ─── -->
+<div class="done-screen" id="doneScreen">
+  <div class="done-icon">📚</div>
+  <div class="done-title">오늘의 탐색 완료!</div>
+  <div class="done-sub">5권의 블라인드 책을 평가했어요.<br>당신의 독서 취향 데이터가 쌓이고 있습니다.</div>
+  <button class="done-cta" onclick="resetAll()">처음부터 다시 탐색</button>
+</div>
+
+<script>
+/* ─────────────────────────────────────────
+   DATA: 블라인드 책 카드 샘플 5장
+   실서비스에서는 서버에서 내려오는 데이터
+───────────────────────────────────────── */
+const BOOKS = [
+  {
+    id: 1,
+    // 블라인드 상태
+    emoji: "🌊",
+    accentColor: "#2dd4bf",
+    habitatColors: ["#061e1e","#0a2e2e"],
+    tags: [
+      {text:"잔잔한 파국", cls:""},
+      {text:"쓸쓸함", cls:"mood"},
+      {text:"성장소설", cls:"genre"}
+    ],
+    desc: `한 사람이 <em>아무것도 하지 않기로 결심</em>하는 이야기. 세상과 천천히 멀어지면서도, 이상하게 더 또렷해지는 것들에 대해 쓴 소설.`,
+    meta: [{key:"분위기",val:"고요하고 서늘한"},{key:"길이",val:"짧음 (200p 내외)"},{key:"독서 난이도",val:"보통"}],
+    hint: "\"읽는 내내 아무 일도 안 일어나는데 다 읽고 나서 멍했어요\"",
+    // 공개 상태
+    title: "나의 투쟁",
+    author: "칼 오베 크나우스고르",
+    coverEmoji: "📖",
+    revealMsg: "삶의 일상을 극단적으로 밀어붙인 자전적 대하소설. 무료하지만 중독성 있는 \"아무것도 안 하는 것의 폭력\"을 담아냈습니다.",
+  },
+  {
+    id: 2,
+    emoji: "🔥",
+    accentColor: "#f97316",
+    habitatColors: ["#1e0e04","#2e1408"],
+    tags: [
+      {text:"심장이 달려감", cls:""},
+      {text:"긴장·불안", cls:"mood"},
+      {text:"스릴러", cls:"genre"}
+    ],
+    desc: `처음 두 페이지에서 <em>이미 누군가 죽는다.</em> 그리고 독자는 범인을 아는데 주인공만 모른다. 그 불편함이 끝까지 간다.`,
+    meta: [{key:"분위기",val:"날카롭고 조여드는"},{key:"길이",val:"중간 (350p)"},{key:"독서 난이도",val:"쉬움"}],
+    hint: "\"지하철에서 읽다가 정류장 놓쳤어요\"",
+    title: "살인자의 기억법",
+    author: "김영하",
+    coverEmoji: "🔪",
+    revealMsg: "치매에 걸린 전직 연쇄살인범이 화자인 서스펜스 소설. 기억이 흐릿해질수록 진실도 흐릿해지는 구조가 압권입니다.",
+  },
+  {
+    id: 3,
+    emoji: "🌿",
+    accentColor: "#86efac",
+    habitatColors: ["#071408","#0e1f0d"],
+    tags: [
+      {text:"마음이 따뜻해짐", cls:""},
+      {text:"위로", cls:"mood"},
+      {text:"에세이", cls:"genre"}
+    ],
+    desc: `<em>잘 하지 않아도 되는 것들</em>에 대한 이야기. 완벽하지 않아도 괜찮다는 말을 이렇게 아름답게 쓸 수 있다는 걸 보여주는 책.`,
+    meta: [{key:"분위기",val:"포근하고 느린"},{key:"길이",val:"짧음 (160p)"},{key:"독서 난이도",val:"매우 쉬움"}],
+    hint: "\"출퇴근 때 읽었는데 지하철에서 눈물 날 뻔했어요\"",
+    title: "어떻게 살아야 할지 모르는 너에게",
+    author: "강규형",
+    coverEmoji: "🌱",
+    revealMsg: "자기계발서도 아니고 힐링서도 아닌 묘한 위치의 에세이. '아무것도 안 해도 돼'라는 말을 가장 예쁘게 쓴 책이라는 평을 받았습니다.",
+  },
+  {
+    id: 4,
+    emoji: "🏙️",
+    accentColor: "#a5b4fc",
+    habitatColors: ["#0e0f1e","#14162c"],
+    tags: [
+      {text:"생각이 계속 남음", cls:""},
+      {text:"도시·고독", cls:"mood"},
+      {text:"장편소설", cls:"genre"}
+    ],
+    desc: `수천만 명이 사는 도시에서 <em>완전히 혼자인 사람</em>의 이야기. 외로움이 감정이 아니라 구조적인 문제라는 걸 서서히 납득하게 만드는 소설.`,
+    meta: [{key:"분위기",val:"쓸쓸하고 밀도 높은"},{key:"길이",val:"긴 편 (480p)"},{key:"독서 난이도",val:"보통"}],
+    hint: "\"다 읽고 나서 창밖을 오래 봤어요\"",
+    title: "군중 속의 고독",
+    author: "데이비드 리스먼",
+    coverEmoji: "🌃",
+    revealMsg: "1950년대에 쓰인 사회학 고전이지만 지금 읽으면 더 뜨끔한 책. '타인 지향형 인간'이라는 개념이 SNS 시대와 완벽하게 맞아떨어집니다.",
+  },
+  {
+    id: 5,
+    emoji: "❓",
+    accentColor: "#e879f9",
+    habitatColors: ["#1a0c20","#240f2c"],
+    tags: [
+      {text:"뇌가 꼬임", cls:""},
+      {text:"기묘·철학", cls:"mood"},
+      {text:"단편집", cls:"genre"}
+    ],
+    desc: `<em>결말이 없는 이야기들의 모음집.</em> 모든 단편이 질문으로 끝나고, 독자가 그 질문을 받아서 스스로 결말을 쓰게 된다.`,
+    meta: [{key:"분위기",val:"기묘하고 열린"},{key:"길이",val:"짧음 (180p)"},{key:"독서 난이도",val:"보통"}],
+    hint: "\"읽고 나서 친구한테 '이게 무슨 뜻인 것 같아?' 연속 질문함\"",
+    title: "열린 결말을 사랑한 사람들",
+    author: "보르헤스 (재편집)",
+    coverEmoji: "🔮",
+    revealMsg: "보르헤스 스타일에서 영감을 받아 엮은 가상의 단편집. 답을 주지 않고 질문만 남기는 방식이 처음에는 불편하지만, 나중엔 그 불편함이 좋아집니다.",
+  },
+];
+
+/* ─────────────────────────────────────────
+   STATE
+───────────────────────────────────────── */
+let currentIdx = 0;
+let rated = 0;
+let currentStars = 0;
+let selectedRxns = new Set();
+let isRevealed = false;
+let isDragging = false;
+let dragStartX = 0, dragStartY = 0, dragDeltaX = 0;
+let cardEl = null;
+
+/* ─────────────────────────────────────────
+   RENDER CARD
+───────────────────────────────────────── */
+function renderCard(idx) {
+  const b = BOOKS[idx];
+  const stack = document.getElementById("stack");
+
+  // remove old card
+  const old = stack.querySelector(".card");
+  if(old) old.remove();
+
+  // reset state
+  currentStars = 0;
+  selectedRxns = new Set();
+  isRevealed = false;
+
+  // update accent
+  const root = document.documentElement.style;
+  root.setProperty("--accent", b.accentColor);
+  root.setProperty("--accent-soft", b.accentColor + "22");
+
+  // ghost bg
+  document.getElementById("ghost1").style.background =
+    `linear-gradient(160deg, ${b.habitatColors[1]}, ${b.habitatColors[0]})`;
+  document.getElementById("ghost2").style.background =
+    `linear-gradient(160deg, ${b.habitatColors[1]}, ${b.habitatColors[0]})`;
+
+  // build card HTML
+  const tagHTML = b.tags.map(t =>
+    `<span class="tag ${t.cls}">${t.text}</span>`
+  ).join("");
+
+  const metaHTML = b.meta.map(m =>
+    `<div class="meta-item"><div class="meta-key">${m.key}</div><div class="meta-val">${m.val}</div></div>`
+  ).join("");
+
+  const card = document.createElement("div");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="drag-hint left" id="hintLeft"><span class="drag-hint-label">PASS</span></div>
+    <div class="drag-hint right" id="hintRight"><span class="drag-hint-label">읽고 싶어요</span></div>
+
+    <div class="cover-area">
+      <div class="cover-scan"></div>
+      <div class="cover-shimmer"></div>
+      <div class="cover-blind" id="coverBlind">
+        <span class="lock-icon">🔒</span>
+        <span class="blind-text">평가 후 공개</span>
+      </div>
+      <div class="cover-real" id="coverReal" style="background:linear-gradient(160deg,${b.habitatColors[1]},${b.habitatColors[0]})">
+        <span class="cover-emoji">${b.coverEmoji}</span>
+      </div>
+      <div class="cover-title-reveal" id="coverTitleReveal">
+        <div class="book-title-text">${b.title}</div>
+        <div class="book-author-text">${b.author}</div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="tag-row">${tagHTML}</div>
+      <div class="book-desc">${b.desc}</div>
+      <div class="meta-row">${metaHTML}</div>
+      <div class="book-hint">${b.hint}</div>
+    </div>
+
+    <div class="rating-panel" id="ratingPanel">
+      <div>
+        <div class="stars-label">이 책, 읽고 싶은가요? (별점)</div>
+        <div class="stars" id="stars">
+          ${[1,2,3,4,5].map(n=>`<span class="star" data-n="${n}">⭐</span>`).join("")}
+        </div>
+      </div>
+      <div>
+        <div class="reactions-label">읽는다면 어떨 것 같아요?</div>
+        <div class="reactions">
+          <span class="rxn" data-rxn="울었음">😭 울 것 같아요</span>
+          <span class="rxn" data-rxn="몰입">🔥 몰입할 것 같아요</span>
+          <span class="rxn" data-rxn="생각많아짐">🤔 생각이 많아질 것 같아요</span>
+          <span class="rxn" data-rxn="재독의향">🔁 두 번 읽을 것 같아요</span>
+        </div>
+      </div>
+      <div class="cta-row">
+        <button class="btn-skip" onclick="skipCard()">패스 →</button>
+        <button class="btn-rate" id="btnRate" disabled onclick="submitRating()">공개하기</button>
+      </div>
+    </div>
+
+    <div class="reveal-block" id="revealBlock">
+      <div class="reveal-title">${b.title}</div>
+      <div class="reveal-author">${b.author}</div>
+      <div class="reveal-msg">${b.revealMsg}</div>
+      <button class="btn-next" onclick="nextCard()">다음 책 →</button>
+    </div>
+  `;
+
+  stack.appendChild(card);
+  cardEl = card;
+
+  // star interaction
+  const stars = card.querySelectorAll(".star");
+  stars.forEach(s => {
+    s.addEventListener("click", () => {
+      const n = +s.dataset.n;
+      currentStars = n;
+      stars.forEach((star, i) => {
+        star.classList.toggle("lit", i < n);
+      });
+      checkEnableRate();
+    });
+    s.addEventListener("mouseenter", () => {
+      const n = +s.dataset.n;
+      stars.forEach((star, i) => {
+        star.style.filter = i < n ? "none" : "grayscale(1) opacity(.35)";
+      });
+    });
+    s.addEventListener("mouseleave", () => {
+      stars.forEach((star, i) => {
+        star.style.filter = "";
+      });
+    });
+  });
+
+  // reaction tags
+  card.querySelectorAll(".rxn").forEach(r => {
+    r.addEventListener("click", () => {
+      const k = r.dataset.rxn;
+      if(selectedRxns.has(k)) {
+        selectedRxns.delete(k);
+        r.classList.remove("on");
+      } else {
+        selectedRxns.add(k);
+        r.classList.add("on");
+      }
+    });
+  });
+
+  // drag
+  setupDrag(card);
+}
+
+function checkEnableRate() {
+  const btn = document.getElementById("btnRate");
+  if(btn) btn.disabled = currentStars === 0;
+}
+
+/* ─────────────────────────────────────────
+   RATING SUBMIT → REVEAL
+───────────────────────────────────────── */
+function submitRating() {
+  if(currentStars === 0) return;
+  isRevealed = true;
+
+  // save data (로컬 스토리지에 취향 데이터 축적)
+  const b = BOOKS[currentIdx];
+  const record = {
+    bookId: b.id,
+    title: b.title,
+    stars: currentStars,
+    reactions: [...selectedRxns],
+    tags: b.tags.map(t=>t.text),
+    ts: Date.now()
+  };
+  const stored = JSON.parse(localStorage.getItem("book_ratings")||"[]");
+  stored.push(record);
+  localStorage.setItem("book_ratings", JSON.stringify(stored));
+
+  // reveal animation
+  document.getElementById("coverBlind").classList.add("revealed");
+  document.getElementById("coverReal").classList.add("revealed");
+  document.getElementById("coverTitleReveal").classList.add("show");
+
+  // switch panels
+  document.getElementById("ratingPanel").classList.add("hide");
+  document.getElementById("revealBlock").classList.add("show");
+
+  // update progress
+  rated++;
+  updateProgress();
+}
+
+/* ─────────────────────────────────────────
+   SKIP (swipe left)
+───────────────────────────────────────── */
+function skipCard() {
+  animateSwipe("left", () => {
+    rated++;
+    updateProgress();
+    nextCard();
+  });
+}
+
+/* ─────────────────────────────────────────
+   NEXT
+───────────────────────────────────────── */
+function nextCard() {
+  animateSwipe("right", () => {
+    currentIdx++;
+    if(currentIdx >= BOOKS.length) {
+      showDone();
+    } else {
+      renderCard(currentIdx);
+    }
+  });
+}
+
+function animateSwipe(dir, cb) {
+  if(!cardEl) return cb();
+  cardEl.classList.add(dir === "left" ? "swipe-left" : "swipe-right");
+  cardEl.addEventListener("animationend", cb, {once:true});
+}
+
+/* ─────────────────────────────────────────
+   PROGRESS
+───────────────────────────────────────── */
+function updateProgress() {
+  const total = BOOKS.length;
+  const pct = Math.round((rated / total) * 100);
+  document.getElementById("progressText").textContent = `${rated} / ${total} 완료`;
+  document.getElementById("progressPct").textContent = pct + "%";
+  document.getElementById("progressFill").style.width = pct + "%";
+}
+
+/* ─────────────────────────────────────────
+   DONE
+───────────────────────────────────────── */
+function showDone() {
+  document.getElementById("stack").style.display = "none";
+  document.querySelector(".swipe-guide").style.display = "none";
+  document.getElementById("doneScreen").classList.add("show");
+}
+
+function resetAll() {
+  currentIdx = 0;
+  rated = 0;
+  isRevealed = false;
+  document.getElementById("stack").style.display = "block";
+  document.querySelector(".swipe-guide").style.display = "flex";
+  document.getElementById("doneScreen").classList.remove("show");
+  updateProgress();
+  renderCard(0);
+}
+
+/* ─────────────────────────────────────────
+   DRAG / SWIPE GESTURE
+───────────────────────────────────────── */
+function setupDrag(card) {
+  let startX = 0, startY = 0, currentX = 0;
+  let dragging = false;
+
+  function onStart(x, y) {
+    // don't trigger drag on buttons/stars/rxn chips
+    dragging = true;
+    startX = x;
+    startY = y;
+    card.classList.add("dragging");
+  }
+  function onMove(x) {
+    if(!dragging) return;
+    currentX = x - startX;
+    const rotate = currentX * 0.04;
+    card.style.transform = `translateX(calc(-50% + ${currentX}px)) rotate(${rotate}deg)`;
+
+    const threshold = 60;
+    const left = card.querySelector("#hintLeft");
+    const right = card.querySelector("#hintRight");
+    if(currentX < -threshold) {
+      left.style.opacity = Math.min(1, Math.abs(currentX) / 140);
+      right.style.opacity = 0;
+    } else if(currentX > threshold) {
+      right.style.opacity = Math.min(1, currentX / 140);
+      left.style.opacity = 0;
+    } else {
+      left.style.opacity = 0;
+      right.style.opacity = 0;
+    }
+  }
+  function onEnd() {
+    if(!dragging) return;
+    dragging = false;
+    card.classList.remove("dragging");
+    const threshold = 100;
+    if(currentX < -threshold) {
+      // skip
+      card.style.transform = "";
+      skipCard();
+    } else if(currentX > threshold && isRevealed) {
+      // next
+      card.style.transform = "";
+      nextCard();
+    } else {
+      // snap back
+      card.style.transition = "transform .35s cubic-bezier(.2,.8,.3,1)";
+      card.style.transform = "translateX(-50%)";
+      const left = card.querySelector("#hintLeft");
+      const right = card.querySelector("#hintRight");
+      if(left) left.style.opacity = 0;
+      if(right) right.style.opacity = 0;
+      setTimeout(() => { card.style.transition = ""; }, 350);
+    }
+    currentX = 0;
+  }
+
+  // mouse
+  card.addEventListener("mousedown", e => {
+    if(e.target.closest("button,.star,.rxn")) return;
+    onStart(e.clientX, e.clientY);
+  });
+  window.addEventListener("mousemove", e => onMove(e.clientX));
+  window.addEventListener("mouseup", onEnd);
+
+  // touch
+  card.addEventListener("touchstart", e => {
+    if(e.target.closest("button,.star,.rxn")) return;
+    onStart(e.touches[0].clientX, e.touches[0].clientY);
+  }, {passive:true});
+  window.addEventListener("touchmove", e => onMove(e.touches[0].clientX), {passive:true});
+  window.addEventListener("touchend", onEnd);
+}
+
+/* ─────────────────────────────────────────
+   INIT
+───────────────────────────────────────── */
+renderCard(0);
+</script>
