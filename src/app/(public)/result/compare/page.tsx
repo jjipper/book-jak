@@ -1,41 +1,38 @@
 'use client'
 
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { READING_TYPES, type TypeCode, TYPE_CODES } from '@/data/readingTypes'
 import { useTestStore } from '@/store/testStore'
 import { loadResult } from '@/lib/scoring'
+import { calcAffinity, affinityLabel } from '@/lib/affinity'
 import IllustPlaceholder from '@/components/illust/IllustPlaceholder'
 
 export default function ComparePage() {
+  return (
+    <Suspense fallback={null}>
+      <CompareContent />
+    </Suspense>
+  )
+}
+
+function CompareContent() {
   const { result: storeResult } = useTestStore()
   const myResult = storeResult ?? loadResult()
   const myTypeCode = myResult?.typeCode
 
-  const [friendType, setFriendType] = useState<TypeCode | null>(null)
+  const searchParams = useSearchParams()
+  const presetType = searchParams.get('type')
+  const initialFriend = presetType && TYPE_CODES.includes(presetType as TypeCode) ? (presetType as TypeCode) : null
+
+  const [friendType, setFriendType] = useState<TypeCode | null>(initialFriend)
   const [showPicker, setShowPicker] = useState(false)
 
   const myType = myTypeCode ? READING_TYPES[myTypeCode] : null
   const friendTypeData = friendType ? READING_TYPES[friendType] : null
 
-  function calcAffinity(a: TypeCode, b: TypeCode): number {
-    const typeA = READING_TYPES[a]
-    if (typeA.compatibility.match === b) return 97
-    if (typeA.compatibility.opposite === b) return 18
-    const codeA = a.split('')
-    const codeB = b.split('')
-    const matches = codeA.filter((c, i) => c === codeB[i]).length
-    return 40 + matches * 15
-  }
-
   const affinity = myTypeCode && friendType ? calcAffinity(myTypeCode, friendType) : null
-
-  const affinityLabel = (n: number) => {
-    if (n >= 90) return '환상의 독서 파트너'
-    if (n >= 70) return '꽤 잘 맞는 편'
-    if (n >= 50) return '달라서 재밌는 사이'
-    return '정반대, 근데 그래서 티키타카'
-  }
 
   const cardBox = (t: typeof myType): React.ReactNode => {
     if (!t) return null
@@ -112,13 +109,13 @@ export default function ComparePage() {
             {myType.compatibility.match === friendType && (
               <div className="bj-callout" style={{ textAlign: 'center' }}>
                 <p style={{ fontWeight: 700, marginBottom: 4 }}>환상의 조합!</p>
-                <p className="bj-caption" style={{ color: 'inherit' }}>"{myType.compatibility.matchLine}"</p>
+                <p className="bj-caption" style={{ color: 'inherit' }}>&ldquo;{myType.compatibility.matchLine}&rdquo;</p>
               </div>
             )}
             {myType.compatibility.opposite === friendType && (
               <div className="bj-callout bj-callout--muted" style={{ textAlign: 'center' }}>
                 <p style={{ fontWeight: 700, marginBottom: 4 }}>완전 상극!</p>
-                <p className="bj-caption">"{myType.compatibility.oppLine}"</p>
+                <p className="bj-caption">&ldquo;{myType.compatibility.oppLine}&rdquo;</p>
               </div>
             )}
           </div>

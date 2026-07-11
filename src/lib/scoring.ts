@@ -1,5 +1,6 @@
 import { QUESTIONS, type AxisValue } from '@/data/questions'
 import { READING_TYPES, type TypeCode, type StatKey } from '@/data/readingTypes'
+import { recordActivity } from '@/lib/activity'
 
 // ────────────────────────────────────────────
 // 1. 타입 정의
@@ -194,6 +195,7 @@ const STORAGE_KEY = 'book_test_result'
 export function saveResult(result: TestResult): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(STORAGE_KEY, JSON.stringify(result))
+  recordActivity('test')
 }
 
 export function loadResult(): TestResult | null {
