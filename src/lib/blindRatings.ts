@@ -1,10 +1,11 @@
 // Phase 2 — 블라인드 책 평가 데이터 저장 (localStorage 임시)
 
+import { recordActivity } from '@/lib/activity'
+
 export interface BlindRatingRecord {
   bookId: number
   title: string
-  stars: number
-  reactions: string[]
+  stars: number // 궁금해요 = 4점 상당의 긍정 신호로 기록
   tags: string[]
   ts: number
 }
@@ -16,6 +17,7 @@ export function saveBlindRating(record: BlindRatingRecord): void {
   const stored = loadBlindRatings()
   stored.push(record)
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored))
+  recordActivity('blind_rating')
 }
 
 export function loadBlindRatings(): BlindRatingRecord[] {

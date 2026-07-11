@@ -2,37 +2,83 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { BlindBook } from '@/data/blindBooks'
-import { BLIND_REACTIONS } from '@/data/blindBooks'
+import { predictBlindMatch, type BlindMatch } from '@/lib/predict'
 import IllustPlaceholder from '@/components/illust/IllustPlaceholder'
-import StarRating from './StarRating'
 
 interface BlindBookCardProps {
   book: BlindBook
-  onSkip: () => void
-  onReveal: (stars: number, reactions: string[]) => void
+  onSkip: () => void // 제 취향 아니에요
+  onCurious: () => void // 궁금해요 → 책 정보 공개
+  onWish: () => void // 읽고싶어요 저장 후 다음
   onNext: () => void
 }
 
 function LockIcon() {
   return (
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <rect x="4" y="10" width="16" height="10" rx="2" />
       <path d="M8 10V7a4 4 0 0 1 8 0v3" />
     </svg>
   )
 }
 
-const TAG_CLASS: Record<BlindBook['tags'][number]['kind'], string> = {
-  primary: 'bj-chip bj-chip--active',
-  mood: 'bj-chip',
-  genre: 'bj-chip',
+function MetaGrid({ book }: { book: BlindBook }) {
+  return (
+    <div
+      style={{
+        display: 'grid', gridTemplateColumns: `repeat(${book.meta.length}, 1fr)`, gap: 8,
+        padding: '12px 0',
+        borderTop: '1px dashed var(--color-border)', borderBottom: '1px dashed var(--color-border)',
+      }}
+    >
+      {book.meta.map((m) => (
+        <div key={m.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.06em' }}>{m.key}</span>
+          <span className="bj-body" style={{ fontSize: 13, fontWeight: 700 }}>{m.value}</span>
+        </div>
+      ))}
+    </div>
+  )
 }
 
-export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindBookCardProps) {
-  const [stars, setStars] = useState(0)
-  const [reactions, setReactions] = useState<string[]>([])
+function TagChips({ book }: { book: BlindBook }) {
+  return (
+    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+      {book.tags.map((tag) => (
+        <span key={tag.text} className={tag.kind === 'primary' ? 'bj-chip bj-chip--active' : 'bj-chip'}>
+          {tag.text}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function Hints({ book, count }: { book: BlindBook; count: number }) {
+  return (
+    <div>
+      <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 8 }}>
+        먼저 읽은 사람들의 후기
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        {book.hints.slice(0, count).map((hint, i) => (
+          <div key={i} className="bj-callout bj-callout--muted">
+            &ldquo;{hint}&rdquo;
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext }: BlindBookCardProps) {
   const [revealed, setRevealed] = useState(false)
+  const [match, setMatch] = useState<BlindMatch | null>(null)
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null)
+
+  // 매칭도는 localStorage 기반이라 마운트 후 계산 (SSR 불일치 방지)
+  useEffect(() => {
+    setMatch(predictBlindMatch(book))
+  }, [book])
 
   const cardRef = useRef<HTMLDivElement>(null)
   const leftHintRef = useRef<HTMLSpanElement>(null)
@@ -44,14 +90,9 @@ export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindB
     revealedRef.current = revealed
   }, [revealed])
 
-  function toggleReaction(key: string) {
-    setReactions((prev) => (prev.includes(key) ? prev.filter((r) => r !== key) : [...prev, key]))
-  }
-
-  function handleSubmitRating() {
-    if (stars === 0) return
-    onReveal(stars, reactions)
+  function handleCurious() {
     setRevealed(true)
+    onCurious()
   }
 
   function triggerSkip() {
@@ -66,13 +107,18 @@ export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindB
     setExitDir('right')
   }
 
+  function handleWish() {
+    onWish()
+    triggerNext()
+  }
+
   function handleTransitionEnd(e: React.TransitionEvent) {
     if (e.propertyName !== 'transform') return
     if (exitDir === 'left') onSkip()
     if (exitDir === 'right') onNext()
   }
 
-  // ── 드래그 제스처: 왼쪽 = 패스, 오른쪽 = (공개 후) 다음 책 ──
+  // ── 드래그 제스처: 왼쪽 = 제 취향 아니에요, 오른쪽 = (공개 후) 다음 책 ──
   useEffect(() => {
     const card = cardRef.current
     if (!card) return
@@ -86,7 +132,7 @@ export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindB
       const right = rightHintRef.current
       if (!left || !right) return
       const threshold = 60
-      if (dx < -threshold) {
+      if (dx < -threshold && !revealedRef.current) {
         left.style.opacity = String(Math.min(1, Math.abs(dx) / 140))
         right.style.opacity = '0'
       } else if (dx > threshold && revealedRef.current) {
@@ -119,7 +165,7 @@ export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindB
       dragging = false
       card!.style.transition = ''
       const threshold = 100
-      if (deltaX < -threshold) {
+      if (deltaX < -threshold && !revealedRef.current) {
         card!.style.transform = ''
         setHints(0)
         triggerSkip()
@@ -174,7 +220,7 @@ export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindB
           opacity: 0, pointerEvents: 'none',
         }}
       >
-        패스
+        제 취향 아니에요
       </span>
       <span
         ref={rightHintRef}
@@ -187,131 +233,115 @@ export default function BlindBookCard({ book, onSkip, onReveal, onNext }: BlindB
           opacity: 0, pointerEvents: 'none',
         }}
       >
-        읽고 싶어요
+        넘어갈래요
       </span>
 
-      {/* 표지 영역 */}
-      <div style={{ marginBottom: 16 }}>
-        {revealed ? (
-          <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 2" />
-        ) : (
-          <div
-            className="bj-illust"
-            style={{
-              aspectRatio: '3 / 2', display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center', gap: 10,
-            }}
-          >
+      {!revealed ? (
+        /* ── 공개 전: 설명 → 장르/분위기/난이도 → 키워드 → 후기 → 선택 버튼 ── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-hint)' }}>
             <LockIcon />
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>
-              평가 후 공개
+            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em' }}>
+              제목·표지는 궁금해요를 누르면 공개돼요
             </span>
           </div>
-        )}
-      </div>
 
-      {revealed && (
-        <div style={{ marginBottom: 16 }}>
-          <h2 className="bj-h2">{book.title}</h2>
-          <p className="bj-caption" style={{ marginTop: 2 }}>{book.author}</p>
-        </div>
-      )}
-
-      {/* 태그 */}
-      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 14 }}>
-        {book.tags.map((tag) => (
-          <span key={tag.text} className={TAG_CLASS[tag.kind]}>{tag.text}</span>
-        ))}
-      </div>
-
-      {/* 설명 */}
-      <p className="bj-body" style={{ marginBottom: 16 }}>
-        {book.desc.map((seg, i) => (
-          <span key={i} style={seg.emphasis ? { color: 'var(--color-action)', fontWeight: 700 } : undefined}>
-            {seg.text}
-          </span>
-        ))}
-      </p>
-
-      {/* 메타 */}
-      <div
-        style={{
-          display: 'grid', gridTemplateColumns: `repeat(${book.meta.length}, 1fr)`, gap: 8,
-          padding: '12px 0', marginBottom: 16,
-          borderTop: '1px dashed var(--color-border)', borderBottom: '1px dashed var(--color-border)',
-        }}
-      >
-        {book.meta.map((m) => (
-          <div key={m.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.06em' }}>{m.key}</span>
-            <span className="bj-body" style={{ fontSize: 13, fontWeight: 700 }}>{m.value}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* 먼저 읽은 사람들의 후기 */}
-      <div style={{ marginBottom: 18 }}>
-        <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 8 }}>
-          먼저 읽은 사람들의 후기
-        </p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {book.hints.map((hint, i) => (
-            <div key={i} className="bj-callout bj-callout--muted">
-              &ldquo;{hint}&rdquo;
+          {/* AI 추천 — 매칭도 + 취향 근거 추천 문단 */}
+          <div className="bj-callout">
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+              <span className="bj-caption" style={{ fontWeight: 800, letterSpacing: '0.12em', color: 'inherit' }}>AI 추천</span>
+              {match && (
+                <span style={{ fontWeight: 800, fontSize: 15 }}>나와의 매칭도 {match.percent}%</span>
+              )}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {!revealed ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <div>
-            <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 8 }}>
-              이 책, 읽고 싶은가요?
+            <p className="bj-body" style={{ fontSize: 13.5, lineHeight: 1.65, color: 'inherit' }}>
+              {book.aiPitch}
             </p>
-            <div className="no-drag">
-              <StarRating value={stars} onChange={setStars} />
-            </div>
+            {match && (
+              <p className="bj-caption" style={{ color: 'inherit', opacity: 0.75, marginTop: 6 }}>
+                내가 좋아한 &lsquo;{match.matchedTags.join(', ')}&rsquo; 취향 기준 · 내 평가 {match.sampleCount}개 근거
+              </p>
+            )}
           </div>
-          <div>
-            <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 8 }}>
-              읽는다면 어떨 것 같아요?
-            </p>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }} className="no-drag">
-              {BLIND_REACTIONS.map((r) => (
-                <button
-                  key={r.key}
-                  type="button"
-                  onClick={() => toggleReaction(r.key)}
-                  className={`bj-chip${reactions.includes(r.key) ? ' bj-chip--active' : ''}`}
-                  style={{ border: '1px solid var(--color-border)', cursor: 'pointer' }}
-                >
-                  {r.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 10 }} className="no-drag">
-            <button type="button" onClick={triggerSkip} className="bj-btn" style={{ flex: 1 }}>
-              패스
+
+          <p className="bj-body" style={{ fontSize: 15, lineHeight: 1.7 }}>
+            {book.desc.map((seg, i) => (
+              <span key={i} style={seg.emphasis ? { color: 'var(--color-action)', fontWeight: 700 } : undefined}>
+                {seg.text}
+              </span>
+            ))}
+          </p>
+
+          <MetaGrid book={book} />
+          <TagChips book={book} />
+          <Hints book={book} count={3} />
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }} className="no-drag">
+            <button type="button" onClick={triggerSkip} className="bj-btn" style={{ flex: 1, padding: '14px 0' }}>
+              제 취향 아니에요
             </button>
-            <button
-              type="button"
-              onClick={handleSubmitRating}
-              disabled={stars === 0}
-              className="bj-btn bj-btn--primary"
-              style={{ flex: 2, opacity: stars === 0 ? 0.4 : 1, cursor: stars === 0 ? 'not-allowed' : 'pointer' }}
-            >
-              공개하기
+            <button type="button" onClick={handleCurious} className="bj-btn bj-btn--primary" style={{ flex: 1, padding: '14px 0' }}>
+              궁금해요
             </button>
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div className="bj-callout">{book.revealMsg}</div>
-          <button type="button" onClick={triggerNext} className="bj-btn bj-btn--primary bj-btn--block no-drag" style={{ padding: '14px 0' }}>
-            다음 책
-          </button>
+        /* ── 공개 후: 책 정보 → 매칭도(+AI 메시지) → 줄거리 → 메타 → 키워드 → 후기 → 버튼 ── */
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', gap: 14 }}>
+            <div style={{ width: 88, flexShrink: 0 }}>
+              <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 4" />
+            </div>
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <h2 className="bj-h2" style={{ fontSize: 20, lineHeight: 1.25 }}>{book.title}</h2>
+              <p className="bj-body" style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>{book.author}</p>
+              <p className="bj-caption" style={{ marginTop: 1 }}>{book.publisher}</p>
+            </div>
+          </div>
+
+          <div className="bj-callout">
+            {match ? (
+              <>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
+                  <span style={{ fontWeight: 700 }}>나와의 예상 매칭도</span>
+                  <span className="bj-display" style={{ fontSize: 24, lineHeight: 1 }}>{match.percent}%</span>
+                </div>
+                <p className="bj-caption" style={{ color: 'inherit', opacity: 0.85 }}>
+                  내가 좋아한 &lsquo;{match.matchedTags.join(', ')}&rsquo; 취향과 겹쳐요 (내 평가 {match.sampleCount}개 근거)
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={{ fontWeight: 700, marginBottom: 4 }}>나와의 예상 매칭도</p>
+                <p className="bj-caption" style={{ color: 'inherit', opacity: 0.85 }}>
+                  아직 데이터가 부족해요. 카드를 몇 장 더 고르면 매칭도를 계산해드릴게요.
+                </p>
+              </>
+            )}
+            <p className="bj-caption" style={{ color: 'inherit', marginTop: 10, paddingTop: 10, borderTop: '1px dashed var(--color-border)' }}>
+              {book.revealMsg}
+            </p>
+          </div>
+
+          <div>
+            <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 6 }}>줄거리</p>
+            <p className="bj-body" style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--color-text-muted)' }}>
+              {book.synopsis}
+            </p>
+          </div>
+
+          <MetaGrid book={book} />
+          <TagChips book={book} />
+          <Hints book={book} count={4} />
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 4 }} className="no-drag">
+            <button type="button" onClick={handleWish} className="bj-btn bj-btn--primary" style={{ flex: 1, padding: '14px 0' }}>
+              읽고싶어요
+            </button>
+            <button type="button" onClick={triggerNext} className="bj-btn" style={{ flex: 1, padding: '14px 0' }}>
+              넘어갈래요
+            </button>
+          </div>
         </div>
       )}
     </div>
