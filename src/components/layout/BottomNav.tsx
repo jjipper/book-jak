@@ -23,6 +23,14 @@ const NAV_ITEMS = [
     ),
   },
   {
+    href: '/rate', label: '평가',
+    icon: (active: boolean) => (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill={active ? 'var(--color-action)' : 'none'} stroke={active ? 'var(--color-action)' : 'var(--color-text-hint)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="12 2 15.09 8.63 22 9.27 16.5 13.97 18.18 21 12 17.27 5.82 21 7.5 13.97 2 9.27 8.91 8.63 12 2" />
+      </svg>
+    ),
+  },
+  {
     href: '/social', label: '소셜',
     icon: (active: boolean) => (
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke={active ? 'var(--color-action)' : 'var(--color-text-hint)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
