@@ -25,14 +25,15 @@
   color: var(--color-text);
   line-height: 1.1;
   letter-spacing: -0.01em;
+  word-break: keep-all;
 }
 .bj-display--xl { font-size: 32px; }
 .bj-display--lg { font-size: 24px; }
 
 .bj-h1 { font-family: var(--font-body); font-weight: 800; font-size: 24px; line-height: 1.3; }
-.bj-h2 { font-family: var(--font-body); font-weight: 700; font-size: 18px; line-height: 1.4; }
+.bj-h2 { font-family: var(--font-body); font-weight: 800; font-size: 18px; line-height: 1.4; }
 .bj-body { font-family: var(--font-body); font-weight: 400; font-size: 16px; line-height: 1.6; }
-.bj-caption { font-family: var(--font-body); font-weight: 400; font-size: 13px; color: var(--color-text-muted); }
+.bj-caption { font-family: var(--font-body); font-weight: 400; font-size: 12px; line-height: 1.5; color: var(--color-text-muted); }
 
 /* --------------------------------------------------------------------------
    Button
@@ -161,6 +162,33 @@
 }
 
 /* --------------------------------------------------------------------------
+   Input / Textarea — 자유 텍스트 입력 (질문·답변·모임 폼)
+   포커스 링은 인풋에 한해 허용된 유일한 그림자 사용처.
+   -------------------------------------------------------------------------- */
+.bj-input,
+.bj-textarea {
+  display: block;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-text);
+  padding: 12px 14px;
+  border-radius: var(--radius-control);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  transition: border-color .15s, box-shadow .15s;
+}
+.bj-input::placeholder,
+.bj-textarea::placeholder { color: var(--color-text-hint); }
+.bj-input:focus,
+.bj-textarea:focus {
+  outline: none;
+  border-color: var(--color-action);
+  box-shadow: 0 0 0 3px var(--color-action-tint);
+}
+.bj-textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+
+/* --------------------------------------------------------------------------
    Signature — 리소 미스레지스트레이션 오프셋
    로고 마크나 강조 아이콘에 "색 어긋남" 시그니처를 부여.
    구조: <span class="bj-riso"><span class="bj-riso__a"></span>
@@ -184,7 +212,7 @@
    -------------------------------------------------------------------------- */
 .bj-illust {
   background: var(--color-bg);
-  border-radius: var(--radius-card);
+  border-radius: 6px; /* 책 표지 — 실물 느낌을 위해 과한 라운딩 금지 */
   overflow: hidden;
   /* 실제 일러스트는 여기 삽입. 형광 3색 + multiply 오버프린트 + 하프톤 그레인 */
 }
@@ -274,7 +302,7 @@
 .bj-section-label__line {
   flex: 1;
   height: 1px;
-  background: var(--color-border);
+  background: linear-gradient(to right, var(--color-border), transparent 85%);
 }
 
 /* --------------------------------------------------------------------------

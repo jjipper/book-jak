@@ -147,7 +147,7 @@ export default function ResultPage({ params }: ResultPageProps) {
             {type.compatibility.matchName}이(가) 최고의 독서 파트너래요
           </p>
           <p className="bj-caption" style={{ marginBottom: 12 }}>
-            "{type.compatibility.matchLine}"
+            &ldquo;{type.compatibility.matchLine}&rdquo;
           </p>
           <Link href="/result/compare" style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-action)', textDecoration: 'none' }}>
             친구와 궁합 비교하기 →
@@ -175,12 +175,12 @@ export default function ResultPage({ params }: ResultPageProps) {
                 <div className="bj-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
                   <p className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>환상의 짝</p>
                   <p className="bj-body" style={{ fontWeight: 600 }}>{type.compatibility.matchName}</p>
-                  <p className="bj-caption" style={{ fontStyle: 'italic' }}>"{type.compatibility.matchLine}"</p>
+                  <p className="bj-caption" style={{ fontStyle: 'italic' }}>&ldquo;{type.compatibility.matchLine}&rdquo;</p>
                 </div>
                 <div className="bj-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
                   <p className="bj-caption" style={{ fontWeight: 700 }}>상극</p>
                   <p className="bj-body" style={{ fontWeight: 600 }}>{type.compatibility.oppName}</p>
-                  <p className="bj-caption" style={{ fontStyle: 'italic' }}>"{type.compatibility.oppLine}"</p>
+                  <p className="bj-caption" style={{ fontStyle: 'italic' }}>&ldquo;{type.compatibility.oppLine}&rdquo;</p>
                 </div>
               </div>
               <Link href="/result/compare" className="bj-btn bj-btn--ghost bj-btn--block" style={{ marginTop: 14 }}>

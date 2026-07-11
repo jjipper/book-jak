@@ -69,7 +69,7 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
           {type.name}
         </h2>
         <p className="bj-body" style={{ marginTop: 8, fontSize: 13, color: 'var(--color-text-muted)' }}>
-          "{type.tagline}"
+          &ldquo;{type.tagline}&rdquo;
         </p>
       </div>
 
