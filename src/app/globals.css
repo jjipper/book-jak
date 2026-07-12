@@ -71,9 +71,21 @@ body {
   }
 }
 
+/* 바텀 네비 고정 도크 — 하단 플로팅 pill (v2) */
+.bj-bottomnav-dock {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 430px;
+  padding: 0 var(--space-sm) calc(var(--space-sm) + env(safe-area-inset-bottom));
+  z-index: 40;
+}
+
 /* 탭 안전 영역 (하단 네비게이션) */
 .pb-nav {
-  padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
 }
 
 /* 스크롤바 숨김 */
