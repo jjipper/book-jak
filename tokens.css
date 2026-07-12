@@ -51,6 +51,7 @@
   --p-fs-16: 16px;
   --p-fs-18: 18px;
   --p-fs-22: 22px;
+  --p-fs-24: 24px;
   --p-fs-28: 28px;
 
   --p-fw-regular: 400;
@@ -65,6 +66,7 @@
   --p-space-4:  4px;
   --p-space-6:  6px;
   --p-space-8:  8px;
+  --p-space-10: 10px;
   --p-space-12: 12px;
   --p-space-16: 16px;
   --p-space-20: 20px;
@@ -113,17 +115,21 @@
   /* interactive states */
   --color-focus-ring:    var(--p-orange-500);
 
+  /* overlay (바텀시트 등 딤 배경) */
+  --color-overlay: color-mix(in srgb, var(--p-ink-900) 45%, transparent);
+
   /* typography roles */
   --font-body:    var(--p-font-body);
   --font-display: var(--p-font-display);
 
   --fs-caption-sm: var(--p-fs-11);   /* 희소도 뱃지 서브 등 최소 텍스트 */
   --fs-caption: var(--p-fs-12);
+  --fs-body-sm: var(--p-fs-13);      /* 칩/태그 등 컴팩트 텍스트 */
   --fs-body:    var(--p-fs-14);
   --fs-body-lg: var(--p-fs-16);
-  --fs-title:   var(--p-fs-18);
-  --fs-heading: var(--p-fs-22);
-  --fs-hero:    var(--p-fs-28);
+  --fs-title:   var(--p-fs-16);
+  --fs-heading: var(--p-fs-18);
+  --fs-hero:    var(--p-fs-24);
 
   --fw-regular: var(--p-fw-regular);
   --fw-medium:  var(--p-fw-medium);
@@ -135,6 +141,10 @@
   --space-md: var(--p-space-12);
   --space-lg: var(--p-space-16);
   --space-xl: var(--p-space-24);
+
+  /* 컨트롤(버튼·옵션·인풋) 공통 패딩 */
+  --space-control-y: var(--p-space-10);
+  --space-control-x: var(--p-space-12);
 
   /* radius */
   --radius-sm: var(--p-radius-8);

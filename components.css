@@ -41,11 +41,11 @@
   justify-content: center;
   gap: var(--space-sm);
   font-family: var(--font-body);
-  font-size: var(--fs-body-lg);
+  font-size: var(--fs-body);
   font-weight: var(--fw-bold);
   border: var(--border-thick) solid transparent;
   border-radius: var(--radius-md);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-control-y) var(--space-control-x);
   cursor: pointer;
   transition: background-color .12s, color .12s, border-color .12s;
 }
@@ -119,9 +119,10 @@
   background: var(--color-surface);
   border: var(--border-thin) solid var(--color-border-soft);
   border-radius: var(--radius-md);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-control-y) var(--space-control-x);
   margin-bottom: var(--space-sm);
-  font-size: var(--fs-body-lg);
+  font-family: var(--font-body);   /* button은 폰트 비상속 — 명시 필수 */
+  font-size: var(--fs-body);
   color: var(--color-text);
   cursor: pointer;
   transition: border-color .12s, background-color .12s;
@@ -157,6 +158,34 @@
   font-size: var(--fs-caption);
   color: var(--color-text-muted);
   font-weight: var(--fw-medium);
+}
+
+
+/* ========== 04b. RARITY TAG (인라인 희소도 pill — 목록/프로필용 소형) ========== */
+/* Wildgak 허용 대상(희소도 뱃지의 소형 변형) */
+.bj-rarity-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+}
+.bj-rarity-tag--common {
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  color: var(--color-text-muted);
+}
+.bj-rarity-tag--rare {
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  color: var(--color-text);
+}
+.bj-rarity-tag--legendary {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
 }
 
 
@@ -240,7 +269,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-sm);
-  font-size: var(--fs-body);
+  font-family: var(--font-body);   /* button은 폰트 비상속 — 명시 필수 */
+  font-size: var(--fs-body-sm);
   font-weight: var(--fw-medium);
   padding: var(--space-sm) var(--space-lg);
   border-radius: var(--radius-pill);
@@ -314,7 +344,7 @@
   background: var(--color-surface);
   border: var(--border-thin) solid var(--color-border-soft);
   border-radius: var(--radius-md);
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-control-y) var(--space-control-x);
 }
 .bj-input:focus-within { border-color: var(--color-border-accent); }
 .bj-input__icon { color: var(--color-text-caption); flex: none; }
@@ -330,6 +360,29 @@
 .bj-input__field:focus { outline: none; }
 
 
+/* ========== 10b. TEXTAREA (자유 텍스트 입력) ========== */
+.bj-textarea {
+  display: block;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-control-y) var(--space-control-x);
+  min-height: 96px;
+  resize: vertical;
+  transition: border-color .12s;
+}
+.bj-textarea::placeholder { color: var(--color-text-caption); }
+.bj-textarea:focus {
+  outline: none;
+  border-color: var(--color-border-accent);
+}
+
+
 /* ========== CARD (공통 컨테이너) ========== */
 /* 06.PROFILE / 07.RECOMMENDATION 등이 공유하는 기본 카드
    기본: 보더 없음 + 연한 베이지 / 강조(spotlight): 흰 배경 + 연한 그레이 보더 */
@@ -342,6 +395,88 @@
 .bj-card--spotlight {
   background: var(--color-surface-spotlight);
   border: var(--border-thin) solid var(--color-border-soft);
+}
+
+
+/* ========== CALLOUT (인용구/처방/안내 박스) ========== */
+.bj-callout {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-faint);
+  color: var(--color-text);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+}
+.bj-callout--muted {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+}
+
+
+/* ========== ROW (리스트 행 — 칭호/배지/궁합 등) ========== */
+.bj-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+
+/* ========== SEGMENTED (다구간 누적 바) ========== */
+/* 구간 구분은 opacity로만 — 색은 --color-fill 하나 */
+.bj-segmented {
+  display: flex;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-track);
+}
+.bj-segmented__seg {
+  height: 100%;
+  background: var(--color-fill);
+}
+
+
+/* ========== SECTION LABEL (대문자 구획 라벨 + 구분선) ========== */
+.bj-section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-caption);
+  margin-bottom: var(--space-md);
+}
+.bj-section-label__line {
+  flex: 1;
+  height: var(--border-thin);
+  background: var(--color-border-soft);
+}
+
+
+/* ========== SHEET (바텀시트 모달) ========== */
+.bj-sheet__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.bj-sheet {
+  width: 100%;
+  max-width: 430px;
+  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
+  max-height: 72vh;
+  overflow-y: auto;
 }
 
 
@@ -363,7 +498,9 @@
   border: none;
   background: transparent;
   color: var(--color-text-muted);
+  font-family: var(--font-body);   /* button/링크 폰트 비상속 — 명시 필수 */
   font-size: var(--fs-caption);
+  text-decoration: none;
   cursor: pointer;
 }
 .bj-navitem--active { color: var(--color-accent); }

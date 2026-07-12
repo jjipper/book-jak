@@ -4,6 +4,7 @@ import { useState } from 'react'
 import {
   BottomNav,
   Button,
+  Callout,
   Card,
   Check,
   Chip,
@@ -14,7 +15,13 @@ import {
   Option,
   Progress,
   RarityBadge,
+  RarityTag,
+  Row,
+  SectionLabel,
+  Segmented,
+  Sheet,
   StatBar,
+  Textarea,
   Toggle,
 } from '@/components/atoms'
 
@@ -118,8 +125,9 @@ export default function DesignSystemPreviewPage() {
   const [selected, setSelected] = useState('D')
   const [toggleOn, setToggleOn] = useState(true)
   const [checked, setChecked] = useState(true)
-  const [activeChip, setActiveChip] = useState('# 보관함')
+  const [activeChip, setActiveChip] = useState('보관함')
   const [activeNav, setActiveNav] = useState('홈')
+  const [sheetOpen, setSheetOpen] = useState(false)
 
   const chips = [
     { label: '몰입수집가', icon: BookIcon },
@@ -187,6 +195,14 @@ export default function DesignSystemPreviewPage() {
           </div>
         </Section>
 
+        <Section title="04b. Rarity Tag (인라인 소형)">
+          <div style={row}>
+            <RarityTag variant="common">흔함 9.4%</RarityTag>
+            <RarityTag variant="rare">희귀 4.1%</RarityTag>
+            <RarityTag variant="legendary">최희귀 2.1%</RarityTag>
+          </div>
+        </Section>
+
         <Section title="05. Stat Bar">
           <div style={stack}>
             <StatBar name="몰입력" value={92} />
@@ -224,11 +240,54 @@ export default function DesignSystemPreviewPage() {
           <Input icon={SearchIcon} placeholder="책 제목, 저자, 키워드로 검색" />
         </Section>
 
+        <Section title="10b. Textarea">
+          <Textarea placeholder="이 책에 대한 생각을 자유롭게 적어주세요" />
+        </Section>
+
         <Section title="Card (공통 컨테이너)">
           <div style={stack}>
             <Card>기본 카드 — 보더 없음 + 연한 베이지</Card>
             <Card spotlight>강조 카드 — 흰 배경 + 연한 그레이 보더</Card>
           </div>
+        </Section>
+
+        <Section title="Callout (안내 박스)">
+          <div style={stack}>
+            <Callout>몰입수집가 유형은 밤 독서와 궁합이 좋아요.</Callout>
+            <Callout muted>진단을 완료하면 맞춤 추천이 열려요.</Callout>
+          </div>
+        </Section>
+
+        <Section title="Row (리스트 행)">
+          <div style={stack}>
+            <Row>
+              {BookIcon}
+              <span style={{ flex: 1 }}>첫 완독 칭호</span>
+              <span className="bj-caption">6월 12일</span>
+            </Row>
+            <Row>
+              {MoonIcon}
+              <span style={{ flex: 1 }}>밤샘 독서 배지</span>
+              <span className="bj-caption">7월 2일</span>
+            </Row>
+          </div>
+        </Section>
+
+        <Section title="Segmented (다구간 누적 바)">
+          <Segmented segments={[42, 28, 18, 12]} label="독서 뇌구조" />
+        </Section>
+
+        <Section title="Section Label">
+          <SectionLabel>Today&apos;s Pick</SectionLabel>
+        </Section>
+
+        <Section title="Sheet (바텀시트)">
+          <Button variant="secondary" onClick={() => setSheetOpen(true)}>시트 열기</Button>
+          <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
+            <p className="bj-title" style={{ margin: '0 0 12px' }}>유형 선택</p>
+            <Option optionKey="A" selected onSelect={() => setSheetOpen(false)}>심해 독서가</Option>
+            <Option optionKey="B" onSelect={() => setSheetOpen(false)}>책벌레 학자</Option>
+          </Sheet>
         </Section>
 
         <Section title="11. Typography">
