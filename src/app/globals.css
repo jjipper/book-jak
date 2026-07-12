@@ -3,6 +3,11 @@
 @import "../styles/tokens.css";
 @import "../styles/components.css";
 
+/* v2 디자인시스템 (루트 스펙 파일 직접 참조 — 구 시스템보다 뒤에 로드해 우선 적용)
+   STEP 2 화면 이관이 끝나면 위의 구 styles/* import는 제거한다. */
+@import "../../tokens.css";
+@import "../../components.css";
+
 * {
   box-sizing: border-box;
 }
@@ -14,7 +19,7 @@ body {
   padding: 0;
 }
 
-/* 모바일 중심 최대 너비 컨테이너 */
+/* 모바일 중심 최대 너비 컨테이너 (레거시 화면용) */
 #app-root {
   max-width: 430px;
   width: 100%;
@@ -23,6 +28,47 @@ body {
   position: relative;
   overflow-x: hidden;
   background: var(--color-bg);
+}
+
+/* v2 반응형 셸: .bj-shell을 채택한 화면은 430px 캡을 벗어나
+   앱(모바일) → 타블렛 → 웹(최대 1920px)으로 확장된다.
+   STEP 2에서 화면들이 .bj-shell로 이관되면 레거시 캡은 제거한다. */
+#app-root:has(.bj-shell) {
+  max-width: 1920px;
+}
+
+.bj-shell {
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--color-bg);
+  padding-inline: var(--space-lg);
+}
+
+/* 타블렛 이상: 여백 확대 */
+@media (min-width: 768px) {
+  .bj-shell {
+    padding-inline: var(--space-xl);
+  }
+}
+
+/* 웹: 콘텐츠는 1920px에서 멈추고 중앙 정렬 */
+@media (min-width: 1280px) {
+  .bj-shell {
+    padding-inline: calc(var(--space-xl) * 2);
+  }
+}
+
+/* 모션 최소화 환경 존중 (UI_PROMPT §4) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }
 
 /* 탭 안전 영역 (하단 네비게이션) */

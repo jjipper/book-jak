@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="bookjak">
+      <body className="bookjak bj-body">
         <div id="app-root">
           {children}
         </div>

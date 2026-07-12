@@ -1,0 +1,379 @@
+/* =========================================================================
+   BOOKJAK · components.css
+   .bj-* 아토믹 컴포넌트. semantic 토큰만 참조(--color-*, --fs-*, --space-* …).
+   원시 hex/px 직접 사용 금지. 그림자 금지(위계=색+보더).
+   디자인시스템 이미지의 번호(01~13)와 1:1로 대응.
+   ========================================================================= */
+
+/* ---------- BASE ---------- */
+.bj-body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-regular);
+  line-height: 1.5;
+}
+
+*:focus-visible {
+  outline: var(--border-thick) solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+
+/* ========== 00. LOGO (Wildgak 허용 대상: 로고) ========== */
+.bj-logo {
+  font-family: var(--font-display);
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-regular);
+  color: var(--color-text);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  word-break: keep-all;
+}
+.bj-logo__mark { color: var(--color-accent); }
+
+
+/* ========== 01. BUTTONS ========== */
+.bj-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--fs-body-lg);
+  font-weight: var(--fw-bold);
+  border: var(--border-thick) solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  cursor: pointer;
+  transition: background-color .12s, color .12s, border-color .12s;
+}
+
+/* 주요 액션 (진단 시작하기) */
+.bj-btn--primary {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+.bj-btn--primary:hover { background: var(--color-accent-hover); }
+
+/* 보조 액션 (+ 책 추가하기) — 아웃라인 */
+.bj-btn--secondary {
+  background: transparent;
+  color: var(--color-accent);
+  border-color: var(--color-border-accent);
+}
+.bj-btn--secondary:hover { background: var(--color-accent-faint); }
+
+/* 텍스트 버튼 (나중에 할게요) */
+.bj-btn--text {
+  background: transparent;
+  color: var(--color-accent);
+  border-color: transparent;
+  padding: var(--space-sm) var(--space-xs);
+  font-weight: var(--fw-medium);
+}
+.bj-btn--text:hover { text-decoration: underline; }
+
+.bj-btn--block { width: 100%; }
+.bj-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+
+/* ========== 01b. ICON BUTTON ========== */
+.bj-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+}
+.bj-icon-btn:hover { background: var(--color-accent-faint); }
+.bj-icon-btn--active { color: var(--color-accent); }
+
+
+/* ========== 02. QUESTION CARD (진단 문항) ========== */
+.bj-question {
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+}
+.bj-question__title {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  margin: 0 0 var(--space-lg);
+}
+
+/* 선택지 옵션 (A/B/C/D) */
+.bj-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-sm);
+  font-size: var(--fs-body-lg);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color .12s, background-color .12s;
+}
+.bj-option:hover { border-color: var(--color-border-accent); }
+.bj-option--selected {
+  background: var(--color-accent-weak);
+  border-color: var(--color-border-accent);
+}
+.bj-option__key {  /* A/B/C/D 라벨 */
+  font-weight: var(--fw-bold);
+  color: var(--color-text-muted);
+}
+.bj-option--selected .bj-option__key { color: var(--color-accent); }
+.bj-option__check { margin-left: auto; color: var(--color-accent); }
+
+
+/* ========== 02b. PROGRESS (2/12) ========== */
+.bj-progress { display: flex; align-items: center; gap: var(--space-sm); }
+.bj-progress__track {
+  flex: 1;
+  height: 6px;
+  background: var(--color-track);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.bj-progress__fill {
+  height: 100%;
+  background: var(--color-fill);
+  border-radius: var(--radius-pill);
+}
+.bj-progress__label {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  font-weight: var(--fw-medium);
+}
+
+
+/* ========== 04. RARITY BADGE (희소도 뱃지) ========== */
+/* Wildgak 허용 대상 중 하나. 폭발형(starburst) — 도형은 SVG가 그리고
+   색은 아래 클래스가 fill/stroke로 입힌다. (흔함=원, 희귀/최희귀=별) */
+.bj-rarity {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  aspect-ratio: 1;
+  font-family: var(--font-display);
+  text-align: center;
+  line-height: 1.2;
+}
+.bj-rarity__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--border-thick);
+}
+.bj-rarity__label { position: relative; font-size: var(--fs-body); font-weight: var(--fw-bold); }
+.bj-rarity__sub   { position: relative; font-size: var(--fs-caption-sm); }
+
+.bj-rarity--common { color: var(--color-text); }        /* 흔함: 원 + soft 테두리 */
+.bj-rarity--common .bj-rarity__shape {
+  fill: var(--color-surface);
+  stroke: var(--color-border-soft);
+  stroke-width: var(--border-thin);
+}
+.bj-rarity--rare { color: var(--color-text); }          /* 희귀: 별 + 강조 테두리 */
+.bj-rarity--rare .bj-rarity__shape {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+}
+.bj-rarity--legendary { color: var(--color-text-on-accent); }  /* 최희귀: 주황 채움 */
+.bj-rarity--legendary .bj-rarity__shape {
+  fill: var(--color-accent);
+  stroke: none;
+}
+
+
+/* ========== 05. STAT BAR (능력치) ========== */
+/* 아이콘 → 이름 → 트랙 → 값, flex 한 줄 (row 명시: 구 CSS column 잔재 차단) */
+.bj-stat {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-md);
+}
+.bj-stat__icon  { color: var(--color-text); flex: none; }
+.bj-stat__name  { width: 56px; font-weight: var(--fw-medium); flex: none; }
+.bj-stat__track {
+  flex: 1;
+  height: 12px;
+  background: var(--color-track);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.bj-stat__fill {
+  height: 100%;
+  background: var(--color-fill);
+  border-radius: var(--radius-pill);
+}
+.bj-stat__value {
+  width: 32px;
+  text-align: right;
+  font-weight: var(--fw-bold);
+  color: var(--color-text);
+  flex: none;
+}
+
+
+/* ========== 08. CHIP / TAG ========== */
+/* 알약형: [아이콘] 라벨 [X(선택 시)] */
+.bj-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-medium);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color .12s, color .12s;
+}
+.bj-chip:hover { background: var(--color-accent-faint); }
+.bj-chip--active {   /* 선택된 태그: 주황 채움 + X 아이콘 */
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+.bj-chip--active:hover { background: var(--color-accent-hover); }
+.bj-chip__icon,
+.bj-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+.bj-chip__remove { margin-left: var(--space-xs); }
+
+
+/* ========== 09. TOGGLE / CHECK ========== */
+.bj-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+  border: none;
+  cursor: pointer;
+  transition: background-color .12s;
+}
+.bj-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 18px; height: 18px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  transition: transform .12s;
+}
+.bj-toggle--on { background: var(--color-accent); }
+.bj-toggle--on::after { transform: translateX(18px); }
+
+.bj-check {
+  width: 20px; height: 20px;
+  border: var(--border-thick) solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.bj-check--checked {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+
+
+/* ========== 10. INPUT FIELD ========== */
+.bj-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+}
+.bj-input:focus-within { border-color: var(--color-border-accent); }
+.bj-input__icon { color: var(--color-text-caption); flex: none; }
+.bj-input__field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--color-text);
+}
+.bj-input__field::placeholder { color: var(--color-text-caption); }
+.bj-input__field:focus { outline: none; }
+
+
+/* ========== CARD (공통 컨테이너) ========== */
+/* 06.PROFILE / 07.RECOMMENDATION 등이 공유하는 기본 카드
+   기본: 보더 없음 + 연한 베이지 / 강조(spotlight): 흰 배경 + 연한 그레이 보더 */
+.bj-card {
+  background: var(--color-surface);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+.bj-card--spotlight {
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+}
+
+
+/* ========== 13. BOTTOM NAVIGATION ========== */
+.bj-bottomnav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-pill);
+  padding: var(--space-sm) var(--space-md);
+}
+.bj-navitem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: var(--fs-caption);
+  cursor: pointer;
+}
+.bj-navitem--active { color: var(--color-accent); }
+
+
+/* ========== TYPOGRAPHY HELPERS (11) ========== */
+.bj-heading  { font-size: var(--fs-heading); font-weight: var(--fw-bold); }
+.bj-title    { font-size: var(--fs-title);   font-weight: var(--fw-bold); }
+.bj-caption  { font-size: var(--fs-caption); color: var(--color-text-caption); }
+
+/* Wildgak 한정 사용: 닉네임 / 로고 / 희소도 뱃지에만 */
+.bj-display  { font-family: var(--font-display); }
+.bj-nickname { font-family: var(--font-display); font-size: var(--fs-title); }

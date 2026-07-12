@@ -86,7 +86,7 @@
    -------------------------------------------------------------------------- */
 .bj-card {
   background: var(--color-surface);
-  border: 0.5px solid var(--color-border);
+  border: 0.5px solid var(--color-border-soft);
   border-radius: var(--radius-card);
   padding: var(--space-xl);
 }
@@ -148,7 +148,7 @@
   font-size: 15px;
   padding: 14px 16px;
   border-radius: var(--radius-control);
-  border: 1.5px solid var(--color-border);
+  border: 1.5px solid var(--color-border-soft);
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
@@ -174,7 +174,7 @@
   color: var(--color-text);
   padding: 12px 14px;
   border-radius: var(--radius-control);
-  border: 1.5px solid var(--color-border);
+  border: 1.5px solid var(--color-border-soft);
   background: var(--color-surface);
   transition: border-color .15s, box-shadow .15s;
 }
@@ -241,7 +241,7 @@
   text-decoration: none;
   transition: background .15s ease;
 }
-.bj-icon-btn:hover { background: var(--color-border); }
+.bj-icon-btn:hover { background: var(--color-border-soft); }
 
 /* --------------------------------------------------------------------------
    Progress bar — 진단 테스트 진행률, 로딩 화면
@@ -282,7 +282,7 @@
 .bj-chip--done {
   background: transparent;
   color: var(--color-text-hint);
-  border-color: var(--color-border);
+  border-color: var(--color-border-soft);
 }
 
 /* --------------------------------------------------------------------------
@@ -302,7 +302,7 @@
 .bj-section-label__line {
   flex: 1;
   height: 1px;
-  background: linear-gradient(to right, var(--color-border), transparent 85%);
+  background: linear-gradient(to right, var(--color-border-soft), transparent 85%);
 }
 
 /* --------------------------------------------------------------------------
@@ -361,7 +361,7 @@
   max-width: 430px;
   display: flex;
   background: var(--color-surface);
-  border-top: 0.5px solid var(--color-border);
+  border-top: 0.5px solid var(--color-border-soft);
   padding-bottom: env(safe-area-inset-bottom);
   z-index: 40;
 }
@@ -397,7 +397,7 @@
   max-width: 430px;
   background: var(--color-surface);
   border-radius: var(--radius-card) var(--radius-card) 0 0;
-  border: 0.5px solid var(--color-border);
+  border: 0.5px solid var(--color-border-soft);
   padding: 20px 20px 40px;
   max-height: 72vh;
   overflow-y: auto;

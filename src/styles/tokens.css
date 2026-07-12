@@ -43,7 +43,7 @@
   --p-rarity-epic-t:   #FFFFFF;  /* 최희귀 텍스트 */
 
   /* --- 타이포 (패밀리) --- */
-  --p-font-display: "와일드각", "Pretendard", sans-serif;  /* 별명·로고·희소도 */
+  --p-font-display: "Wildgak", "Pretendard", sans-serif;  /* 별명·로고·희소도 (v2와 패밀리명 통일) */
   --p-font-body:    "Pretendard", -apple-system, sans-serif; /* 그 외 전부 */
   --p-font-mono:    ui-monospace, "SF Mono", monospace;
 
@@ -116,13 +116,4 @@
   --riso-offset: 3px;  /* 로고/포인트 요소의 색 어긋남 정도 */
 }
 
-/* ==========================================================================
-   폰트 등록 — 실제 파일 경로는 프로젝트에 맞게 교체하세요.
-   와일드각: 눈누(김씨폰트공방) / Pretendard: 오픈소스
-   ========================================================================== */
-@font-face {
-  font-family: "와일드각";
-  src: url("/fonts/Wildgak.ttf") format("truetype");
-  font-weight: 400;
-  font-display: swap;
-}
+/* @font-face 'Wildgak'은 v2 tokens.css(루트)에서 일원화 선언 */
