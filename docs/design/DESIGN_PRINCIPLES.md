@@ -2,6 +2,10 @@
 
 > Claude Code 필독. 새 화면·컴포넌트를 만들 때 이 규칙을 반드시 지킬 것.
 > 이 문서는 "왜 이렇게 생겼나"의 근거이자, 일관성을 지키는 가드레일입니다.
+>
+> 토큰 정본은 `src/styles/tokens.css`(v2). 본문 예시 중 `--color-action`·`--color-border-strong` 등
+> 일부 이름은 v1 기준이며, v2에서는 `--color-accent`(강조)·`--color-border-soft`(헤어라인)·
+> `--color-border`(강조 잉크선)에 대응한다. 미이관 화면용 v1은 `src/styles/legacy/`에 격리되어 있다.
 
 ## 0. 한 줄 정체성
 **북작 = 취향으로 북적이는 독서 취향 소셜.**

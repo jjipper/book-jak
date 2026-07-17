@@ -1,345 +1,434 @@
-/* ==========================================================================
-   북작 (BOOKJAK) — Components
-   모든 컴포넌트는 tokens.css의 [2] Semantic 토큰만 참조합니다.
-   원시값(#hex)을 여기 직접 쓰지 마세요.
-   ========================================================================== */
+/* =========================================================================
+   BOOKJAK · components.css
+   .bj-* 아토믹 컴포넌트. semantic 토큰만 참조(--color-*, --fs-*, --space-* …).
+   원시 hex/px 직접 사용 금지. 그림자 금지(위계=색+보더).
+   디자인시스템 이미지의 번호(01~13)와 1:1로 대응.
+   ========================================================================= */
 
-/* --------------------------------------------------------------------------
-   기본 리셋 / 바탕
-   -------------------------------------------------------------------------- */
-.bookjak {
-  font-family: var(--font-body);
-  color: var(--color-text);
+/* ---------- BASE ---------- */
+.bj-body {
   background: var(--color-bg);
-  -webkit-font-smoothing: antialiased;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-regular);
+  line-height: 1.5;
 }
 
-/* --------------------------------------------------------------------------
-   Typography
-   .display  → 별명·로고·희소도 (와일드각)
-   그 외      → 프리텐다드 위계
-   -------------------------------------------------------------------------- */
-.bj-display {
+*:focus-visible {
+  outline: var(--border-thick) solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+
+/* ========== 00. LOGO (Wildgak 허용 대상: 로고) ========== */
+.bj-logo {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-size: var(--fs-hero);
+  font-weight: var(--fw-regular);
   color: var(--color-text);
   line-height: 1.1;
   letter-spacing: -0.01em;
   word-break: keep-all;
 }
-.bj-display--xl { font-size: 32px; }
-.bj-display--lg { font-size: 24px; }
+.bj-logo__mark { color: var(--color-accent); }
 
-.bj-h1 { font-family: var(--font-body); font-weight: 800; font-size: 24px; line-height: 1.3; }
-.bj-h2 { font-family: var(--font-body); font-weight: 800; font-size: 18px; line-height: 1.4; }
-.bj-body { font-family: var(--font-body); font-weight: 400; font-size: 16px; line-height: 1.6; }
-.bj-caption { font-family: var(--font-body); font-weight: 400; font-size: 12px; line-height: 1.5; color: var(--color-text-muted); }
 
-/* --------------------------------------------------------------------------
-   Button
-   .bj-btn            기본(외곽선)
-   .bj-btn--primary   주황 채움 (화면당 1개 권장)
-   .bj-btn--ghost     투명
-   -------------------------------------------------------------------------- */
+/* ========== 01. BUTTONS ========== */
 .bj-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  text-decoration: none;
+  gap: var(--space-sm);
   font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 15px;
-  padding: 12px 20px;
-  border-radius: var(--radius-control);
-  border: 1.5px solid var(--color-border-strong);
-  background: transparent;
-  color: var(--color-text);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  text-decoration: none;   /* Link를 버튼으로 쓸 때 밑줄 제거 */
+  border: var(--border-thick) solid transparent;
+  border-radius: var(--radius-md);
+  padding: var(--space-control-y) var(--space-control-x);
   cursor: pointer;
-  transition: background .15s ease, transform .1s ease;
+  transition: background-color .12s, color .12s, border-color .12s;
 }
-.bj-btn:hover  { background: var(--color-bg-sunken); }
-.bj-btn:active { transform: scale(.98); }
 
+/* 주요 액션 (진단 시작하기) */
 .bj-btn--primary {
-  background: var(--color-action);
-  border-color: var(--color-action);
-  color: var(--color-text-on-action);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
 }
-.bj-btn--primary:hover {
-  background: var(--color-action-hover);
-  border-color: var(--color-action-hover);
-}
+.bj-btn--primary:hover { background: var(--color-accent-hover); }
 
-.bj-btn--ghost {
+/* 보조 액션 (+ 책 추가하기) — 아웃라인 */
+.bj-btn--secondary {
+  background: transparent;
+  color: var(--color-accent);
+  border-color: var(--color-border-accent);
+}
+.bj-btn--secondary:hover { background: var(--color-accent-faint); }
+
+/* 텍스트 버튼 (나중에 할게요) */
+.bj-btn--text {
+  background: transparent;
+  color: var(--color-accent);
   border-color: transparent;
-  color: var(--color-action);
+  padding: var(--space-sm) var(--space-xs);
+  font-weight: var(--fw-medium);
 }
-.bj-btn--ghost:hover { background: var(--color-action-tint); }
+.bj-btn--text:hover { text-decoration: underline; }
 
-.bj-btn--block { display: block; width: 100%; }
+.bj-btn--block { width: 100%; }
+.bj-btn:disabled { opacity: .4; cursor: not-allowed; }
 
-/* --------------------------------------------------------------------------
-   Card
-   .bj-card           기본 카드 (화이트 표면 + 헤어라인)
-   .bj-card--flat     테두리 없이 눌린 배경만
-   -------------------------------------------------------------------------- */
-.bj-card {
-  background: var(--color-surface);
-  border: 0.5px solid var(--color-border-soft);
-  border-radius: var(--radius-card);
-  padding: var(--space-xl);
-}
-.bj-card--flat {
-  background: var(--color-bg-sunken);
-  border: none;
-  border-radius: var(--radius-card);
-  padding: var(--space-lg);
-}
 
-/* --------------------------------------------------------------------------
-   Badge — 희소도 등급
-   .bj-badge--common / --rare / --epic
-   -------------------------------------------------------------------------- */
-.bj-badge {
+/* ========== 01b. ICON BUTTON ========== */
+.bj-icon-btn {
   display: inline-flex;
   align-items: center;
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: 12px;
-  padding: 4px 12px;
-  border-radius: var(--radius-badge);
-  line-height: 1;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
 }
-.bj-badge--common { background: var(--p-rarity-common); color: var(--p-rarity-common-t); }
-.bj-badge--rare   { background: var(--p-rarity-rare);   color: var(--p-rarity-rare-t); }
-.bj-badge--epic   { background: var(--p-rarity-epic);   color: var(--p-rarity-epic-t); }
+.bj-icon-btn:hover { background: var(--color-accent-faint); }
+.bj-icon-btn--active { color: var(--color-accent); }
 
-/* --------------------------------------------------------------------------
-   Stat bar — 독서 스탯 (몰입력/허세력 등)
-   -------------------------------------------------------------------------- */
-.bj-stat { display: flex; flex-direction: column; gap: 4px; }
-.bj-stat__head {
-  display: flex; justify-content: space-between;
-  font-size: 13px; color: var(--color-text);
+
+/* ========== 02. QUESTION CARD (진단 문항) ========== */
+.bj-question {
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
 }
-.bj-stat__value { color: var(--color-text-muted); }
-.bj-stat__track {
-  height: 8px;
+.bj-question__title {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  margin: 0 0 var(--space-lg);
+}
+
+/* 선택지 옵션 (A/B/C/D) */
+.bj-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  text-align: left;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-control-y) var(--space-control-x);
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-body);   /* button은 폰트 비상속 — 명시 필수 */
+  font-size: var(--fs-body);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color .12s, background-color .12s;
+}
+.bj-option:hover { border-color: var(--color-border-accent); }
+.bj-option--selected {
+  background: var(--color-accent-weak);
+  border-color: var(--color-border-accent);
+}
+.bj-option__key {  /* A/B/C/D 라벨 */
+  font-weight: var(--fw-bold);
+  color: var(--color-text-muted);
+}
+.bj-option--selected .bj-option__key { color: var(--color-accent); }
+.bj-option__check { margin-left: auto; color: var(--color-accent); }
+
+
+/* ========== 02b. PROGRESS (2/12) ========== */
+.bj-progress { display: flex; align-items: center; gap: var(--space-sm); }
+.bj-progress__track {
+  flex: 1;
+  height: 6px;
   background: var(--color-track);
-  border-radius: var(--radius-badge);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.bj-progress__fill {
+  height: 100%;
+  background: var(--color-fill);
+  border-radius: var(--radius-pill);
+}
+.bj-progress__label {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  font-weight: var(--fw-medium);
+}
+
+
+/* ========== 04b. RARITY TAG (인라인 희소도 pill — 목록/프로필용 소형) ========== */
+/* Wildgak 허용 대상(희소도 뱃지의 소형 변형) */
+.bj-rarity-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-caption);
+  line-height: 1.4;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+}
+/* 색 위계(시안): 흔함=크림, 희귀=주황, 최희귀=잉크 */
+.bj-rarity-tag--common {
+  background: var(--color-bg-sunken);
+  color: var(--color-text-muted);
+}
+.bj-rarity-tag--rare {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+.bj-rarity-tag--legendary {
+  background: var(--color-text);
+  color: var(--color-surface-raised);
+}
+
+
+/* ========== 04. RARITY BADGE (희소도 뱃지) ========== */
+/* Wildgak 허용 대상 중 하나. 폭발형(starburst) — 도형은 SVG가 그리고
+   색은 아래 클래스가 fill/stroke로 입힌다. (흔함=원, 희귀/최희귀=별) */
+.bj-rarity {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  aspect-ratio: 1;
+  font-family: var(--font-display);
+  text-align: center;
+  line-height: 1.2;
+}
+.bj-rarity__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  stroke-width: var(--border-thick);
+}
+.bj-rarity__label { position: relative; font-size: var(--fs-body); font-weight: var(--fw-bold); }
+.bj-rarity__sub   { position: relative; font-size: var(--fs-caption-sm); }
+
+.bj-rarity--common { color: var(--color-text); }        /* 흔함: 원 + soft 테두리 */
+.bj-rarity--common .bj-rarity__shape {
+  fill: var(--color-surface);
+  stroke: var(--color-border-soft);
+  stroke-width: var(--border-thin);
+}
+.bj-rarity--rare { color: var(--color-text); }          /* 희귀: 별 + 강조 테두리 */
+.bj-rarity--rare .bj-rarity__shape {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+}
+.bj-rarity--legendary { color: var(--color-text-on-accent); }  /* 최희귀: 주황 채움 */
+.bj-rarity--legendary .bj-rarity__shape {
+  fill: var(--color-accent);
+  stroke: none;
+}
+
+
+/* ========== 05. STAT BAR (능력치) ========== */
+/* 아이콘 → 이름 → 트랙 → 값, flex 한 줄 (row 명시: 구 CSS column 잔재 차단) */
+.bj-stat {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-md);
+}
+.bj-stat__icon  { color: var(--color-text); flex: none; }
+.bj-stat__name  { width: 56px; font-weight: var(--fw-medium); flex: none; }
+.bj-stat__track {
+  flex: 1;
+  height: 12px;
+  background: var(--color-track);
+  border-radius: var(--radius-pill);
   overflow: hidden;
 }
 .bj-stat__fill {
   height: 100%;
   background: var(--color-fill);
-  border-radius: var(--radius-badge);
+  border-radius: var(--radius-pill);
+}
+.bj-stat__value {
+  width: 32px;
+  text-align: right;
+  font-weight: var(--fw-bold);
+  color: var(--color-text);
+  flex: none;
 }
 
-/* --------------------------------------------------------------------------
-   Choice — 진단 문항 선택지
-   .is-active 로 선택 상태 표시
-   -------------------------------------------------------------------------- */
-.bj-choice {
-  display: block;
-  width: 100%;
-  text-align: left;
-  font-family: var(--font-body);
-  font-size: 15px;
-  padding: 14px 16px;
-  border-radius: var(--radius-control);
-  border: 1.5px solid var(--color-border-soft);
+
+/* ========== 08. CHIP / TAG ========== */
+/* 알약형: [아이콘] 라벨 [X(선택 시)] */
+.bj-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-body);   /* button은 폰트 비상속 — 명시 필수 */
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  border: none;
   background: var(--color-surface);
   color: var(--color-text);
   cursor: pointer;
-  transition: border-color .15s, background .15s;
+  transition: background-color .12s, color .12s;
 }
-.bj-choice:hover { border-color: var(--color-action); }
-.bj-choice.is-active {
-  border-color: var(--color-action);
-  background: var(--color-action-tint);
-  color: var(--color-action-on-tint);
+.bj-chip:hover { background: var(--color-accent-faint); }
+.bj-chip--active {   /* 선택된 태그: 주황 채움 + X 아이콘 */
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+.bj-chip--active:hover { background: var(--color-accent-hover); }
+.bj-chip__icon,
+.bj-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+}
+.bj-chip__remove { margin-left: var(--space-xs); }
+
+
+/* ========== 09. TOGGLE / CHECK ========== */
+.bj-toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+  border: none;
+  cursor: pointer;
+  transition: background-color .12s;
+}
+.bj-toggle::after {
+  content: "";
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 18px; height: 18px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-raised);
+  transition: transform .12s;
+}
+.bj-toggle--on { background: var(--color-accent); }
+.bj-toggle--on::after { transform: translateX(18px); }
+
+.bj-check {
+  width: 20px; height: 20px;
+  border: var(--border-thick) solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.bj-check--checked {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-text-on-accent);
 }
 
-/* --------------------------------------------------------------------------
-   Input / Textarea — 자유 텍스트 입력 (질문·답변·모임 폼)
-   그림자 금지(v2 규칙) — 포커스는 보더 색으로만 표시.
-   -------------------------------------------------------------------------- */
-.bj-input,
+
+/* ========== 10. INPUT FIELD ========== */
+.bj-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-control-y) var(--space-control-x);
+}
+.bj-input:focus-within { border-color: var(--color-border-accent); }
+.bj-input__icon { color: var(--color-text-caption); flex: none; }
+.bj-input__field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  color: var(--color-text);
+}
+.bj-input__field::placeholder { color: var(--color-text-caption); }
+.bj-input__field:focus { outline: none; }
+
+
+/* ========== 10b. TEXTAREA (자유 텍스트 입력) ========== */
 .bj-textarea {
   display: block;
   width: 100%;
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--fs-body);
+  line-height: 1.5;
   color: var(--color-text);
-  padding: 12px 14px;
-  border-radius: var(--radius-control);
-  border: 1.5px solid var(--color-border-soft);
   background: var(--color-surface);
-  transition: border-color .15s;
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-md);
+  padding: var(--space-control-y) var(--space-control-x);
+  min-height: 96px;
+  resize: vertical;
+  transition: border-color .12s;
 }
-.bj-input::placeholder,
-.bj-textarea::placeholder { color: var(--color-text-hint); }
-.bj-input:focus,
+.bj-textarea::placeholder { color: var(--color-text-caption); }
 .bj-textarea:focus {
   outline: none;
-  border-color: var(--color-action);
-  box-shadow: none;
-}
-.bj-textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
-
-/* --------------------------------------------------------------------------
-   Signature — 리소 미스레지스트레이션 오프셋
-   로고 마크나 강조 아이콘에 "색 어긋남" 시그니처를 부여.
-   구조: <span class="bj-riso"><span class="bj-riso__a"></span>
-                                <span class="bj-riso__b"></span></span>
-   -------------------------------------------------------------------------- */
-.bj-riso { position: relative; display: inline-block; }
-.bj-riso__a, .bj-riso__b {
-  display: block;
-  border-radius: var(--radius-sm);
-}
-.bj-riso__b {
-  position: absolute;
-  top: var(--riso-offset);
-  left: var(--riso-offset);
-  mix-blend-mode: multiply;
+  border-color: var(--color-border-accent);
 }
 
-/* --------------------------------------------------------------------------
-   Illustration frame — 형광 리소 3색이 허용되는 유일한 영역
-   이 클래스 안에서만 --p-riso-* 사용. 밖에서는 절대 금지.
-   -------------------------------------------------------------------------- */
-.bj-illust {
-  background: var(--color-bg);
-  border-radius: 6px; /* 책 표지 — 실물 느낌을 위해 과한 라운딩 금지 */
-  overflow: hidden;
-  /* 실제 일러스트는 여기 삽입. 형광 3색 + multiply 오버프린트 + 하프톤 그레인 */
-}
-.bj-illust img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
 
-/* --------------------------------------------------------------------------
-   Icon button — 원형 아이콘 버튼 (뒤로가기, 설정 등)
-   -------------------------------------------------------------------------- */
-.bj-icon-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: var(--color-bg-sunken);
+/* ========== CARD (공통 컨테이너) ========== */
+/* 06.PROFILE / 07.RECOMMENDATION 등이 공유하는 기본 카드
+   기본: 보더 없음 + 연한 베이지 / 강조(spotlight): 흰 배경 + 연한 그레이 보더 */
+.bj-card {
+  background: var(--color-surface);
   border: none;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background .15s ease;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
 }
-.bj-icon-btn:hover { background: var(--color-border-soft); }
-
-/* --------------------------------------------------------------------------
-   Progress bar — 진단 테스트 진행률, 로딩 화면
-   -------------------------------------------------------------------------- */
-.bj-progress__track {
-  height: 6px;
-  border-radius: var(--radius-badge);
-  background: var(--color-track);
-  overflow: hidden;
-}
-.bj-progress__fill {
-  height: 100%;
-  border-radius: var(--radius-badge);
-  background: var(--color-fill);
-  transition: width .4s ease;
+.bj-card--spotlight {
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
 }
 
-/* --------------------------------------------------------------------------
-   Chip — 축 인디케이터 등 상태형 pill
-   기본 / --active(진행중) / --done(완료)
-   -------------------------------------------------------------------------- */
-.bj-chip {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: var(--radius-badge);
-  background: var(--color-bg-sunken);
-  color: var(--color-text-hint);
-  border: 1px solid transparent;
-}
-.bj-chip--active {
-  background: var(--color-action-tint);
-  color: var(--color-action-on-tint);
-  border-color: var(--color-action);
-}
-.bj-chip--done {
-  background: transparent;
-  color: var(--color-text-hint);
-  border-color: var(--color-border-soft);
-}
 
-/* --------------------------------------------------------------------------
-   Section label — 대문자 라벨 + 구분선
-   -------------------------------------------------------------------------- */
-.bj-section-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-action);
-  margin-bottom: 12px;
-}
-.bj-section-label__line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(to right, var(--color-border-soft), transparent 85%);
-}
-
-/* --------------------------------------------------------------------------
-   Callout — 인용구 / 처방 / 안내 박스
-   -------------------------------------------------------------------------- */
+/* ========== CALLOUT (인용구/처방/안내 박스) ========== */
 .bj-callout {
-  padding: 14px 16px;
-  border-radius: var(--radius-control);
-  background: var(--color-action-tint);
-  color: var(--color-action-on-tint);
-  font-size: 14px;
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-faint);
+  color: var(--color-text);
+  font-size: var(--fs-body);
   line-height: 1.6;
 }
 .bj-callout--muted {
-  background: var(--color-bg-sunken);
-  color: var(--color-text);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
 }
 
-/* --------------------------------------------------------------------------
-   Row — 리스트 항목 (칭호, 배지, 궁합 등)
-   -------------------------------------------------------------------------- */
+
+/* ========== ROW (리스트 행 — 칭호/배지/궁합 등) ========== */
 .bj-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border-radius: var(--radius-control);
-  background: var(--color-bg-sunken);
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
 }
 
-/* --------------------------------------------------------------------------
-   Segmented bar — 독서 뇌구조 등 다구간 누적 바
-   구간별 강조는 opacity로만 구분 (색은 --color-fill 하나)
-   -------------------------------------------------------------------------- */
+
+/* ========== SEGMENTED (다구간 누적 바) ========== */
+/* 구간 구분은 opacity로만 — 색은 --color-fill 하나 */
 .bj-segmented {
   display: flex;
-  height: 20px;
+  height: 16px;
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--color-track);
@@ -349,40 +438,27 @@
   background: var(--color-fill);
 }
 
-/* --------------------------------------------------------------------------
-   Bottom navbar — 하단 탭 네비게이션
-   -------------------------------------------------------------------------- */
-.bj-navbar {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 430px;
-  display: flex;
-  background: var(--color-surface);
-  border-top: 0.5px solid var(--color-border-soft);
-  padding-bottom: env(safe-area-inset-bottom);
-  z-index: 40;
-}
-.bj-navbar__item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 10px 0 12px;
-  text-decoration: none;
-  color: var(--color-text-hint);
-  font-size: 10px;
-  font-weight: 600;
-}
-.bj-navbar__item.is-active { color: var(--color-action); }
 
-/* --------------------------------------------------------------------------
-   Sheet — 바텀시트 모달 (유형 선택 등)
-   -------------------------------------------------------------------------- */
+/* ========== SECTION LABEL (대문자 구획 라벨 + 구분선) ========== */
+.bj-section-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-caption);
+  margin-bottom: var(--space-md);
+}
+.bj-section-label__line {
+  flex: 1;
+  height: var(--border-thin);
+  background: var(--color-border-soft);
+}
+
+
+/* ========== SHEET (바텀시트 모달) ========== */
 .bj-sheet__overlay {
   position: fixed;
   inset: 0;
@@ -396,9 +472,509 @@
   width: 100%;
   max-width: 430px;
   background: var(--color-surface);
-  border-radius: var(--radius-card) var(--radius-card) 0 0;
-  border: 0.5px solid var(--color-border-soft);
-  padding: 20px 20px 40px;
+  border: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
   max-height: 72vh;
   overflow-y: auto;
+}
+
+
+/* ========== 13. BOTTOM NAVIGATION ========== */
+.bj-bottomnav {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-pill);
+  padding: var(--space-sm) var(--space-md);
+}
+.bj-navitem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);   /* button/링크 폰트 비상속 — 명시 필수 */
+  font-size: var(--fs-caption);
+  text-decoration: none;
+  cursor: pointer;
+}
+.bj-navitem--active { color: var(--color-accent); }
+
+
+/* ========== TYPOGRAPHY HELPERS (11) ========== */
+.bj-heading  { font-size: var(--fs-heading); font-weight: var(--fw-bold); }
+.bj-title    { font-size: var(--fs-title);   font-weight: var(--fw-bold); }
+.bj-caption  { font-size: var(--fs-caption); color: var(--color-text-caption); }
+
+/* Wildgak 한정 사용: 닉네임 / 로고 / 희소도 뱃지에만 */
+.bj-display  { font-family: var(--font-display); }
+.bj-nickname { font-family: var(--font-display); font-size: var(--fs-title); }
+
+
+/* ========== SIGNATURE — 리소 미스레지스트레이션 (문서 5번) ========== */
+/* 같은 도형을 2색으로 살짝 어긋나게 겹침. 로고 마크·강조 아이콘 전용.
+   구조: <span class="bj-riso"><span class="bj-riso__a"/><span class="bj-riso__b"/></span> */
+.bj-riso { position: relative; display: inline-block; }
+.bj-riso__a,
+.bj-riso__b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+}
+.bj-riso__a { background: var(--color-riso-a); }
+.bj-riso__b {
+  position: absolute;
+  inset: var(--riso-offset) auto auto var(--riso-offset);
+  background: var(--color-riso-b);
+  mix-blend-mode: multiply;
+}
+
+
+/* ========== TOPBAR (상단바) ========== */
+.bj-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  background: var(--color-bg);
+  padding: var(--space-lg) 0 var(--space-md);
+}
+.bj-topbar__brand { display: flex; align-items: center; gap: var(--space-lg); min-width: 0; }
+.bj-topbar__divider {
+  width: var(--border-thin);
+  height: 36px;
+  background: var(--color-border-soft);
+  flex: none;
+}
+.bj-topbar__slogan { min-width: 0; }
+.bj-topbar__slogan-main {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.bj-topbar__slogan-sub {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+/* 좁은 화면에서는 슬로건 블록 숨김 */
+@media (max-width: 639px) {
+  .bj-topbar__divider,
+  .bj-topbar__slogan { display: none; }
+}
+.bj-topbar__actions { display: flex; align-items: center; gap: var(--space-xs); }
+
+/* 로고 블록 — 워드마크 + BOOKJAK 레터스페이스 캡션 */
+.bj-logo__caption {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 9px;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.34em;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* 로고 * 마크 — 리소 미스레지스트레이션 적용 자리 (문서 5번) */
+.bj-riso-star {
+  position: relative;
+  display: inline-block;
+  font-size: 0.62em;
+  line-height: 1;
+  vertical-align: super;
+}
+.bj-riso-star__a { color: var(--color-riso-a); }
+.bj-riso-star__b {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  color: var(--color-riso-b);
+  mix-blend-mode: multiply;
+}
+
+/* 알림 dot — .bj-icon-btn 내부에 배치 */
+.bj-icon-btn { position: relative; }
+.bj-icon-btn__dot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+
+/* 아바타 — 원형, 헤어라인 테두리 (강한 잉크선 금지) */
+.bj-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-pill);
+  border: var(--border-thin) solid var(--color-border-soft);
+  background: var(--color-surface);
+  overflow: hidden;
+  flex: none;
+}
+
+
+/* ========== SECTION (섹션 공통 헤더) ========== */
+.bj-section { padding: var(--space-xl) 0 0; }
+.bj-section__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+.bj-section__title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--fs-heading);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.02em;
+}
+.bj-section__icon {
+  display: inline-flex;
+  color: var(--color-text);
+  flex: none;
+  transform: translateY(2px);
+}
+.bj-section__cap {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-regular);
+  color: var(--color-text-muted);
+  margin-left: var(--space-sm);
+}
+.bj-more {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.bj-more:hover { color: var(--color-accent); }
+
+
+/* ========== RAIL (가로 스크롤 레일 — 카드 1.2개 노출) ========== */
+/* 부모 패딩 밖으로 블리드시키려면 인라인으로 margin-inline 음수를 준다.
+   자식 카드가 flex-basis(예: min(84%, 360px))와 scroll-snap-align을 정한다. */
+.bj-rail {
+  display: flex;
+  gap: var(--space-md);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: var(--space-sm);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.bj-rail::-webkit-scrollbar { display: none; }
+.bj-rail > * { scroll-snap-align: start; }
+
+
+/* ========== TAG (해시태그 칩 — 읽기 전용, .bj-chip과 용도 분리) ========== */
+.bj-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-medium);
+  color: var(--color-accent);
+  background: var(--color-accent-faint);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+}
+
+
+/* ========== HOT BADGE (지금 뜨는 표시) ========== */
+.bj-hot {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+
+
+/* ========== LINE CLAMP 유틸 ========== */
+.bj-clamp-1,
+.bj-clamp-2,
+.bj-clamp-4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bj-clamp-1 { -webkit-line-clamp: 1; }
+.bj-clamp-2 { -webkit-line-clamp: 2; }
+.bj-clamp-4 { -webkit-line-clamp: 4; }
+
+
+/* ========== FOOTER ========== */
+.bj-footer {
+  margin-top: var(--space-xl);
+  padding: var(--space-xl) 0;
+  border-top: var(--border-thin) solid var(--color-border-soft);
+  background: var(--color-surface);
+}
+.bj-footer__tag {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  margin-top: var(--space-xs);
+}
+.bj-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-lg);
+  margin-top: var(--space-lg);
+}
+.bj-footer__links > * {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-medium);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+.bj-footer__copy {
+  font-size: var(--fs-caption-sm);
+  color: var(--color-text-caption);
+  margin-top: var(--space-lg);
+  line-height: 1.6;
+}
+
+
+/* =========================================================================
+   HOME 패턴 — 홈 화면에서 파생된 카드 조합. 다른 화면 재사용 가능.
+   ========================================================================= */
+
+/* ----- 히어로 배너 (가로형: 일러스트 좌 + 본문 우) ----- */
+.bj-hero {
+  display: flex;
+  align-items: stretch;
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.bj-hero__illust {
+  flex: 0 0 116px;
+  background: var(--color-surface);
+  display: grid;
+  place-items: center;
+}
+.bj-hero__body { flex: 1; min-width: 0; padding: var(--space-lg); }
+.bj-hero__eyebrow {
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.02em;
+  color: var(--color-accent);
+}
+.bj-hero__title {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-top: var(--space-xs);
+}
+.bj-hero__sub {
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+  margin-top: var(--space-xs);
+}
+.bj-hero__count {
+  font-size: var(--fs-caption-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-sm);
+}
+.bj-hero__count b { color: var(--color-text); font-weight: var(--fw-bold); }
+
+/* pill 버튼 변형 — 히어로 CTA·궁금해요 등 */
+.bj-btn--pill { border-radius: var(--radius-pill); }
+
+/* ----- 오늘의 발견 카드 ----- */
+.bj-discover-card {
+  flex: 0 0 min(84%, 360px);
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.bj-discover-card__top { display: flex; gap: var(--space-md); padding: var(--space-lg) var(--space-lg) var(--space-md); }
+.bj-discover-card__cover {
+  position: relative;
+  flex: 0 0 74px;
+  aspect-ratio: 3 / 4;
+  background: var(--color-text);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  color: var(--color-text-on-accent);
+}
+.bj-discover-card__q { font-size: var(--fs-hero); font-weight: var(--fw-bold); opacity: 0.85; }
+.bj-discover-card__match {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-on-accent);
+  background: var(--color-accent);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+}
+.bj-discover-card__info { flex: 1; min-width: 0; }
+.bj-discover-card__ai {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: var(--fs-caption-sm);
+  font-weight: var(--fw-bold);
+  color: var(--color-accent);
+  margin-bottom: var(--space-xs);
+}
+.bj-discover-card__desc { font-size: var(--fs-body-sm); line-height: 1.5; }
+.bj-discover-card__tags { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin-top: var(--space-sm); }
+.bj-discover-card__reviews {
+  border-top: var(--border-thin) solid var(--color-border-soft);
+  padding: var(--space-sm) var(--space-lg) var(--space-md);
+}
+.bj-discover-card__review {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+  padding: 2px 0;
+}
+.bj-discover-card__hearts {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex: none;
+}
+.bj-discover-card__actions { display: flex; gap: var(--space-sm); padding: 0 var(--space-lg) var(--space-lg); }
+
+/* ----- 토론 카드 ----- */
+.bj-discuss-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  text-decoration: none;
+  color: inherit;
+}
+.bj-discuss-card__q {
+  font-size: var(--fs-body);
+  font-weight: var(--fw-bold);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+.bj-discuss-card__meta {
+  display: flex;
+  gap: var(--space-lg);
+  margin-top: var(--space-sm);
+  font-size: var(--fs-caption);
+  color: var(--color-text-muted);
+}
+.bj-discuss-card__meta > span { display: inline-flex; align-items: center; gap: var(--space-xs); }
+.bj-discuss-card__thumb {
+  flex: 0 0 52px;
+  width: 52px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+/* ----- 친구(취향 매칭) 카드 ----- */
+.bj-friend-card {
+  flex: 0 0 118px;
+  display: block;
+  text-align: center;
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg) var(--space-sm);
+  text-decoration: none;
+  color: inherit;
+}
+.bj-friend-card__face {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-pill);
+  border: var(--border-thin) solid var(--color-border-soft);
+  overflow: hidden;
+  margin: 0 auto var(--space-sm);
+}
+.bj-friend-card__face .bj-illust { height: 100%; }
+.bj-friend-card__name { font-size: var(--fs-body-sm); font-weight: var(--fw-bold); }
+.bj-friend-card__match {
+  font-size: var(--fs-caption);
+  font-weight: var(--fw-bold);
+  color: var(--color-accent);
+  margin-top: 2px;
+}
+.bj-friend-card__hint {
+  font-size: var(--fs-caption-sm);
+  color: var(--color-text-muted);
+  margin-top: var(--space-sm);
+}
+
+/* ----- 책 모임 카드 ----- */
+.bj-club-card {
+  flex: 0 0 min(84%, 360px);
+  display: block;
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+.bj-club-card__body { padding: var(--space-md) var(--space-lg) var(--space-lg); }
+.bj-club-card__name { font-size: var(--fs-body-lg); font-weight: var(--fw-bold); letter-spacing: -0.01em; }
+.bj-club-card__chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin: var(--space-sm) 0; }
+.bj-club-card__chip {
+  font-size: var(--fs-caption-sm);
+  color: var(--color-text-muted);
+  border: var(--border-thin) solid var(--color-border-soft);
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-pill);
+}
+.bj-club-card__desc { font-size: var(--fs-body-sm); color: var(--color-text-muted); line-height: 1.45; }
+
+/* ----- 16유형 카드 ----- */
+.bj-type-card {
+  flex: 0 0 128px;
+  background: var(--color-surface-spotlight);
+  border: var(--border-thin) solid var(--color-border-soft);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.bj-type-card__illust { position: relative; }
+.bj-type-card__rarity { position: absolute; bottom: var(--space-sm); right: var(--space-sm); }
+.bj-type-card__name {
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-bold);
+  text-align: center;
+  letter-spacing: -0.02em;
 }

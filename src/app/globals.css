@@ -1,12 +1,13 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
+/* 구(v1) 시스템 — 미이관 화면(테스트·결과·발견·소셜 등)만 사용.
+   화면 이관이 끝나면 legacy import 두 줄을 제거한다. */
+@import "../styles/legacy/tokens.css";
+@import "../styles/legacy/components.css";
+
+/* v2 디자인시스템 (정본) — legacy보다 뒤에 로드해 우선 적용 */
 @import "../styles/tokens.css";
 @import "../styles/components.css";
-
-/* v2 디자인시스템 (루트 스펙 파일 직접 참조 — 구 시스템보다 뒤에 로드해 우선 적용)
-   STEP 2 화면 이관이 끝나면 위의 구 styles/* import는 제거한다. */
-@import "../../tokens.css";
-@import "../../components.css";
 
 * {
   box-sizing: border-box;

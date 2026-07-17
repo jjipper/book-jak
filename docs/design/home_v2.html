@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>북작 · 홈</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* =========================================================
+   북작 디자인 시스템 (확정값)
+   포인트 주황 #F0562E / 잉크 #1A1A2E / 페이퍼 #F4EFE4
+   그림자 없음 · 위계는 색/테두리로만 · 이모지 사용 금지
+   와일드각: 로고·닉네임·희소도 전용
+   ========================================================= */
+:root{
+  --p-orange:#F0562E; --p-orange-weak:#FCE9E1;
+  --p-ink:#1A1A2E; --p-paper:#F4EFE4;
+  --p-surface:#FBF8F0; --p-surface-2:#FFFFFF;
+  --p-line:#E4DFD2; --p-sub:#6B6858;
+  --p-yellow:#FFE800; --p-blue:#2B4CFF;
+
+  --color-bg:var(--p-paper); --color-surface:var(--p-surface);
+  --color-card:var(--p-surface-2); --color-ink:var(--p-ink);
+  --color-sub:var(--p-sub); --color-line:var(--p-line);
+  --color-action:var(--p-orange); --color-action-weak:var(--p-orange-weak);
+
+  --radius:16px; --radius-sm:10px; --radius-pill:999px;
+  --pad:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--color-bg);
+  color:var(--color-ink);line-height:1.5;-webkit-font-smoothing:antialiased;}
+@font-face{font-family:'Wildgak';src:local('Pretendard');font-display:swap;}
+.wildgak{font-family:'Wildgak','Pretendard',sans-serif;}
+
+.app{max-width:430px;margin:0 auto;min-height:100vh;background:var(--color-bg);
+  padding-bottom:96px;position:relative;}
+
+/* 상단바 */
+.topbar{position:sticky;top:0;z-index:20;background:var(--color-bg);
+  display:flex;align-items:center;justify-content:space-between;padding:14px var(--pad) 10px;}
+.logo{font-family:'Wildgak','Pretendard';font-size:26px;font-weight:800;
+  letter-spacing:-.5px;position:relative;}
+.logo sup{color:var(--color-action);font-size:14px;top:-.7em;}
+.topbar-actions{display:flex;gap:4px;align-items:center;}
+.icon-btn{width:40px;height:40px;border:none;background:transparent;position:relative;
+  display:grid;place-items:center;color:var(--color-ink);cursor:pointer;border-radius:50%;}
+.icon-btn:active{background:var(--color-line);}
+.icon-btn .dot{position:absolute;width:7px;height:7px;background:var(--color-action);
+  border-radius:50%;top:8px;right:9px;}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--p-yellow);
+  border:2px solid var(--color-ink);overflow:hidden;display:grid;place-items:center;
+  font-size:11px;color:var(--color-sub);margin-left:4px;}
+.ic{width:22px;height:22px;}
+
+/* ===== 히어로: 검정 border 제거 + 축소 (가로형 배너) ===== */
+.hero{margin:4px var(--pad) 4px;border-radius:var(--radius);overflow:hidden;
+  background:var(--color-card);border:1.5px solid var(--color-line);
+  display:flex;align-items:stretch;}
+.hero-illust{flex:0 0 116px;background:
+    repeating-linear-gradient(135deg,#EEE9DB 0 12px,#F4EFE4 12px 24px);
+  display:grid;place-items:center;position:relative;}
+.hero-illust::after{content:'illust/hero.png';font-size:10px;color:#B7B09C;text-align:center;}
+.hero-body{flex:1;padding:15px 15px 16px;min-width:0;}
+.hero-eyebrow{font-size:11px;font-weight:700;color:var(--color-action);letter-spacing:.3px;}
+.hero-title{font-size:17px;font-weight:800;letter-spacing:-.4px;margin-top:3px;line-height:1.3;}
+.hero-sub{font-size:12px;color:var(--color-sub);margin-top:4px;line-height:1.4;}
+.hero-cta{display:inline-flex;align-items:center;gap:6px;margin-top:11px;
+  background:var(--color-action);color:#fff;border:none;border-radius:var(--radius-pill);
+  padding:10px 16px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;}
+.hero-cta:active{filter:brightness(.94);}
+.hero-count{font-size:11px;color:var(--color-sub);margin-top:8px;}
+.hero-count b{color:var(--color-ink);font-weight:700;}
+
+/* 섹션 공통 */
+.section{padding:22px var(--pad) 2px;}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:13px;}
+.section-title{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+.section-title .cap{font-size:12px;font-weight:500;color:var(--color-sub);margin-left:7px;}
+.more{font-size:12.5px;color:var(--color-sub);text-decoration:none;font-weight:600;
+  white-space:nowrap;}
+.more:active{color:var(--color-action);}
+
+/* 가로 레일: 카드 1.2개 노출 */
+.rail{display:flex;gap:12px;overflow-x:auto;padding:2px var(--pad) 6px;
+  margin:0 calc(var(--pad) * -1);scroll-snap-type:x mandatory;
+  -ms-overflow-style:none;scrollbar-width:none;}
+.rail::-webkit-scrollbar{display:none;}
+.rail::before,.rail::after{content:'';flex:0 0 calc(var(--pad) - 12px);}
+
+/* ===== 오늘의 발견: 넓은 카드 1.2개, 커버 높이 축소, 설명+리뷰 ===== */
+.discover-card{flex:0 0 84%;scroll-snap-align:start;border-radius:var(--radius);
+  border:1.5px solid var(--color-line);background:var(--color-card);overflow:hidden;
+  display:flex;flex-direction:column;}
+.discover-top{display:flex;gap:13px;padding:14px 15px 12px;}
+.discover-cover{flex:0 0 74px;aspect-ratio:3/4;background:var(--color-ink);
+  border-radius:var(--radius-sm);display:grid;place-items:center;position:relative;color:#fff;}
+.discover-cover .q{font-size:30px;font-weight:800;opacity:.85;}
+.discover-cover .match{position:absolute;left:5px;top:5px;background:var(--color-action);
+  color:#fff;font-size:10px;font-weight:700;padding:2px 6px;border-radius:var(--radius-pill);}
+.discover-info{flex:1;min-width:0;}
+.ai-label{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;
+  color:var(--color-action);margin-bottom:5px;}
+.discover-desc{font-size:12.5px;color:var(--color-ink);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
+.tag-row{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap;}
+.tag{font-size:11px;color:var(--color-action);background:var(--color-action-weak);
+  padding:3px 8px;border-radius:var(--radius-pill);font-weight:600;}
+.discover-reviews{border-top:1px solid var(--color-line);padding:10px 15px 12px;}
+.review-line{display:flex;align-items:center;justify-content:space-between;
+  font-size:12px;color:var(--color-sub);padding:3px 0;}
+.review-line .cnt{display:flex;align-items:center;gap:4px;color:var(--color-sub);}
+.discover-actions{display:flex;gap:8px;padding:0 15px 14px;}
+.btn-curious{flex:1;background:var(--color-action);color:#fff;border:none;
+  border-radius:var(--radius-pill);padding:11px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;}
+.btn-skip{flex:0 0 42%;background:transparent;border:1.5px solid var(--color-line);
+  color:var(--color-sub);border-radius:var(--radius-pill);padding:11px;font-size:13px;
+  font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* ===== 토론: 3개, 이모지 제거, 커스텀 아이콘 ===== */
+.discuss-card{display:flex;gap:12px;align-items:center;padding:15px var(--pad);
+  border-radius:var(--radius);background:var(--color-card);
+  border:1.5px solid var(--color-line);margin-bottom:10px;text-decoration:none;color:inherit;}
+.discuss-card:last-child{margin-bottom:0;}
+.discuss-main{flex:1;min-width:0;}
+.hot{display:inline-block;background:var(--color-action);color:#fff;font-size:10px;
+  font-weight:800;padding:2px 7px;border-radius:6px;margin-right:6px;vertical-align:middle;}
+.discuss-q{font-size:14.5px;font-weight:700;line-height:1.4;letter-spacing:-.2px;}
+.discuss-meta{display:flex;gap:15px;margin-top:9px;font-size:12px;color:var(--color-sub);}
+.discuss-meta span{display:flex;align-items:center;gap:5px;}
+.mic{width:15px;height:15px;color:var(--color-sub);}
+.discuss-thumb{flex:0 0 52px;height:52px;border-radius:var(--radius-sm);
+  background:repeating-linear-gradient(135deg,#EEE9DB 0 8px,#F4EFE4 8px 16px);
+  border:1px solid var(--color-line);}
+
+/* ===== 취향 비슷한 친구 (border 검정 제거 → 라인) ===== */
+.friend-card{flex:0 0 118px;scroll-snap-align:start;text-align:center;padding:14px 10px;
+  border-radius:var(--radius);background:var(--color-card);border:1.5px solid var(--color-line);
+  text-decoration:none;color:inherit;display:block;}
+.friend-face{width:64px;height:64px;border-radius:50%;margin:0 auto 9px;
+  border:1.5px solid var(--color-line);background:var(--p-yellow);overflow:hidden;
+  display:grid;place-items:center;font-size:10px;color:var(--color-sub);}
+.friend-name{font-size:13.5px;font-weight:700;}
+.friend-match{font-size:12px;color:var(--color-action);font-weight:700;margin-top:2px;}
+.friend-hint{font-size:11px;color:var(--color-sub);margin-top:8px;}
+
+/* ===== 책 모임 ===== */
+.club-card{flex:0 0 84%;scroll-snap-align:start;border-radius:var(--radius);
+  background:var(--color-card);border:1.5px solid var(--color-line);overflow:hidden;}
+.club-cover{aspect-ratio:5/2;background:var(--color-ink);position:relative;}
+.club-cover .book-save{position:absolute;top:9px;right:9px;color:#fff;opacity:.9;}
+.club-body{padding:13px 14px 15px;}
+.club-name{font-size:15px;font-weight:800;letter-spacing:-.2px;}
+.club-chips{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap;}
+.chip{font-size:11px;color:var(--color-sub);border:1px solid var(--color-line);
+  padding:3px 9px;border-radius:var(--radius-pill);}
+.club-desc{font-size:12.5px;color:var(--color-sub);line-height:1.45;}
+
+/* ===== 16유형 ===== */
+.type-card{flex:0 0 128px;scroll-snap-align:start;border-radius:var(--radius);
+  border:1.5px solid var(--color-line);background:var(--color-card);overflow:hidden;}
+.type-illust{aspect-ratio:1;background:var(--color-surface);display:grid;place-items:center;
+  position:relative;}
+.type-illust .slot{font-size:10px;color:#B7B09C;text-align:center;line-height:1.3;}
+.rarity{position:absolute;bottom:7px;right:7px;font-size:10px;font-weight:800;color:#fff;
+  background:var(--color-action);padding:3px 8px;clip-path:polygon(8% 0,100% 0,92% 100%,0 100%);}
+.rarity--rare{background:var(--p-blue);}
+.type-name{padding:10px 11px 12px;font-weight:800;font-size:13.5px;text-align:center;
+  letter-spacing:-.3px;}
+
+/* ===== FOOTER ===== */
+.footer{margin:28px 0 0;padding:24px var(--pad) 28px;border-top:1px solid var(--color-line);
+  background:var(--color-surface);}
+.footer-logo{font-family:'Wildgak','Pretendard';font-size:20px;font-weight:800;}
+.footer-logo sup{color:var(--color-action);font-size:11px;top:-.7em;}
+.footer-tag{font-size:12px;color:var(--color-sub);margin-top:4px;}
+.footer-links{display:flex;flex-wrap:wrap;gap:14px 18px;margin-top:16px;}
+.footer-links a{font-size:12.5px;color:var(--color-sub);text-decoration:none;font-weight:600;}
+.footer-copy{font-size:11px;color:#B7B09C;margin-top:18px;line-height:1.6;}
+
+/* ===== 하단 네비 ===== */
+.bottomnav{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);
+  width:calc(100% - 28px);max-width:402px;background:var(--color-ink);
+  border-radius:var(--radius-pill);display:flex;justify-content:space-around;
+  padding:11px 8px;z-index:30;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:#9C99A8;
+  font-size:10.5px;text-decoration:none;flex:1;font-weight:600;}
+.nav-item.active{color:#fff;}
+.nav-item.active .ic{color:var(--color-action);}
+
+:focus-visible{outline:2.5px solid var(--color-action);outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="logo wildgak">북작<sup>*</sup></div>
+    <div class="topbar-actions">
+      <button class="icon-btn" aria-label="검색">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="알림"><span class="dot"></span>
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg>
+      </button>
+      <div class="avatar">나</div>
+    </div>
+  </header>
+
+  <!-- 히어로: border 검정 제거 + 가로 축소형 -->
+  <section class="hero">
+    <div class="hero-illust"></div>
+    <div class="hero-body">
+      <div class="hero-eyebrow">READING TYPE TEST</div>
+      <h1 class="hero-title">나의 독서 유형은?</h1>
+      <p class="hero-sub">12문항으로 16가지 유형을 진단해보세요.</p>
+      <button class="hero-cta">테스트 시작하기
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+      <p class="hero-count">지금까지 <b>128,312명</b> 참여했어요</p>
+    </div>
+  </section>
+
+  <!-- 오늘의 발견: 넓은 카드 1.2개 -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">오늘의 발견<span class="cap">블라인드로 만나는 5권</span></h2>
+      <a class="more" href="#">더보기 ›</a>
+    </div>
+    <div class="rail">
+      <article class="discover-card">
+        <div class="discover-top">
+          <div class="discover-cover"><span class="q">?</span><span class="match">91%</span></div>
+          <div class="discover-info">
+            <span class="ai-label">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg>
+              AI가 골랐어요
+            </span>
+            <p class="discover-desc">상실과 회복 사이에서 한 사람이 자신만의 세계를 만들어가는 이야기. 조용하지만 강한 울림이 오래 남아요. 지금 마음이 소란한 사람에게 권하고 싶은 한 권.</p>
+            <div class="tag-row"><span class="tag">#성장</span><span class="tag">#여운</span><span class="tag">#인생소설</span></div>
+          </div>
+        </div>
+        <div class="discover-reviews">
+          <div class="review-line"><span>"읽고 난 뒤, 한동안 멍해졌어요."</span>
+            <span class="cnt"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.5-9C.8 8.6 2.3 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>124</span></div>
+          <div class="review-line"><span>"나를 돌아보게 만드는 책."</span>
+            <span class="cnt"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.5-9C.8 8.6 2.3 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>98</span></div>
+        </div>
+        <div class="discover-actions">
+          <button class="btn-curious">궁금해요</button>
+          <button class="btn-skip">넘어갈래요</button>
+        </div>
+      </article>
+
+      <article class="discover-card">
+        <div class="discover-top">
+          <div class="discover-cover"><span class="q">?</span><span class="match">85%</span></div>
+          <div class="discover-info">
+            <span class="ai-label">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l1.8 5.4L19 9l-5.2 1.6L12 16l-1.8-5.4L5 9l5.2-1.6z"/></svg>
+              AI가 골랐어요
+            </span>
+            <p class="discover-desc">머릿속에 우주를 짓고 싶은 사람을 위한 SF. 낯선 세계의 규칙을 하나씩 이해해가는 재미가 촘촘해요.</p>
+            <div class="tag-row"><span class="tag">#SF</span><span class="tag">#우주</span></div>
+          </div>
+        </div>
+        <div class="discover-reviews">
+          <div class="review-line"><span>"세계관에 완전히 빠졌어요."</span>
+            <span class="cnt"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.5-9C.8 8.6 2.3 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>76</span></div>
+        </div>
+        <div class="discover-actions">
+          <button class="btn-curious">궁금해요</button>
+          <button class="btn-skip">넘어갈래요</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 토론: 3개, 커스텀 아이콘 -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">의견 나누기<span class="cap">지금 뜨는 독서 토론</span></h2>
+      <a class="more" href="#">더보기 ›</a>
+    </div>
+    <a class="discuss-card" href="#">
+      <div class="discuss-main">
+        <p class="discuss-q"><span class="hot">HOT</span>책 속 인물 중 가장 이해되지 않는 선택을 한 인물은?</p>
+        <div class="discuss-meta">
+          <span><svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 01-8 8H4l1.5-3A8 8 0 1121 12z"/></svg>128</span>
+          <span><svg class="mic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.5-9C.8 8.6 2.3 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>231</span>
+        </div>
+      </div>
+      <div class="discuss-thumb"></div>
+    </a>
+    <a class="discuss-card" href="#">
+      <div class="discuss-main">
+        <p class="discuss-q">최근 읽은 책 중, 당신의 생각을 가장 바꿔놓은 책은?</p>
+        <div class="discuss-meta">
+          <span><svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 01-8 8H4l1.5-3A8 8 0 1121 12z"/></svg>97</span>
+          <span><svg class="mic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.5-9C.8 8.6 2.3 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>165</span>
+        </div>
+      </div>
+    </a>
+    <a class="discuss-card" href="#">
+      <div class="discuss-main">
+        <p class="discuss-q">주인공의 선택, 당신이라면 다르게 했을 것 같나요?</p>
+        <div class="discuss-meta">
+          <span><svg class="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a8 8 0 01-8 8H4l1.5-3A8 8 0 1121 12z"/></svg>84</span>
+          <span><svg class="mic" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.6-9.5-9C.8 8.6 2.3 5 6 5c2 0 3.2 1.2 4 2.3C10.8 6.2 12 5 14 5c3.7 0 5.2 3.6 3.5 7-2.5 4.4-9.5 9-9.5 9z"/></svg>142</span>
+        </div>
+      </div>
+      <div class="discuss-thumb"></div>
+    </a>
+  </section>
+
+  <!-- 취향이 비슷한 친구 (카드→프로필 링크) -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">취향이 비슷한 친구<span class="cap">궁합 순</span></h2>
+      <a class="more" href="#">더보기 ›</a>
+    </div>
+    <div class="rail">
+      <a class="friend-card" href="#/people/1">
+        <div class="friend-face">illust</div>
+        <p class="friend-name">문장수집가</p>
+        <p class="friend-match">궁합 92%</p>
+        <p class="friend-hint">프로필 보기 ›</p>
+      </a>
+      <a class="friend-card" href="#/people/2">
+        <div class="friend-face">illust</div>
+        <p class="friend-name">감성탐독러</p>
+        <p class="friend-match">궁합 87%</p>
+        <p class="friend-hint">프로필 보기 ›</p>
+      </a>
+      <a class="friend-card" href="#/people/3">
+        <div class="friend-face">illust</div>
+        <p class="friend-name">고요한독서가</p>
+        <p class="friend-match">궁합 81%</p>
+        <p class="friend-hint">프로필 보기 ›</p>
+      </a>
+      <a class="friend-card" href="#/people/4">
+        <div class="friend-face">illust</div>
+        <p class="friend-name">페이지위너</p>
+        <p class="friend-match">궁합 79%</p>
+        <p class="friend-hint">프로필 보기 ›</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- 책 모임 -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">책 모임<span class="cap">함께 읽고 이야기해요</span></h2>
+      <a class="more" href="#">더보기 ›</a>
+    </div>
+    <div class="rail">
+      <article class="club-card">
+        <div class="club-cover">
+          <svg class="book-save" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+        </div>
+        <div class="club-body">
+          <p class="club-name">밤의 페이지 넘김</p>
+          <div class="club-chips"><span class="chip">오프라인</span><span class="chip">정원 6/8</span><span class="chip">서울 마포</span></div>
+          <p class="club-desc">매주 금요일, 한 권을 깊게 읽고 나눠요. #문학 #에세이</p>
+        </div>
+      </article>
+      <article class="club-card">
+        <div class="club-cover">
+          <svg class="book-save" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 4h12v16l-6-4-6 4z"/></svg>
+        </div>
+        <div class="club-body">
+          <p class="club-name">상상력 연구소</p>
+          <div class="club-chips"><span class="chip">온라인</span><span class="chip">정원 4/6</span></div>
+          <p class="club-desc">SF·판타지 모임! 상상의 한계는 없다. #SF #판타지 #창작</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 16유형 -->
+  <section class="section">
+    <div class="section-head">
+      <h2 class="section-title">16가지 유형<span class="cap">당신은 어떤 독서가?</span></h2>
+      <a class="more" href="#">더보기 ›</a>
+    </div>
+    <div class="rail">
+      <article class="type-card">
+        <div class="type-illust"><span class="slot">illust/FIER.png</span><span class="rarity rarity--rare">최희귀</span></div>
+        <p class="type-name">심해 독서가</p>
+      </article>
+      <article class="type-card">
+        <div class="type-illust"><span class="slot">illust/FIEW.png</span><span class="rarity rarity--rare">희귀</span></div>
+        <p class="type-name">책벌레 학자</p>
+      </article>
+      <article class="type-card">
+        <div class="type-illust"><span class="slot">illust/FCGW.png</span><span class="rarity">흔함</span></div>
+        <p class="type-name">몽상 이야기꾼</p>
+      </article>
+      <article class="type-card">
+        <div class="type-illust"><span class="slot">illust/TCGR.png</span><span class="rarity">흔함</span></div>
+        <p class="type-name">현실 고증형</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo wildgak">북작<sup>*</sup></div>
+    <p class="footer-tag">읽는 취향이, 나를 만든다</p>
+    <div class="footer-links">
+      <a href="#">서비스 소개</a>
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">문의하기</a>
+      <a href="#">공지사항</a>
+    </div>
+    <p class="footer-copy">북작(BOOKJAK) · 독서 취향 소셜 앱<br>© 2026 BOOKJAK. All rights reserved.</p>
+  </footer>
+
+</div>
+
+<nav class="bottomnav">
+  <a class="nav-item active" href="#">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>홈
+  </a>
+  <a class="nav-item" href="#">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-2.5 5.5L7 17l2.5-5.5z"/></svg>발견
+  </a>
+  <a class="nav-item" href="#">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.6 6.3 6.8.5-5.2 4.4 1.6 6.6L12 17.8 6.2 21.4l1.6-6.6L2.6 9.8l6.8-.5z"/></svg>평가
+  </a>
+  <a class="nav-item" href="#">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3 2.5-5 6-5s6 2 6 5M14 20c0-2 1.5-3.5 4-3.5"/></svg>소셜
+  </a>
+  <a class="nav-item" href="#">
+    <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.5-7 8-7s8 3 8 7"/></svg>마이
+  </a>
+</nav>
+</body>
+</html>
