@@ -2,17 +2,17 @@
 // 실서비스에서는 서버에서 내려오는 데이터. 현재는 샘플 15권 고정.
 // 발견 탭에서 날짜별로 5권씩 로테이션해서 보여준다.
 
-export interface BlindBookDescSegment {
+interface BlindBookDescSegment {
   text: string
   emphasis?: boolean
 }
 
-export interface BlindBookTag {
+interface BlindBookTag {
   text: string
   kind: 'primary' | 'mood' | 'genre'
 }
 
-export interface BlindBookMeta {
+interface BlindBookMeta {
   key: string
   value: string
 }

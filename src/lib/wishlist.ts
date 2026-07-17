@@ -22,9 +22,6 @@ export function loadWishlist(): WishlistRecord[] {
   }
 }
 
-export function isInWishlist(bookId: string): boolean {
-  return loadWishlist().some((r) => r.bookId === bookId)
-}
 
 export function addToWishlist(record: WishlistRecord): void {
   if (typeof window === 'undefined') return

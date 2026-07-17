@@ -8,7 +8,7 @@ export interface BookAuthor {
   bio: string
 }
 
-export const AUTHORS: BookAuthor[] = [
+const AUTHORS: BookAuthor[] = [
   {
     id: 'a01',
     name: '김영하',

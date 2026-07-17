@@ -21,7 +21,7 @@ const NICKNAME_NOUNS = [
 ]
 
 // 설정 안 한 사용자에게 붙여줄 책 관련 랜덤 닉네임 (매 호출 시 새로 뽑음)
-export function randomNickname(): string {
+function randomNickname(): string {
   const a = NICKNAME_ADJECTIVES[Math.floor(Math.random() * NICKNAME_ADJECTIVES.length)]
   const n = NICKNAME_NOUNS[Math.floor(Math.random() * NICKNAME_NOUNS.length)]
   return `${a}${n}`
@@ -46,7 +46,3 @@ export function setAvatar(dataUrl: string): void {
   localStorage.setItem(AVATAR_KEY, dataUrl)
 }
 
-export function clearAvatar(): void {
-  if (typeof window === 'undefined') return
-  localStorage.removeItem(AVATAR_KEY)
-}

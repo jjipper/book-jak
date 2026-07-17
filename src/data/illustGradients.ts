@@ -4,7 +4,7 @@ import type { TypeCode } from './readingTypes'
    그림 영역 전용 색이라 의미 토큰 대신 일러스트별 원시값을 여기(데이터)에 둔다.
    UI 컨트롤에는 절대 쓰지 말 것.
    ⚠️ 아래 값은 일러스트 분위기에 맞춘 1차 제안 — 확정 색은 추후 지정 예정 */
-export const ILLUST_GRADIENT_TOP: Record<TypeCode, string> = {
+const ILLUST_GRADIENT_TOP: Record<TypeCode, string> = {
   FCER: '#FFF0C9', // 티타임 — 따뜻한 옐로
   FCEW: '#DCEDFB', // 구름 위 — 맑은 하늘색
   FCGR: '#DCE4F6', // 달밤 — 은은한 밤하늘 블루

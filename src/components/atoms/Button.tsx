@@ -2,7 +2,7 @@ import type { ButtonHTMLAttributes } from 'react'
 
 /* 01. BUTTONS — primary(주요 액션) / secondary(보조 액션) / text(텍스트 버튼) */
 
-export type ButtonVariant = 'primary' | 'secondary' | 'text'
+type ButtonVariant = 'primary' | 'secondary' | 'text'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant

@@ -308,7 +308,7 @@ export interface MockBookReview {
   text: string
 }
 
-export const MOCK_BOOK_REVIEWS: MockBookReview[] = [
+const MOCK_BOOK_REVIEWS: MockBookReview[] = [
   { bookId: 'b01', personId: 'p03', stars: 5, text: '아무 일도 안 일어나는데 밑줄 친 문장이 서른 개가 넘어요.' },
   { bookId: 'b01', personId: 'p05', stars: 3, text: '속도가 안 나서 힘들었는데, 다 읽고 나니 이상하게 계속 생각남.' },
   { bookId: 'b02', personId: 'p05', stars: 5, text: '지하철에서 읽다가 정류장 두 번 놓쳤습니다. 하루면 다 읽어요.' },

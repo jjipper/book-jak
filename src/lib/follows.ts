@@ -16,7 +16,7 @@ export function isFollowing(id: string): boolean {
   return getFollowingIds().includes(id)
 }
 
-export function followPerson(id: string): void {
+function followPerson(id: string): void {
   if (typeof window === 'undefined') return
   const ids = getFollowingIds()
   if (ids.includes(id)) return

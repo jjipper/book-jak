@@ -5,7 +5,7 @@ export type TypeCode =
   | 'TCER' | 'TCEW' | 'TCGR' | 'TCGW'
 
 export type RarityLevel = 'most-common' | 'common' | 'rare' | 'very-rare' | 'ultra-rare'
-export type ParticleType = 'bubble' | 'ember' | 'mote' | 'cross' | 'star' | 'leaf' | 'spark' | 'question'
+type ParticleType = 'bubble' | 'ember' | 'mote' | 'cross' | 'star' | 'leaf' | 'spark' | 'question'
 
 export type StatKey = '몰입력' | '인내심' | '감수성' | '허세력' | '완독력'
 
@@ -650,15 +650,6 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 }
 
 export const TYPE_CODES = Object.keys(READING_TYPES) as TypeCode[]
-
-// 희소도별 라벨
-export const RARITY_LABELS: Record<RarityLevel, string> = {
-  'most-common': '가장 흔함',
-  'common': '흔한 편',
-  'rare': '희귀 등급',
-  'very-rare': '매우 희귀',
-  'ultra-rare': '최희귀 등급',
-}
 
 // 디자인 시스템 뱃지는 common/rare/epic 3단계만 지원 → 5단계 희소도를 매핑
 export type RarityBadgeVariant = 'common' | 'rare' | 'epic'

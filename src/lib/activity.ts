@@ -11,7 +11,7 @@ export type ActivityType =
   | 'club_create'
   | 'club_join'
 
-export interface ActivityEvent {
+interface ActivityEvent {
   type: ActivityType
   ts: number
 }

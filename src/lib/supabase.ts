@@ -13,9 +13,6 @@ export function getSupabase(): SupabaseClient | null {
   return client
 }
 
-export function isSupabaseEnabled(): boolean {
-  return getSupabase() !== null
-}
 
 // 익명 세션 보장 — 이미 세션이 있으면 재사용, 없으면 새로 발급
 export async function ensureSession(): Promise<string | null> {

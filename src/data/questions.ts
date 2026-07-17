@@ -1,11 +1,11 @@
 // 4축: F/T, I/C, E/G, R/W
-export type AxisFT = 'F' | 'T'
-export type AxisIC = 'I' | 'C'
-export type AxisEG = 'E' | 'G'
-export type AxisRW = 'R' | 'W'
+type AxisFT = 'F' | 'T'
+type AxisIC = 'I' | 'C'
+type AxisEG = 'E' | 'G'
+type AxisRW = 'R' | 'W'
 export type AxisValue = AxisFT | AxisIC | AxisEG | AxisRW
 
-export interface QuestionOption {
+interface QuestionOption {
   id: string           // 'A' | 'B' | 'C' | 'D'
   label: string
   value: AxisValue
@@ -162,11 +162,3 @@ export const QUESTIONS: Question[] = [
     ],
   },
 ]
-
-// 축별 문항 인덱스
-export const AXIS_QUESTION_MAP = {
-  FT: [1, 2, 3],
-  IC: [4, 5, 6],
-  EG: [7, 8, 9],
-  RW: [10, 11, 12],
-} as const

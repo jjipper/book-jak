@@ -13,7 +13,7 @@ export interface RemoteBookInput {
   thumbnail?: string
 }
 
-export interface RemoteReview {
+interface RemoteReview {
   userId: string
   nickname: string
   stars: number

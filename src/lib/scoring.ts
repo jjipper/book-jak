@@ -13,7 +13,7 @@ export interface TestAnswer {
   badgeKey?: string
 }
 
-export interface AxisScores {
+interface AxisScores {
   FT: { F: number; T: number }
   IC: { I: number; C: number }
   EG: { E: number; G: number }
@@ -179,15 +179,7 @@ function collectBadges(answers: TestAnswer[]): string[] {
 }
 
 // ────────────────────────────────────────────
-// 7. 유틸: 스탯 막대 퍼센트 → 블록 수 (최대 10칸)
-// ────────────────────────────────────────────
-
-export function statToBlocks(value: number): number {
-  return Math.round((value / 100) * 10)
-}
-
-// ────────────────────────────────────────────
-// 8. localStorage 저장/불러오기 (Phase 1 임시)
+// 7. localStorage 저장/불러오기 (Phase 1 임시)
 // ────────────────────────────────────────────
 
 const STORAGE_KEY = 'book_test_result'
@@ -208,7 +200,3 @@ export function loadResult(): TestResult | null {
   }
 }
 
-export function clearResult(): void {
-  if (typeof window === 'undefined') return
-  localStorage.removeItem(STORAGE_KEY)
-}
