@@ -47,7 +47,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
     rarityText: '전체의 4.1% · 희귀 등급',
     rarityLevel: 'rare',
     rarityPct: 4.1,
-    tagline: '책 펴는 순간 현실에서 잠수 탐. 호출 금지.',
+    tagline: '책 펴는 순간 책 속 세계로 사라지는 사람',
     accent: '#2dd4bf',
     habitatColors: { h1: '#06222b', h2: '#0a3540' },
     particle: 'bubble',
@@ -85,7 +85,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
     rarityText: '전체의 7.3% · 흔한 편',
     rarityLevel: 'common',
     rarityPct: 7.3,
-    tagline: '현실이 힘들 땐 남의 현실로 도망친다.',
+    tagline: '현실이 힘들 때 다른 세계로 도망치는 사람',
     accent: '#f87171',
     habitatColors: { h1: '#1a0808', h2: '#2a1010' },
     particle: 'mote',
@@ -118,7 +118,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   FIGR: {
     code: 'FIGR',
-    name: '이야기로 자라는 사람',
+    name: '이야기로 자라나는 사람',
     emoji: '🌱',
     rarityText: '전체의 8.1% · 흔한 편',
     rarityLevel: 'common',
@@ -156,7 +156,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   FIGW: {
     code: 'FIGW',
-    name: '환상 속 나를 찾는 사람',
+    name: '환상 속에서 나를 찾아가는 사람',
     emoji: '🦋',
     rarityText: '전체의 3.8% · 희귀 등급',
     rarityLevel: 'rare',
@@ -194,7 +194,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   FCER: {
     code: 'FCER',
-    name: '마음을 데우는 사람',
+    name: '책으로 마음을 잔잔하게 데우는 사람',
     emoji: '🍵',
     rarityText: '전체의 6.9% · 흔한 편',
     rarityLevel: 'common',
@@ -308,7 +308,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   FCGW: {
     code: 'FCGW',
-    name: '우화에서 진심을 줍는 사람',
+    name: '우화에서 진심을 찾는 사람',
     emoji: '🦊',
     rarityText: '전체의 2.9% · 매우 희귀',
     rarityLevel: 'very-rare',
@@ -384,7 +384,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   TIEW: {
     code: 'TIEW',
-    name: '논리적으로 떠나는 사람',
+    name: '논리적으로 책을 분석하는 사람',
     emoji: '🚀',
     rarityText: '전체의 3.5% · 희귀 등급',
     rarityLevel: 'rare',
@@ -422,7 +422,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   TIGR: {
     code: 'TIGR',
-    name: '지식 사냥꾼',
+    name: '책 속의 지식을 찾는 지식 사냥꾼',
     emoji: '⚔️',
     rarityText: '전체의 9.4% · 가장 흔함',
     rarityLevel: 'most-common',
@@ -536,7 +536,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   TCEW: {
     code: 'TCEW',
-    name: '머릿속에 우주를 짓는 사람',
+    name: '머릿속에 나만의 우주를 건설하는 사람',
     emoji: '🌌',
     rarityText: '전체의 2.3% · 최희귀 등급',
     rarityLevel: 'ultra-rare',
@@ -574,7 +574,7 @@ export const READING_TYPES: Record<TypeCode, ReadingType> = {
 
   TCGR: {
     code: 'TCGR',
-    name: '세상을 해부하는 사람',
+    name: '세상을 날카롭게 해부하는 사람',
     emoji: '🔬',
     rarityText: '전체의 5.7% · 흔한 편',
     rarityLevel: 'common',

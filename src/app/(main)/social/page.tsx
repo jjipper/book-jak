@@ -37,18 +37,19 @@ export default function SocialPage() {
   }, [])
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh', paddingBottom: 40 }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <span className="bj-display bj-display--lg">소셜</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
 
         {/* 취향 맞는 사람 — 프로필 캐러셀 */}
         <div>
-          <SectionHeader title="취향 맞는 사람" moreHref="/social/people" />
+          <SectionHeader  title="나와 비슷한 북작러" moreHref="/social/people" />
           {matched.length > 0 ? (
-            <div className="scrollbar-hide" style={{ display: 'flex', gap: 16, overflowX: 'auto', paddingBottom: 4 }}>
+            <div className="bj-rail bj-rail--lg-wrap" style={{ gap: 16, paddingBottom: 4 }}>
               {matched.slice(0, 10).map(({ person, affinity }) => {
                 const type = READING_TYPES[person.typeCode]
                 return (
@@ -75,10 +76,10 @@ export default function SocialPage() {
           )}
         </div>
 
-        {/* 의견 나누기 */}
+        {/* 소통해요 */}
         <div>
-          <SectionHeader title="의견 나누기" moreHref="/social/discuss" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <SectionHeader title="의견으로 북작" moreHref="/social/discuss" />
+          <div className="bj-list bj-list--lg-grid-2" style={{ gap: 10 }}>
             {questions.map((q) => {
               const author = resolveAuthor(q.authorId)
               const answerCount = loadAnswers(q.id).length
@@ -95,10 +96,10 @@ export default function SocialPage() {
           </div>
         </div>
 
-        {/* 책 모임 */}
+        {/* 함께해요 */}
         <div>
-          <SectionHeader title="책 모임" moreHref="/social/clubs" />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <SectionHeader title="함께 모여 북작" moreHref="/social/clubs" />
+          <div className="bj-list bj-list--lg-grid-2" style={{ gap: 10 }}>
             {clubs.map((club) => {
               const organizer = resolveAuthor(club.organizerId)
               const memberCount = displayMemberCount(club)
@@ -117,6 +118,7 @@ export default function SocialPage() {
           </div>
         </div>
 
+      </div>
       </div>
     </main>
   )

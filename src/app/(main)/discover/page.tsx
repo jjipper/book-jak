@@ -83,8 +83,9 @@ export default function DiscoverPage() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '52px 20px 12px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, width: '100%', margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <span className="bj-display bj-display--lg">발견</span>
         <button className="bj-icon-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -94,8 +95,8 @@ export default function DiscoverPage() {
         </button>
       </header>
 
-      {/* 날짜 네비게이션 — 다른 날의 발견 5권으로 이동 */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 14 }}>
+      {/* 날짜 네비게이션 — 다른 날의 발견 5권으로 이동 (카드 플로우와 같은 폭으로 중앙 정렬) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: 560, margin: '0 auto 14px' }}>
         <button
           type="button"
           onClick={() => moveDay(-1)}
@@ -125,7 +126,7 @@ export default function DiscoverPage() {
       {!mounted ? (
         <div style={{ flex: 1 }} />
       ) : !isDone ? (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 20px 40px' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', padding: '0 0 40px', width: '100%', maxWidth: 560, margin: '0 auto' }}>
           <div style={{ marginBottom: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
               <span className="bj-caption">{completedCount} / {total} 완료</span>
@@ -151,7 +152,7 @@ export default function DiscoverPage() {
           </div>
         </div>
       ) : (
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 24px', gap: 16, textAlign: 'center' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '0 0 40px', gap: 16, textAlign: 'center', width: '100%', maxWidth: 560, margin: '0 auto' }}>
           <p className="bj-h1">{dayTitle} 완료</p>
           <p className="bj-body" style={{ color: 'var(--color-text-muted)' }}>
             {total}권의 블라인드 책을 모두 살펴봤어요.<br />
@@ -167,6 +168,7 @@ export default function DiscoverPage() {
           </div>
         </div>
       )}
+      </div>
     </main>
   )
 }

@@ -62,3 +62,21 @@ export function BubbleIcon({ size = 15 }: IconProps) {
     </svg>
   )
 }
+
+export function PeopleIcon({ size = 18 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="9" cy="8" r="3" />
+      <circle cx="17" cy="10" r="2.5" />
+      <path d="M3 20c0-3 2.5-5 6-5s6 2 6 5M14 20c0-2 1.5-3.5 4-3.5" />
+    </svg>
+  )
+}
+
+export function StarIcon({ size = 18 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3l2.6 6.3 6.8.5-5.2 4.4 1.6 6.6L12 17.8 6.2 21.4l1.6-6.6L2.6 9.8l6.8-.5z" />
+    </svg>
+  )
+}

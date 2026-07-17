@@ -7,6 +7,12 @@ interface IllustPlaceholderProps {
   alt: string
   aspectRatio?: string
   className?: string
+  /** 이미지 없을 때 폴백: cover = 표지풍(어두운 색면), slot = 밝은 빈 슬롯(파일명 표기) */
+  fallback?: 'cover' | 'slot'
+  /** contain = 투명 배경 일러스트를 자르지 않고 전부 표시 */
+  fit?: 'cover' | 'contain'
+  /** 투명 PNG 뒤 배경. 카드 위에 얹을 땐 카드 표면색을 넘긴다 */
+  background?: string
 }
 
 // 실제 일러스트 파일이 없을 때 그려주는 표지풍 플레이스홀더 색상 조합
@@ -32,6 +38,9 @@ export default function IllustPlaceholder({
   alt,
   aspectRatio = '4 / 3',
   className,
+  fallback = 'cover',
+  fit = 'cover',
+  background = 'var(--color-bg-sunken)',
 }: IllustPlaceholderProps) {
   const [failed, setFailed] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -50,11 +59,44 @@ export default function IllustPlaceholder({
   return (
     <div
       className={`bj-illust${className ? ` ${className}` : ''}`}
-      style={{ aspectRatio, width: '100%', background: 'var(--color-bg-sunken)' }}
+      style={{ aspectRatio, width: '100%', background }}
     >
       {!failed ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img ref={imgRef} src={`/assets/illust/${code}.png`} alt={alt} onError={() => setFailed(true)} />
+        <img
+          ref={imgRef}
+          src={`/assets/illust/${code}.png`}
+          alt={alt}
+          style={fit === 'contain' ? { objectFit: 'contain' } : undefined}
+          onError={() => setFailed(true)}
+        />
+      ) : fallback === 'slot' ? (
+        <div
+          role="img"
+          aria-label={alt}
+          style={{
+            width: '100%',
+            height: '100%',
+            background:
+              'repeating-linear-gradient(135deg, var(--color-bg-sunken) 0 12px, var(--color-bg) 12px 24px)',
+            display: 'grid',
+            placeItems: 'center',
+            boxSizing: 'border-box',
+            padding: '8%',
+          }}
+        >
+          <span
+            style={{
+              fontSize: 10,
+              color: 'var(--color-text-caption)',
+              textAlign: 'center',
+              wordBreak: 'break-all',
+              lineHeight: 1.3,
+            }}
+          >
+            illust/{code}.png
+          </span>
+        </div>
       ) : (
         <div
           role="img"

@@ -9,6 +9,8 @@ import SectionHead from './SectionHead'
 import { SparkleIcon, HeartIcon } from './icons'
 import Link from 'next/link'
 
+const RAIL_CLASS = 'bj-rail bj-rail--lg-grid-3'
+
 /* 오늘의 발견 — 블라인드 카드 가로 레일.
    궁금해요 = discover와 동일한 saveBlindRating 레코드로 저장(취향 통계에 합산).
    넘어갈래요 = 홈에서만 당일 숨김(발견 탭 흐름은 건드리지 않음). */
@@ -75,7 +77,12 @@ export default function DiscoverRail({ books, dateKey }: DiscoverRailProps) {
 
   return (
     <section className="bj-section">
-      <SectionHead title="오늘의 발견" cap={`블라인드로 만나는 ${books.length}권`} moreHref="/discover" />
+      <SectionHead
+        title="오늘의 발견"
+        icon={<SparkleIcon size={18} />}
+        cap={`블라인드로 만나는 오늘의 ${books.length}권`}
+        moreHref="/discover"
+      />
       {visible.length === 0 ? (
         <div className="bj-callout">
           오늘 카드는 전부 넘겼어요. 내일 새 책이 오고,{' '}
@@ -85,7 +92,7 @@ export default function DiscoverRail({ books, dateKey }: DiscoverRailProps) {
           에는 지난 카드가 남아 있어요
         </div>
       ) : (
-        <div className="bj-rail">
+        <div className={RAIL_CLASS}>
           {visible.map((book) => {
             const curious = curiousIds.has(book.id)
             return (
@@ -93,9 +100,6 @@ export default function DiscoverRail({ books, dateKey }: DiscoverRailProps) {
                 <div className="bj-discover-card__top">
                   <div className="bj-discover-card__cover">
                     <span className="bj-discover-card__q">?</span>
-                    {matches[book.id] !== undefined && (
-                      <span className="bj-discover-card__match">{matches[book.id]}%</span>
-                    )}
                   </div>
                   <div className="bj-discover-card__info">
                     <span className="bj-discover-card__ai">
@@ -108,6 +112,11 @@ export default function DiscoverRail({ books, dateKey }: DiscoverRailProps) {
                         <span key={tag.text} className="bj-tag">#{tag.text}</span>
                       ))}
                     </div>
+                    {matches[book.id] !== undefined && (
+                      <p className="bj-discover-card__match" style={{ margin: 0 }}>
+                        매칭도 {matches[book.id]}%
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="bj-discover-card__reviews">

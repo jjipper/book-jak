@@ -20,8 +20,13 @@ interface DiscussSectionProps {
 export default function DiscussSection({ questions, answerCounts }: DiscussSectionProps) {
   return (
     <section className="bj-section">
-      <SectionHead title="의견 나누기" cap="지금 뜨는 독서 토론" moreHref="/social/discuss" />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+      <SectionHead
+        title="의견 나누기"
+        icon={<BubbleIcon size={18} />}
+        cap="지금 뜨는 독서 토론"
+        moreHref="/social/discuss"
+      />
+      <div className="bj-list bj-list--lg-grid-2">
         {questions.map((q) => {
           const book = q.bookId !== null ? BLIND_BOOKS.find((b) => b.id === q.bookId) : undefined
           const hot = (q.likeCount ?? 0) >= HOT_THRESHOLD
@@ -42,7 +47,9 @@ export default function DiscussSection({ questions, answerCounts }: DiscussSecti
                     {answerCounts[q.id] ?? 0}
                   </span>
                   <span>
-                    <HeartIcon size={14} />
+                    <span className="bj-heart" style={{ display: 'inline-flex' }}>
+                      <HeartIcon size={14} />
+                    </span>
                     {q.likeCount ?? 0}
                   </span>
                 </div>

@@ -105,9 +105,10 @@ export default function MyPage() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
       {/* 헤더 */}
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '52px 20px 16px' }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <span className="bj-display bj-display--lg">마이</span>
         <button className="bj-icon-btn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -117,7 +118,7 @@ export default function MyPage() {
         </button>
       </header>
 
-      <div style={{ padding: '0 20px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ padding: '0 0 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {/* 프로필 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -169,6 +170,9 @@ export default function MyPage() {
             </Link>
           </div>
         )}
+
+        {/* 스타일 분석 + 배지 — 데스크톱(≥900px)에서 2열 */}
+        <div className="bj-list bj-list--lg-grid-2" style={{ gap: 16 }}>
 
         {/* 좋아하는 책 스타일 분석 */}
         <div className="bj-card">
@@ -240,6 +244,11 @@ export default function MyPage() {
           )}
         </div>
 
+        </div>
+
+        {/* 보관함 + 활동 — 데스크톱(≥900px)에서 2열 */}
+        <div className="bj-list bj-list--lg-grid-2" style={{ gap: 16 }}>
+
         {/* 보관함 */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
@@ -265,6 +274,8 @@ export default function MyPage() {
             <ActivityRow href="/my/clubs" label="신청한 모임" count={myClubCount} />
           </div>
         </div>
+
+        </div>
       </div>
 
       {showNicknameSheet && (
@@ -278,6 +289,7 @@ export default function MyPage() {
           }}
         />
       )}
+      </div>
     </main>
   )
 }

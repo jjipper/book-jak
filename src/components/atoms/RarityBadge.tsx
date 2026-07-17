@@ -9,6 +9,8 @@ interface RarityBadgeProps {
   label: string
   /** 상위 50% 등 보조 텍스트 */
   sub?: string
+  /** sm: 결과 카드 스티커 / xs: 레일 카드 코너(라벨만 표시) */
+  size?: 'md' | 'sm' | 'xs'
 }
 
 /* 16꼭지 별 (outer r=49, inner r=40, viewBox 100) */
@@ -18,9 +20,9 @@ const STARBURST_POINTS =
   '50.0,99.0 42.2,89.2 31.2,95.3 27.8,83.3 15.4,84.6 16.7,72.2 4.7,68.8 10.8,57.8 ' +
   '1.0,50.0 10.8,42.2 4.7,31.2 16.7,27.8 15.4,15.4 27.8,16.7 31.2,4.7 42.2,10.8'
 
-export default function RarityBadge({ variant, label, sub }: RarityBadgeProps) {
+export default function RarityBadge({ variant, label, sub, size = 'md' }: RarityBadgeProps) {
   return (
-    <span className={`bj-rarity bj-rarity--${variant}`}>
+    <span className={`bj-rarity bj-rarity--${variant}${size !== 'md' ? ` bj-rarity--${size}` : ''}`}>
       <svg className="bj-rarity__shape" viewBox="0 0 100 100" aria-hidden="true">
         {variant === 'common' ? (
           <circle cx="50" cy="50" r="48" vectorEffect="non-scaling-stroke" />

@@ -57,8 +57,9 @@ export default function RatePage() {
   const myStarsOf = (bookId: string) => myRatings.find((r) => r.bookId === bookId)?.stars
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh', paddingBottom: 40 }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <span className="bj-display bj-display--lg">평가</span>
         <p className="bj-caption" style={{ marginTop: 6 }}>
           읽은 책을 평가할수록 예상 점수가 정확해져요
@@ -66,13 +67,14 @@ export default function RatePage() {
         </p>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
         <input
           className="bj-input"
           type="search"
           placeholder="책 제목이나 작가를 검색해보세요"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          style={{ maxWidth: 560 }}
         />
 
         {isSearchMode ? (
@@ -87,7 +89,7 @@ export default function RatePage() {
             )}
 
             {!searching && !searchError && results.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className="bj-list bj-list--lg-grid-2" style={{ gap: 10 }}>
                 {results.map((book) => (
                   <ExternalBookRow key={book.id} book={book} myStars={myStarsOf(book.id)} />
                 ))}
@@ -105,7 +107,7 @@ export default function RatePage() {
           </>
         ) : (
           <>
-            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 2 }}>
+            <div className="bj-rail bj-rail--lg-wrap" style={{ gap: 8, paddingBottom: 2 }}>
               {BOOK_GENRES.map((g) => (
                 <button
                   key={g}
@@ -120,13 +122,14 @@ export default function RatePage() {
             </div>
 
             <p className="bj-caption" style={{ fontWeight: 700 }}>북작 추천 서가</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="bj-list bj-list--lg-grid-2" style={{ gap: 10 }}>
               {curated.map((book) => (
                 <BookRow key={book.id} book={book} myStars={myStarsOf(book.id)} />
               ))}
             </div>
           </>
         )}
+      </div>
       </div>
     </main>
   )

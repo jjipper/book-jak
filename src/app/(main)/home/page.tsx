@@ -45,13 +45,13 @@ export default function HomePage() {
 
   return (
     <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div style={{ maxWidth: 680, margin: '0 auto' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
         <HomeTopbar typeCode={savedResult?.typeCode ?? null} />
         <HomeHero typeCode={savedResult?.typeCode ?? null} />
         {dailyBooks.length > 0 && <DiscoverRail books={dailyBooks} dateKey={dateKey} />}
         {questions.length > 0 && <DiscussSection questions={questions} answerCounts={answerCounts} />}
-        {matches.length > 0 && <FriendRail matches={matches} />}
         {clubs.length > 0 && <ClubRail clubs={clubs} />}
+        {matches.length > 0 && <FriendRail matches={matches} />}
         <TypeRail />
         <HomeFooter />
       </div>

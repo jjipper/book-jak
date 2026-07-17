@@ -6,8 +6,10 @@
    ========================================================================= */
 
 /* ---------- BASE ---------- */
+/* 배경은 페이지 루트(body)에만 — 레거시 화면이 .bj-body를 본문 타이포 클래스로도
+   쓰고 있어, 텍스트 요소에 배경이 깔리지 않도록 스코프를 좁힌다. */
+body.bj-body { background: var(--color-bg); }
 .bj-body {
-  background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-body);
   font-size: var(--fs-body);
@@ -230,6 +232,14 @@
   fill: var(--color-accent);
   stroke: none;
 }
+/* 소형 — 결과 카드 스티커용 */
+.bj-rarity--sm { width: 56px; }
+.bj-rarity--sm .bj-rarity__label { font-size: var(--fs-caption); }
+.bj-rarity--sm .bj-rarity__sub   { font-size: 9px; }
+/* 초소형 — 레일 카드 코너용. 라벨만 표시 */
+.bj-rarity--xs { width: 30px; }
+.bj-rarity--xs .bj-rarity__label { font-size: 8px; letter-spacing: -0.02em; }
+.bj-rarity--xs .bj-rarity__sub   { display: none; }
 
 
 /* ========== 05. STAT BAR (능력치) ========== */
@@ -615,16 +625,16 @@
   background: var(--color-accent);
 }
 
-/* 아바타 — 원형, 헤어라인 테두리 (강한 잉크선 금지) */
+/* 아바타 — 원형, 잉크 테두리 + 주황 틴트 (시안) */
 .bj-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-pill);
-  border: var(--border-thin) solid var(--color-border-soft);
-  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border);
+  background: var(--color-accent-faint);
   overflow: hidden;
   flex: none;
 }
@@ -683,15 +693,39 @@
 .bj-rail::-webkit-scrollbar { display: none; }
 .bj-rail > * { scroll-snap-align: start; }
 
+/* 세로 리스트 (모바일) → 데스크톱 그리드 전환용 */
+.bj-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+/* 데스크톱(≥900px): 레일이 스크롤 대신 그리드로 펼쳐진다 (시안 레이아웃) */
+@media (min-width: 900px) {
+  .bj-rail--lg-grid-2,
+  .bj-rail--lg-grid-3 {
+    display: grid;
+    overflow-x: visible;
+  }
+  .bj-rail--lg-grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .bj-rail--lg-grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .bj-rail--lg-grid-2 > *,
+  .bj-rail--lg-grid-3 > * { width: auto; }
+  .bj-rail--lg-wrap { flex-wrap: wrap; overflow-x: visible; }
+  .bj-list--lg-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-md);
+  }
+}
+
 
 /* ========== TAG (해시태그 칩 — 읽기 전용, .bj-chip과 용도 분리) ========== */
+/* 시안: 흰 pill + 잉크 텍스트 (주황은 액션·강조 전용으로 아낀다) */
 .bj-tag {
   display: inline-flex;
   align-items: center;
   font-size: var(--fs-caption-sm);
   font-weight: var(--fw-medium);
-  color: var(--color-accent);
-  background: var(--color-accent-faint);
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+  border: var(--border-thin) solid var(--color-border-soft);
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-pill);
 }
@@ -727,9 +761,9 @@
 /* ========== FOOTER ========== */
 .bj-footer {
   margin-top: var(--space-xl);
-  padding: var(--space-xl) 0;
-  border-top: var(--border-thin) solid var(--color-border-soft);
+  padding: var(--space-xl);
   background: var(--color-surface);
+  border-radius: var(--radius-lg);
 }
 .bj-footer__tag {
   font-size: var(--fs-caption);
@@ -760,22 +794,36 @@
    HOME 패턴 — 홈 화면에서 파생된 카드 조합. 다른 화면 재사용 가능.
    ========================================================================= */
 
-/* ----- 히어로 배너 (가로형: 일러스트 좌 + 본문 우) ----- */
+/* 페이지 프레임 — 데스크톱에서 시안의 "종이 한 장" 느낌 (모바일은 프레임 없음) */
+@media (min-width: 900px) {
+  .bj-frame {
+    border: var(--border-thin) solid var(--color-border-soft);
+    border-radius: calc(var(--radius-lg) + 8px);
+    padding: 0 var(--space-xl) var(--space-xl);
+    margin-block: var(--space-lg);
+    background: var(--color-bg);
+    overflow: hidden;
+  }
+}
+
+/* ----- 히어로 배너 (일러스트 좌 + 본문 중앙 + starburst 뱃지 우) ----- */
 .bj-hero {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: var(--space-lg);
   background: var(--color-surface-spotlight);
-  border: var(--border-thin) solid var(--color-border-soft);
+  border: var(--border-thick) solid var(--color-border-accent);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
 .bj-hero__illust {
-  flex: 0 0 116px;
+  flex: 0 0 clamp(116px, 24%, 240px);
+  align-self: stretch;
   background: var(--color-surface);
   display: grid;
   place-items: center;
 }
-.bj-hero__body { flex: 1; min-width: 0; padding: var(--space-lg); }
+.bj-hero__body { flex: 1; min-width: 0; padding: var(--space-xl) var(--space-lg); }
 .bj-hero__eyebrow {
   font-size: var(--fs-caption-sm);
   font-weight: var(--fw-bold);
@@ -783,14 +831,14 @@
   color: var(--color-accent);
 }
 .bj-hero__title {
-  font-size: var(--fs-title);
+  font-size: clamp(var(--fs-heading), 2.4vw, var(--fs-hero));
   font-weight: var(--fw-bold);
   letter-spacing: -0.02em;
   line-height: 1.3;
   margin-top: var(--space-xs);
 }
 .bj-hero__sub {
-  font-size: var(--fs-caption);
+  font-size: var(--fs-body-sm);
   color: var(--color-text-muted);
   line-height: 1.4;
   margin-top: var(--space-xs);
@@ -801,6 +849,42 @@
   margin-top: var(--space-sm);
 }
 .bj-hero__count b { color: var(--color-text); font-weight: var(--fw-bold); }
+
+/* 참여 수 starburst — 시안의 주황 폭발 뱃지 (좁은 화면에서는 count 텍스트로 대체) */
+.bj-hero__burst {
+  position: relative;
+  flex: none;
+  width: 128px;
+  aspect-ratio: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-right: var(--space-xl);
+  color: var(--color-text-on-accent);
+}
+.bj-hero__burst-shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: var(--color-accent);
+}
+.bj-hero__burst-label {
+  position: relative;
+  font-size: var(--fs-caption-sm);
+  line-height: 1.45;
+}
+.bj-hero__burst-label b {
+  display: block;
+  font-size: var(--fs-body-lg);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+}
+@media (min-width: 720px) {
+  .bj-hero__burst { display: flex; }
+  .bj-hero--with-burst .bj-hero__count { display: none; }
+}
 
 /* pill 버튼 변형 — 히어로 CTA·궁금해요 등 */
 .bj-btn--pill { border-radius: var(--radius-pill); }
@@ -815,28 +899,29 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
-.bj-discover-card__top { display: flex; gap: var(--space-md); padding: var(--space-lg) var(--space-lg) var(--space-md); }
+.bj-discover-card__top {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-lg) var(--space-md);
+}
 .bj-discover-card__cover {
   position: relative;
-  flex: 0 0 74px;
-  aspect-ratio: 3 / 4;
-  background: var(--color-text);
+  flex: none;
+  width: 74px;
+  height: 98px; /* 3:4 — aspect-ratio는 flex 높이 계산 버그로 고정값 사용 */
+  background: var(--color-bg-sunken);
   border-radius: var(--radius-sm);
   display: grid;
   place-items: center;
-  color: var(--color-text-on-accent);
+  color: var(--color-text);
 }
 .bj-discover-card__q { font-size: var(--fs-hero); font-weight: var(--fw-bold); opacity: 0.85; }
 .bj-discover-card__match {
-  position: absolute;
-  top: var(--space-xs);
-  left: var(--space-xs);
-  font-size: var(--fs-caption-sm);
+  font-size: var(--fs-body-sm);
   font-weight: var(--fw-bold);
-  color: var(--color-text-on-accent);
-  background: var(--color-accent);
-  padding: 2px var(--space-sm);
-  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  margin-top: var(--space-sm);
 }
 .bj-discover-card__info { flex: 1; min-width: 0; }
 .bj-discover-card__ai {
@@ -883,6 +968,7 @@
   text-decoration: none;
   color: inherit;
 }
+.bj-discuss-card__meta .bj-heart { color: var(--color-accent); }
 .bj-discuss-card__q {
   font-size: var(--fs-body);
   font-weight: var(--fw-bold);
@@ -904,23 +990,21 @@
   overflow: hidden;
 }
 
-/* ----- 친구(취향 매칭) 카드 ----- */
+/* ----- 친구(취향 매칭) 카드 — 시안: 박스 없이 원형 얼굴 + 텍스트 ----- */
 .bj-friend-card {
   flex: 0 0 118px;
   display: block;
   text-align: center;
-  background: var(--color-surface-spotlight);
-  border: var(--border-thin) solid var(--color-border-soft);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg) var(--space-sm);
+  padding: var(--space-sm) var(--space-xs);
   text-decoration: none;
   color: inherit;
 }
 .bj-friend-card__face {
-  width: 64px;
-  height: 64px;
+  width: 88px;
+  height: 88px;
   border-radius: var(--radius-pill);
   border: var(--border-thin) solid var(--color-border-soft);
+  background: var(--color-accent-faint);
   overflow: hidden;
   margin: 0 auto var(--space-sm);
 }
@@ -928,8 +1012,7 @@
 .bj-friend-card__name { font-size: var(--fs-body-sm); font-weight: var(--fw-bold); }
 .bj-friend-card__match {
   font-size: var(--fs-caption);
-  font-weight: var(--fw-bold);
-  color: var(--color-accent);
+  color: var(--color-text-muted);
   margin-top: 2px;
 }
 .bj-friend-card__hint {
@@ -937,19 +1020,31 @@
   color: var(--color-text-muted);
   margin-top: var(--space-sm);
 }
+.bj-friend-card:hover .bj-friend-card__name { color: var(--color-accent); }
 
-/* ----- 책 모임 카드 ----- */
+/* ----- 책 모임 카드 — 시안: 원형 썸네일 좌 + 본문 우 가로형 ----- */
 .bj-club-card {
-  flex: 0 0 min(84%, 360px);
-  display: block;
+  flex: 0 0 min(84%, 400px);
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
   background: var(--color-surface-spotlight);
   border: var(--border-thin) solid var(--color-border-soft);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  padding: var(--space-lg);
   text-decoration: none;
   color: inherit;
 }
-.bj-club-card__body { padding: var(--space-md) var(--space-lg) var(--space-lg); }
+.bj-club-card__thumb {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  border-radius: var(--radius-pill);
+  border: var(--border-thin) solid var(--color-border-soft);
+  overflow: hidden;
+}
+.bj-club-card__thumb .bj-illust { height: 100%; }
+.bj-club-card__body { flex: 1; min-width: 0; }
 .bj-club-card__name { font-size: var(--fs-body-lg); font-weight: var(--fw-bold); letter-spacing: -0.01em; }
 .bj-club-card__chips { display: flex; flex-wrap: wrap; gap: var(--space-xs); margin: var(--space-sm) 0; }
 .bj-club-card__chip {
@@ -957,13 +1052,23 @@
   color: var(--color-text-muted);
   border: var(--border-thin) solid var(--color-border-soft);
   padding: 2px var(--space-sm);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
+}
+.bj-club-card__chip--format {
+  color: var(--color-accent);
+  border-color: var(--color-border-accent);
+  font-weight: var(--fw-bold);
 }
 .bj-club-card__desc { font-size: var(--fs-body-sm); color: var(--color-text-muted); line-height: 1.45; }
+.bj-club-card__tags {
+  font-size: var(--fs-caption);
+  color: var(--color-text);
+  margin-top: var(--space-xs);
+}
 
-/* ----- 16유형 카드 ----- */
+/* ----- 16유형 카드 — 일러스트 위(위치 고정), 유형명 아래 + 코너 희소도 pill ----- */
 .bj-type-card {
-  flex: 0 0 128px;
+  flex: 0 0 148px;
   background: var(--color-surface-spotlight);
   border: var(--border-thin) solid var(--color-border-soft);
   border-radius: var(--radius-lg);
@@ -973,8 +1078,10 @@
 .bj-type-card__rarity { position: absolute; bottom: var(--space-sm); right: var(--space-sm); }
 .bj-type-card__name {
   padding: var(--space-sm) var(--space-md) var(--space-md);
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-body);
   font-weight: var(--fw-bold);
   text-align: center;
   letter-spacing: -0.02em;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }

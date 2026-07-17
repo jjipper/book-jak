@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
-import { READING_TYPES, type TypeCode } from '@/data/readingTypes'
+import { READING_TYPES, rarityBadgeVariant, RARITY_BADGE_LABELS, type TypeCode } from '@/data/readingTypes'
 import type { TestResult } from '@/lib/scoring'
-import RarityBadge from '@/components/ui/RarityBadge'
+import { illustGradient } from '@/data/illustGradients'
+import { RarityBadge } from '@/components/atoms'
 import IllustPlaceholder from '@/components/illust/IllustPlaceholder'
 
 interface TypeCardProps {
@@ -17,6 +18,8 @@ const STAT_KEYS = ['몰입력', '감수성', '완독력', '인내심', '허세�
 export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) {
   const type = READING_TYPES[typeCode]
   const stats = result.variantStats
+  const rarityKey = rarityBadgeVariant(type.rarityLevel)
+  const rarityVariant = rarityKey === 'epic' ? 'legendary' : rarityKey
   const fillRefs = useRef<(HTMLDivElement | null)[]>([])
 
   // 스탯 바 애니메이션
@@ -46,21 +49,33 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
         width: '100%',
         background: 'var(--color-surface)',
         borderRadius: 'var(--radius-card)',
-        border: '0.5px solid var(--color-border)',
         overflow: 'hidden',
       }}
     >
       {/* 상단 바 */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 18px' }}>
-        <RarityBadge level={type.rarityLevel} pct={type.rarityPct} />
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '14px 18px' }}>
         <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>
           {type.code}
         </span>
       </div>
 
-      {/* 캐릭터 일러스트 */}
-      <div style={{ padding: '0 18px' }}>
-        <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="16 / 10" />
+      {/* 캐릭터 일러스트 + 희소도 스티커 — 유형별 틴트가 위에서 표면색으로 녹아든다 */}
+      <div style={{ position: 'relative', padding: '12px 18px 0', background: illustGradient(typeCode) }}>
+        <IllustPlaceholder
+          code={type.code}
+          alt={type.name}
+          aspectRatio="4 / 3"
+          fit="contain"
+          background="transparent"
+        />
+        <span style={{ position: 'absolute', top: 4, left: 20 }}>
+          <RarityBadge
+            variant={rarityVariant}
+            label={RARITY_BADGE_LABELS[rarityKey]}
+            sub={`${type.rarityPct}%`}
+            size="sm"
+          />
+        </span>
       </div>
 
       {/* 이름 */}
