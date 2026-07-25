@@ -2,7 +2,7 @@
 // ?q=검색어        : 제목·저자 통합 검색
 // ?isbn=ISBN13    : ISBN 단건 조회 (상세 페이지용)
 
-import type { ExternalBook } from '@/lib/externalBooks'
+import type { ExternalBook } from '@/entities/external-book/model/externalBooks'
 
 interface KakaoBookDocument {
   title: string

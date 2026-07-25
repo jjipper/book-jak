@@ -2,12 +2,12 @@
 
 /* 구(v1) 시스템 — 미이관 화면(테스트·결과·발견·소셜 등)만 사용.
    화면 이관이 끝나면 legacy import 두 줄을 제거한다. */
-@import "../styles/legacy/tokens.css";
-@import "../styles/legacy/components.css";
+@import "../shared/styles/legacy/tokens.css";
+@import "../shared/styles/legacy/components.css";
 
 /* v2 디자인시스템 (정본) — legacy보다 뒤에 로드해 우선 적용 */
-@import "../styles/tokens.css";
-@import "../styles/components.css";
+@import "../shared/styles/tokens.css";
+@import "../shared/styles/components.css";
 
 * {
   box-sizing: border-box;

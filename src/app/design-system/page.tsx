@@ -23,7 +23,7 @@ import {
   StatBar,
   Textarea,
   Toggle,
-} from '@/components/atoms'
+} from '@/shared/ui'
 
 /* STEP 1 아토믹 컴포넌트 갤러리 (승인용 미리보기)
    화면 조합 아님 — 각 단위를 독립 전시. 인라인 스타일은 갤러리 배치 전용. */
