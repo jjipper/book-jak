@@ -20,8 +20,12 @@ export default function SocialClubDetailView() {
 
   if (!club) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ padding: 'var(--space-lg) 0' }}>
+            <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+          </div>
+        </div>
       </main>
     )
   }
@@ -42,13 +46,14 @@ export default function SocialClubDetailView() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">모임 상세</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="bj-card">
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <p className="bj-h1">{club.name}</p>
@@ -83,6 +88,7 @@ export default function SocialClubDetailView() {
             {joined ? '참여 취소하기' : isFull ? '정원이 찼어요' : '참여하기'}
           </button>
         )}
+      </div>
       </div>
     </main>
   )

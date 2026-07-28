@@ -165,4 +165,16 @@
   --color-riso-a: var(--p-riso-orange);
   --color-riso-b: var(--p-riso-blue);
   --riso-offset: 3px;
+
+  /* v1 토큰명 별칭 — 뷰 인라인 스타일이 아직 v1 이름을 참조하므로 유지 */
+  --color-action:         var(--color-accent);
+  --color-action-hover:   var(--color-accent-hover);
+  --color-action-tint:    var(--color-accent-weak);
+  --color-action-on-tint: var(--color-accent-hover);
+  --color-text-on-action: var(--color-text-on-accent);
+  --color-text-hint:      var(--color-text-caption);
+  --color-border-strong:  var(--color-border);
+  --radius-control:       var(--radius-md);
+  --radius-card:          var(--radius-lg);
+  --radius-badge:         var(--radius-pill);
 }

@@ -1085,3 +1085,72 @@ body.bj-body { background: var(--color-bg); }
   word-break: keep-all;
   overflow-wrap: break-word;
 }
+
+
+/* ========== v1 BACKWARD-COMPAT — 뷰 참조용, 신규 작성 금지 ========== */
+
+/* Typography modifiers */
+.bj-display--xl { font-size: 32px; line-height: 1.1; }
+.bj-display--lg { font-size: 24px; line-height: 1.1; }
+.bj-h1 { font-family: var(--font-body); font-weight: 800; font-size: 24px; line-height: 1.3; }
+.bj-h2 { font-family: var(--font-body); font-weight: 800; font-size: 18px; line-height: 1.4; }
+
+/* Card flat variant (sunken bg, no border) */
+.bj-card--flat {
+  background: var(--color-bg-sunken);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+}
+
+/* Quiz choice button */
+.bj-choice {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: var(--fs-body);
+  padding: var(--space-control-y) var(--space-control-x);
+  border-radius: var(--radius-md);
+  border: var(--border-thin) solid var(--color-border-soft);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.bj-choice:hover { border-color: var(--color-accent); }
+.bj-choice.is-active {
+  border-color: var(--color-accent);
+  background: var(--color-accent-weak);
+  color: var(--color-text);
+}
+
+/* Rarity badge */
+.bj-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-caption);
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-pill);
+  line-height: 1;
+}
+.bj-badge--common { background: var(--color-bg-sunken);   color: var(--color-text-muted); }
+.bj-badge--rare   { background: var(--color-accent-weak);  color: var(--color-accent-hover); }
+.bj-badge--epic   { background: var(--color-text);         color: var(--color-surface-raised); }
+
+/* Chip done state */
+.bj-chip--done {
+  background: transparent;
+  color: var(--color-text-caption);
+  border: var(--border-thin) solid var(--color-border-soft);
+}
+
+/* Ghost button alias (v1 name → v2 text button style) */
+.bj-btn--ghost {
+  background: transparent;
+  color: var(--color-accent);
+  border-color: transparent;
+}
+.bj-btn--ghost:hover { background: var(--color-accent-faint); }

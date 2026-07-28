@@ -46,9 +46,10 @@ function CompareContent() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
       {/* 헤더 */}
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '48px 20px 20px' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href={myTypeCode ? `/result/${myTypeCode}` : '/home'} className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <div>
           <p className="bj-h2">친구 궁합 비교</p>
@@ -56,7 +57,7 @@ function CompareContent() {
         </div>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {/* 나 vs 친구 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -174,6 +175,7 @@ function CompareContent() {
           </div>
         </div>
       )}
+      </div>
     </main>
   )
 }

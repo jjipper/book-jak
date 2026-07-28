@@ -52,8 +52,12 @@ export default function SocialDiscussDetailView() {
 
   if (!question) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/social/discuss" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ padding: 'var(--space-lg) 0' }}>
+            <Link href="/social/discuss" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+          </div>
+        </div>
       </main>
     )
   }
@@ -61,13 +65,14 @@ export default function SocialDiscussDetailView() {
   const author = resolveAuthor(question.authorId)
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social/discuss" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">{bookTitle(question.bookId)}</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="bj-callout">
           <p style={{ marginBottom: 8 }}>{question.text}</p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -124,6 +129,7 @@ export default function SocialDiscussDetailView() {
       </div>
 
       {showNicknameSheet && <NicknameSheet onSubmit={handleNicknameSubmit} onClose={closeNicknameSheet} />}
+      </div>
     </main>
   )
 }

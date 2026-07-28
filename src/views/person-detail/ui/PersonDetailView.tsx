@@ -26,9 +26,13 @@ export default function PersonDetailView() {
 
   if (!person) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/social/people" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-        <p className="bj-body" style={{ marginTop: 20 }}>사람을 찾을 수 없어요</p>
+      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ padding: 'var(--space-lg) 0' }}>
+            <Link href="/social/people" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+            <p className="bj-body" style={{ marginTop: 20 }}>사람을 찾을 수 없어요</p>
+          </div>
+        </div>
       </main>
     )
   }
@@ -41,13 +45,14 @@ export default function PersonDetailView() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social/people" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">{person.nickname}</span>
       </header>
 
-      <div style={{ padding: '0 20px 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
 
         {/* 프로필 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -177,6 +182,7 @@ export default function PersonDetailView() {
             <p className="bj-caption" style={{ textAlign: 'center' }}>아직 획득한 배지가 없어요</p>
           )}
         </div>
+      </div>
       </div>
     </main>
   )

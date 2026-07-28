@@ -19,9 +19,13 @@ export default function RateAuthorDetailView() {
 
   if (!author) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-        <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>작가를 찾을 수 없어요.</p>
+      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ padding: 'var(--space-lg) 0' }}>
+            <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+            <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>작가를 찾을 수 없어요.</p>
+          </div>
+        </div>
       </main>
     )
   }
@@ -32,13 +36,14 @@ export default function RateAuthorDetailView() {
     : 0
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">작가</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div className="bj-card bj-card--flat" style={{ padding: 18 }}>
           <p className="bj-h1" style={{ fontSize: 20, marginBottom: 4 }}>{author.name}</p>
           <p className="bj-caption" style={{ marginBottom: 10 }}>{author.origin}</p>
@@ -66,6 +71,7 @@ export default function RateAuthorDetailView() {
             ))}
           </div>
         </section>
+      </div>
       </div>
     </main>
   )

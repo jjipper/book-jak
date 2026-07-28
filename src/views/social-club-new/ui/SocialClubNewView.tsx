@@ -35,13 +35,14 @@ export default function SocialClubNewView() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">모임 만들기</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div>
           <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>모임 이름</p>
           <input
@@ -128,6 +129,7 @@ export default function SocialClubNewView() {
       </div>
 
       {showNicknameSheet && <NicknameSheet onSubmit={handleNicknameSubmit} onClose={closeNicknameSheet} />}
+      </div>
     </main>
   )
 }

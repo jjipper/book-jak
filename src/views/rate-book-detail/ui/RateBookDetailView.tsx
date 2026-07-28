@@ -69,9 +69,13 @@ function CatalogBookDetail({ id }: { id: string }) {
 
   if (!book) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-        <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>책을 찾을 수 없어요.</p>
+      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+          <div style={{ padding: 'var(--space-lg) 0' }}>
+            <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+            <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>책을 찾을 수 없어요.</p>
+          </div>
+        </div>
       </main>
     )
   }
@@ -124,13 +128,14 @@ function CatalogBookDetail({ id }: { id: string }) {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>책 정보</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 24 }}>
         {/* ① 책 기본 정보 */}
         <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
           <div style={{ width: 104, flexShrink: 0 }}>
@@ -329,6 +334,7 @@ function CatalogBookDetail({ id }: { id: string }) {
             </div>
           </div>
         </section>
+      </div>
       </div>
     </main>
   )

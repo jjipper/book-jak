@@ -12,13 +12,14 @@ export default function SocialClubsView() {
   useEffect(() => { setClubs(loadClubs()) }, [])
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">책 모임</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <Link href="/social/clubs/new" className="bj-btn bj-btn--primary bj-btn--block" style={{ padding: '14px 0', textDecoration: 'none' }}>
           모임 만들기
         </Link>
@@ -50,6 +51,7 @@ export default function SocialClubsView() {
             )
           })}
         </div>
+      </div>
       </div>
     </main>
   )

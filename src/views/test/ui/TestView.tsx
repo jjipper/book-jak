@@ -45,8 +45,9 @@ export default function TestView() {
   // ── 인트로 화면 (테스트 시작 전 커버) ──────────────────────
   if (!started) {
     return (
-      <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
-        <header style={{ padding: '52px 24px 8px' }}>
+      <main className="bj-shell" style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <header style={{ padding: 'var(--space-lg) 0 8px' }}>
           <Link href="/home" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
             <span className="bj-riso" style={{ width: 26, height: 26 }}>
               <span className="bj-riso__a" style={{ width: 26, height: 26, background: 'var(--color-action)' }} />
@@ -56,7 +57,7 @@ export default function TestView() {
           </Link>
         </header>
 
-        <section style={{ flex: 1, padding: '32px 24px 40px', display: 'flex', flexDirection: 'column', gap: 32 }}>
+        <section style={{ flex: 1, paddingTop: 32, paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 32 }}>
           <div>
             <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--color-action)', marginBottom: 12 }}>
               독서 취향 소셜
@@ -101,16 +102,18 @@ export default function TestView() {
             책을 통해 사람의 취향이 연결되는 소셜 네트워크
           </p>
         </section>
+        </div>
       </main>
     )
   }
 
   // ── 진단 문항 화면 ──────────────────────
   return (
-    <main style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
 
       {/* 상단 헤더 */}
-      <header style={{ padding: '48px 20px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <header style={{ padding: 'var(--space-lg) 0 var(--space-md)', display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           onClick={() => {
             if (currentStep === 0) { resetTest(); setStarted(false) }
@@ -134,7 +137,7 @@ export default function TestView() {
       </header>
 
       {/* 축 인디케이터 */}
-      <div style={{ padding: '0 20px 20px', display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <div style={{ paddingBottom: 20, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {(['FT', 'IC', 'EG', 'RW'] as const).map((axis, i) => {
           const isDone = i < Math.floor(currentStep / 3)
           const isCurrent = i === Math.floor(currentStep / 3)
@@ -147,7 +150,7 @@ export default function TestView() {
       </div>
 
       {/* 문항 카드 */}
-      <div style={{ flex: 1, padding: '0 20px', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div className="bj-card" style={{ marginBottom: 20 }}>
           <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em', color: 'var(--color-action)', marginBottom: 14 }}>
             Q{question.id}.
@@ -193,6 +196,7 @@ export default function TestView() {
         <p className="bj-caption" style={{ textAlign: 'center', margin: '24px 0 32px' }}>
           {question.type === 'quad' ? '가장 가까운 것 하나만 고르면 돼요' : '솔직하게 고를수록 정확해요'}
         </p>
+      </div>
       </div>
     </main>
   )

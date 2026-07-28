@@ -18,13 +18,14 @@ export default function MyRatedView() {
   }, [])
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/my" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">별점 준 책</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 10 }}>
         {ratings.length === 0 ? (
           <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
             <p className="bj-body" style={{ fontWeight: 700, marginBottom: 6 }}>아직 별점 준 책이 없어요</p>
@@ -59,6 +60,7 @@ export default function MyRatedView() {
             )
           })
         )}
+      </div>
       </div>
     </main>
   )

@@ -50,13 +50,12 @@ export default function TestLoadingView() {
   }, [result, router])
 
   return (
-    <main style={{
+    <main className="bj-shell" style={{
       minHeight: '100dvh',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '0 24px',
     }}>
       {/* 스피너 */}
       <div style={{ position: 'relative', width: 96, height: 96, marginBottom: 48 }}>

@@ -1,11 +1,6 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
-/* 구(v1) 시스템 — 미이관 화면(테스트·결과·발견·소셜 등)만 사용.
-   화면 이관이 끝나면 legacy import 두 줄을 제거한다. */
-@import "../shared/styles/legacy/tokens.css";
-@import "../shared/styles/legacy/components.css";
-
-/* v2 디자인시스템 (정본) — legacy보다 뒤에 로드해 우선 적용 */
+/* v2 디자인시스템 (정본) */
 @import "../shared/styles/tokens.css";
 @import "../shared/styles/components.css";
 
@@ -20,22 +15,12 @@ body {
   padding: 0;
 }
 
-/* 모바일 중심 최대 너비 컨테이너 (레거시 화면용) */
 #app-root {
-  max-width: 430px;
   width: 100%;
-  margin: 0 auto;
   min-height: 100dvh;
   position: relative;
   overflow-x: hidden;
   background: var(--color-bg);
-}
-
-/* v2 반응형 셸: .bj-shell을 채택한 화면은 430px 캡을 벗어나
-   앱(모바일) → 타블렛 → 웹(최대 1920px)으로 확장된다.
-   STEP 2에서 화면들이 .bj-shell로 이관되면 레거시 캡은 제거한다. */
-#app-root:has(.bj-shell) {
-  max-width: 1920px;
 }
 
 .bj-shell {

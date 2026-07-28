@@ -63,13 +63,14 @@ export default function SocialDiscussView() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 100 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">의견 나누기</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 100, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <p className="bj-body" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
           책 읽고 생긴 질문을 남기면 다른 사람이 답해요
         </p>
@@ -160,6 +161,7 @@ export default function SocialDiscussView() {
       )}
 
       {showNicknameSheet && <NicknameSheet onSubmit={handleNicknameSubmit} onClose={closeNicknameSheet} />}
+      </div>
     </main>
   )
 }

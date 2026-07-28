@@ -26,13 +26,14 @@ export default function SocialPeopleView() {
   }
 
   return (
-    <main style={{ minHeight: '100dvh' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">취향 맞는 사람 찾기</span>
       </header>
 
-      <div style={{ padding: '0 20px 40px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
         {!hasResult ? (
           <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
             <p className="bj-h1" style={{ marginBottom: 10 }}>취향 맞는 사람 찾기</p>
@@ -99,6 +100,7 @@ export default function SocialPeopleView() {
             </div>
           </>
         )}
+      </div>
       </div>
     </main>
   )

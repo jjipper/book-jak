@@ -34,13 +34,14 @@ export default function SocialRankingView() {
     : []
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
+    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
         <span className="bj-display bj-display--lg">독서 랭킹</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div className="bj-card--flat">
           <p className="bj-body" style={{ fontWeight: 600, marginBottom: 6 }}>내 활동 내역 · {myScore}점</p>
           {summaryEntries.length > 0 ? (
@@ -84,6 +85,7 @@ export default function SocialRankingView() {
             )
           })}
         </div>
+      </div>
       </div>
     </main>
   )
