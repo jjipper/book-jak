@@ -26,7 +26,7 @@ export default function ClubRail({ clubs }: ClubRailProps) {
         {clubs.map((club) => (
           <Link key={club.id} href={`/social/clubs/${club.id}`} className="bj-club-card">
             <div className="bj-club-card__thumb">
-              <IllustPlaceholder code={`club-${club.id}`} alt={club.name} aspectRatio="1 / 1" fallback="slot" />
+              <IllustPlaceholder code={club.illust ?? `club-${club.id}`} alt={club.name} aspectRatio="1 / 1" fallback="slot" fit="contain" />
             </div>
             <div className="bj-club-card__body">
               <p className="bj-club-card__name" style={{ margin: 0 }}>{club.name}</p>

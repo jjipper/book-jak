@@ -556,7 +556,7 @@ body.bj-body { background: var(--color-bg); }
   justify-content: space-between;
   gap: var(--space-lg);
   background: var(--color-bg);
-  padding: var(--space-lg) 0 var(--space-md);
+  padding: var(--space-md)  var(--space-lg);
 }
 .bj-topbar__brand { display: flex; align-items: center; gap: var(--space-lg); min-width: 0; }
 .bj-topbar__divider {
@@ -584,17 +584,6 @@ body.bj-body { background: var(--color-bg); }
   .bj-topbar__slogan { display: none; }
 }
 .bj-topbar__actions { display: flex; align-items: center; gap: var(--space-xs); }
-
-/* 로고 블록 — 워드마크 + BOOKJAK 레터스페이스 캡션 */
-.bj-logo__caption {
-  display: block;
-  font-family: var(--font-body);
-  font-size: 9px;
-  font-weight: var(--fw-medium);
-  letter-spacing: 0.34em;
-  color: var(--color-text-muted);
-  margin-top: 2px;
-}
 
 /* 로고 * 마크 — 리소 미스레지스트레이션 적용 자리 (문서 5번) */
 .bj-riso-star {
@@ -687,6 +676,7 @@ body.bj-body { background: var(--color-bg); }
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   padding-bottom: var(--space-sm);
+  padding-inline: var(--space-sm);
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -712,6 +702,7 @@ body.bj-body { background: var(--color-bg); }
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-md);
+    align-items: start;
   }
 }
 
@@ -812,7 +803,6 @@ body.bj-body { background: var(--color-bg); }
   align-items: center;
   gap: var(--space-lg);
   background: var(--color-surface-spotlight);
-  border: var(--border-thick) solid var(--color-border-accent);
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
@@ -820,8 +810,12 @@ body.bj-body { background: var(--color-bg); }
   flex: 0 0 clamp(116px, 24%, 240px);
   align-self: stretch;
   background: var(--color-surface);
-  display: grid;
-  place-items: center;
+  overflow: hidden;
+}
+.bj-hero__illust .bj-illust {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
 }
 .bj-hero__body { flex: 1; min-width: 0; padding: var(--space-xl) var(--space-lg); }
 .bj-hero__eyebrow {

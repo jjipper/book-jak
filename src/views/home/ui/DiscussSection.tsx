@@ -22,7 +22,7 @@ export default function DiscussSection({ questions, answerCounts }: DiscussSecti
     <section className="bj-section">
       <SectionHead
         title="의견 나누기"
-        icon={<BubbleIcon size={18} />}
+        icon={<img src="/assets/icons/bubble-1.png" alt="" style={{ display: 'block', width: 'clamp(18px, 2.5vw, 26px)', height: 'clamp(18px, 2.5vw, 26px)', objectFit: 'contain' }} />}
         cap="지금 뜨는 독서 토론"
         moreHref="/social/discuss"
       />

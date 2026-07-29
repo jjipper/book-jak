@@ -2,7 +2,7 @@
 
 import { recordActivity } from '@/shared/lib/activity'
 import { ME_ID } from '@/shared/config/currentUser'
-import { SEED_CLUBS, type BookClub, type ClubFormat } from '@/entities/club/model/clubs'
+import { SEED_CLUBS, type BookClub, type ClubFormat, type ClubIllustCode } from '@/entities/club/model/clubs'
 
 const LOCAL_CLUBS_KEY = 'book_local_clubs'
 const JOINED_KEY = 'book_joined_clubs'
@@ -31,6 +31,7 @@ export function createClub(params: {
   tags: string[]
   capacity: number
   format: ClubFormat
+  illust?: ClubIllustCode
 }): BookClub {
   const club: BookClub = {
     id: `local-c-${Date.now()}`,
@@ -41,6 +42,7 @@ export function createClub(params: {
     memberCount: 1,
     format: params.format,
     organizerId: ME_ID,
+    illust: params.illust,
   }
   const stored = loadLocalClubs()
   stored.push(club)

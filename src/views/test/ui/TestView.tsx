@@ -71,8 +71,7 @@ export default function TestView() {
             </p>
           </div>
 
-          {/* 일러스트 자리 — 실제 이미지는 추후 삽입 */}
-          <IllustPlaceholder code="test-intro" alt="독서유형 테스트" aspectRatio="4 / 3" />
+          <IllustPlaceholder code="intro_test" alt="독서유형 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" />
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <button onClick={() => setStarted(true)} className="bj-btn bj-btn--primary bj-btn--block" style={{ padding: '18px 0', fontSize: 18 }}>

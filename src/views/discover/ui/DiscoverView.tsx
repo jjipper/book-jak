@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { saveBlindRating } from '@/entities/blind-rating/model/blindRatings'
 import { addToWishlist } from '@/features/wishlist/model/wishlist'
+import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { pickDailyBooks, dateKeyOf, BOOKS_PER_DAY, MAX_PAST_DAYS } from '@/entities/blind-book/model/dailyDiscover'
 import BlindBookCard from '@/widgets/blind-book-card/BlindBookCard'
+import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -20,6 +22,23 @@ export default function DiscoverView() {
   const [dayOffset, setDayOffset] = useState(0) // 0 = 오늘, -1 = 어제 …
   const [currentIdx, setCurrentIdx] = useState(0)
   const [completedCount, setCompletedCount] = useState(0)
+  const [showBrowse, setShowBrowse] = useState(false)
+  const [browseTag, setBrowseTag] = useState<string | null>(null)
+  const [revealedIds, setRevealedIds] = useState<Set<number>>(new Set())
+
+  const allBrowseTags = useMemo(() => {
+    const seen = new Set<string>()
+    const tags: string[] = []
+    BLIND_BOOKS.forEach((b) => b.tags.forEach((t) => {
+      if (!seen.has(t.text)) { seen.add(t.text); tags.push(t.text) }
+    }))
+    return tags
+  }, [])
+
+  const browsedBooks = useMemo(
+    () => browseTag ? BLIND_BOOKS.filter((b) => b.tags.some((t) => t.text === browseTag)) : BLIND_BOOKS,
+    [browseTag],
+  )
 
   useEffect(() => {
     setMounted(true)
@@ -87,7 +106,7 @@ export default function DiscoverView() {
       <div className="bj-frame" style={{ maxWidth: 1120, width: '100%', margin: '0 auto', flex: 1, display: 'flex', flexDirection: 'column' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <span className="bj-display bj-display--lg">발견</span>
-        <button className="bj-icon-btn">
+        <button className="bj-icon-btn" onClick={() => setShowBrowse(true)} aria-label="블라인드 서가 둘러보기">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -169,6 +188,110 @@ export default function DiscoverView() {
         </div>
       )}
       </div>
+
+      {showBrowse && (
+        <div className="bj-sheet__overlay" onClick={() => setShowBrowse(false)}>
+          <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <p className="bj-h2">블라인드 서가</p>
+              <button onClick={() => setShowBrowse(false)} className="bj-icon-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+              <button
+                type="button"
+                onClick={() => setBrowseTag(null)}
+                className={`bj-chip${browseTag === null ? ' bj-chip--active' : ''}`}
+                style={{ cursor: 'pointer' }}
+              >
+                전체
+              </button>
+              {allBrowseTags.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => setBrowseTag((prev) => (prev === tag ? null : tag))}
+                  className={`bj-chip${browseTag === tag ? ' bj-chip--active' : ''}`}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+
+            <p className="bj-caption" style={{ marginBottom: 12 }}>{browsedBooks.length}권</p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {browsedBooks.map((book) => {
+                const isRevealed = revealedIds.has(book.id)
+                return (
+                  <div key={book.id} className="bj-card--flat" style={{ padding: 14 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                      {book.tags.map((tag) => (
+                        <span key={tag.text} className={tag.kind === 'primary' ? 'bj-chip bj-chip--active' : 'bj-chip'}>
+                          {tag.text}
+                        </span>
+                      ))}
+                    </div>
+
+                    <p className="bj-body" style={{ fontSize: 14, lineHeight: 1.65, marginBottom: 8 }}>
+                      {book.desc.map((seg, i) => (
+                        <span key={i} style={seg.emphasis ? { color: 'var(--color-action)', fontWeight: 700 } : undefined}>
+                          {seg.text}
+                        </span>
+                      ))}
+                    </p>
+
+                    <div style={{ display: 'flex', gap: 16, marginBottom: 10 }}>
+                      {book.meta.map((m) => (
+                        <span key={m.key} className="bj-caption">
+                          <span style={{ fontWeight: 700 }}>{m.key}</span> {m.value}
+                        </span>
+                      ))}
+                    </div>
+
+                    {isRevealed ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, borderTop: '0.5px solid var(--color-border)', paddingTop: 10 }}>
+                        <div style={{ width: 40, flexShrink: 0 }}>
+                          <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 4" />
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p className="bj-body" style={{ fontWeight: 700, fontSize: 14 }}>{book.title}</p>
+                          <p className="bj-caption">{book.author} · {book.publisher}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => addToWishlist({ bookId: `blind-${book.id}`, title: book.title, author: book.author, publisher: book.publisher, illustCode: book.illustCode, ts: Date.now() })}
+                          className="bj-btn"
+                          style={{ flexShrink: 0, padding: '8px 12px', fontSize: 12 }}
+                        >
+                          읽고싶어요
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setRevealedIds((prev) => new Set([...prev, book.id]))
+                          saveBlindRating({ bookId: book.id, title: book.title, stars: 4, tags: book.tags.map((t) => t.text), ts: Date.now() })
+                        }}
+                        className="bj-btn bj-btn--primary"
+                        style={{ width: '100%', padding: '10px 0', fontSize: 13 }}
+                      >
+                        궁금해요 → 제목·표지 공개
+                      </button>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

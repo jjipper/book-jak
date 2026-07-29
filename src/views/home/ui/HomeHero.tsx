@@ -29,7 +29,7 @@ export default function HomeHero({ typeCode }: HomeHeroProps) {
   return (
     <section className="bj-hero bj-hero--with-burst" style={{ marginTop: 'var(--space-xs)' }}>
       <div className="bj-hero__illust">
-        <IllustPlaceholder code="hero" alt="독서 유형 테스트" aspectRatio="3 / 4" fallback="slot" />
+        <IllustPlaceholder code="intro_test" alt="독서 유형 테스트" aspectRatio="1 / 1" fit="contain" background="transparent" />
       </div>
       <div className="bj-hero__body">
         <h1 className="bj-hero__title" style={{ margin: 0 }}>나의 독서 유형은 무엇일까?</h1>

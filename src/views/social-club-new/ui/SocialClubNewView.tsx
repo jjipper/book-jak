@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClub } from '@/entities/club/model/clubActions'
-import { CLUB_TAGS, type ClubFormat } from '@/entities/club/model/clubs'
+import { CLUB_TAGS, CLUB_ILLUSTS, type ClubFormat, type ClubIllustCode } from '@/entities/club/model/clubs'
 import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNickname'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 
@@ -18,6 +18,7 @@ export default function SocialClubNewView() {
   const [capacity, setCapacity] = useState(6)
   const [format, setFormat] = useState<ClubFormat>('온라인')
   const [tags, setTags] = useState<string[]>([])
+  const [illust, setIllust] = useState<ClubIllustCode | undefined>(undefined)
   const { showNicknameSheet, requireNickname, handleNicknameSubmit, closeNicknameSheet } = useRequireNickname()
 
   const canSubmit = name.trim().length > 0 && description.trim().length > 0
@@ -29,7 +30,7 @@ export default function SocialClubNewView() {
   function handleSubmit() {
     if (!canSubmit) return
     requireNickname(() => {
-      const club = createClub({ name: name.trim(), description: description.trim(), tags, capacity, format })
+      const club = createClub({ name: name.trim(), description: description.trim(), tags, capacity, format, illust })
       router.push(`/social/clubs/${club.id}`)
     })
   }
@@ -64,6 +65,51 @@ export default function SocialClubNewView() {
             onChange={(e) => setDescription(e.target.value)}
             style={{ minHeight: 72 }}
           />
+        </div>
+
+        <div>
+          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>모임 분위기 선택</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+            {CLUB_ILLUSTS.map(({ code, label }) => {
+              const active = illust === code
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  onClick={() => setIllust(active ? undefined : code)}
+                  style={{
+                    border: `2px solid ${active ? 'var(--color-action)' : 'var(--color-border)'}`,
+                    borderRadius: 'var(--radius-card)',
+                    background: active ? 'var(--color-action-tint)' : 'var(--color-surface)',
+                    padding: 0,
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/assets/illust/club/${code}.png`}
+                    alt={label}
+                    style={{ width: '100%', aspectRatio: '4 / 3', objectFit: 'cover', display: 'block' }}
+                  />
+                  <span
+                    className="bj-caption"
+                    style={{
+                      display: 'block',
+                      padding: '4px 0',
+                      textAlign: 'center',
+                      fontWeight: active ? 700 : 400,
+                      color: active ? 'var(--color-action)' : 'var(--color-text)',
+                    }}
+                  >
+                    {label}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
 
         <div>

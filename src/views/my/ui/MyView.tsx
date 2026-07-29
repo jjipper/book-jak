@@ -50,6 +50,7 @@ export default function MyView() {
   const [nickname, setNicknameState] = useState('')
   const [avatar, setAvatarState] = useState<string | null>(null)
   const [showNicknameSheet, setShowNicknameSheet] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [followingCount, setFollowingCount] = useState(0)
   const [followerCount, setFollowerCount] = useState(0)
   const [likedCount, setLikedCount] = useState(0)
@@ -110,7 +111,7 @@ export default function MyView() {
       {/* 헤더 */}
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <span className="bj-display bj-display--lg">마이</span>
-        <button className="bj-icon-btn">
+        <button className="bj-icon-btn" onClick={() => setShowSettings(true)} aria-label="설정">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="3" />
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
@@ -288,6 +289,46 @@ export default function MyView() {
             setShowNicknameSheet(false)
           }}
         />
+      )}
+
+      {showSettings && (
+        <div className="bj-sheet__overlay" onClick={() => setShowSettings(false)}>
+          <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <p className="bj-h2">설정</p>
+              <button onClick={() => setShowSettings(false)} className="bj-icon-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="bj-card--flat" style={{ padding: 16 }}>
+                <p className="bj-display bj-display--lg" style={{ marginBottom: 4 }}>북작</p>
+                <p className="bj-caption">취향으로 북적이는 독서 취향 소셜</p>
+                <p className="bj-caption" style={{ marginTop: 2, color: 'var(--color-text-hint)' }}>v2 프리뷰</p>
+              </div>
+
+              <div>
+                <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8, color: 'var(--color-text-muted)', letterSpacing: '0.1em' }}>데이터</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('평가, 글, 팔로우 등 모든 활동 데이터가 삭제됩니다. 계속할까요?')) {
+                      localStorage.clear()
+                      window.location.href = '/'
+                    }
+                  }}
+                  className="bj-btn bj-btn--block"
+                  style={{ padding: '14px 0', fontSize: 13 }}
+                >
+                  데이터 전체 초기화
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
       </div>
     </main>

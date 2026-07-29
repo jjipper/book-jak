@@ -29,14 +29,6 @@ body {
   margin: 0 auto;
   min-height: 100dvh;
   background: var(--color-bg);
-  padding-inline: var(--space-lg);
-}
-
-/* 타블렛 이상: 여백 확대 */
-@media (min-width: 768px) {
-  .bj-shell {
-    padding-inline: var(--space-xl);
-  }
 }
 
 /* 웹: 콘텐츠는 1920px에서 멈추고 중앙 정렬 */

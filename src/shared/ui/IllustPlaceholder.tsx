@@ -33,6 +33,17 @@ function hashCode(str: string): number {
   return Math.abs(h)
 }
 
+// 코드에서 서브폴더를 자동 해석: type/ covers/ club/ intro/
+// 이미 슬래시가 포함된 코드(예: "type/TCER")는 그대로 사용
+function resolveIllustPath(code: string): string {
+  if (code.includes('/')) return code
+  if (/^[TF][A-Z]{3}$/.test(code)) return `type/${code}`
+  if (code.startsWith('blind-') || code.startsWith('book-')) return `covers/${code}`
+  if (code.startsWith('CLUB_')) return `club/${code}`
+  if (code.startsWith('intro_')) return `intro/${code}`
+  return code
+}
+
 export default function IllustPlaceholder({
   code,
   alt,
@@ -59,15 +70,21 @@ export default function IllustPlaceholder({
   return (
     <div
       className={`bj-illust${className ? ` ${className}` : ''}`}
-      style={{ aspectRatio, width: '100%', background }}
+      style={{ aspectRatio, width: '100%', background, overflow: 'hidden', position: 'relative' }}
     >
       {!failed ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           ref={imgRef}
-          src={`/assets/illust/${code}.png`}
+          src={`/assets/illust/${resolveIllustPath(code)}.png`}
           alt={alt}
-          style={fit === 'contain' ? { objectFit: 'contain' } : undefined}
+          style={{
+            display: 'block',
+            width: '100%',
+            height: '100%',
+            objectFit: fit === 'contain' ? 'contain' : 'cover',
+            objectPosition: 'center',
+          }}
           onError={() => setFailed(true)}
         />
       ) : fallback === 'slot' ? (

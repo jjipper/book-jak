@@ -47,6 +47,24 @@ export default function SocialClubDetailView() {
 
   return (
     <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+      {club.illust && (
+        <div className="bj-illust" style={{ width: '100%', maxHeight: 220, overflow: 'hidden', position: 'relative' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`/assets/illust/club/${club.illust}.png`}
+            alt={club.name}
+            style={{ width: '100%', height: 220, objectFit: 'cover', display: 'block' }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'linear-gradient(to bottom, transparent 40%, var(--color-bg) 100%)',
+            }}
+          />
+        </div>
+      )}
+
       <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
       <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
         <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>

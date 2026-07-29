@@ -79,17 +79,20 @@ export default function DiscoverRail({ books, dateKey }: DiscoverRailProps) {
     <section className="bj-section">
       <SectionHead
         title="오늘의 발견"
-        icon={<SparkleIcon size={18} />}
+        icon={<img src="/assets/icons/magnifier.png" alt="" style={{ display: 'block', width: 'clamp(18px, 2.5vw, 26px)', height: 'clamp(18px, 2.5vw, 26px)', objectFit: 'contain' }} />}
         cap={`블라인드로 만나는 오늘의 ${books.length}권`}
         moreHref="/discover"
       />
       {visible.length === 0 ? (
-        <div className="bj-callout">
-          오늘 카드는 전부 넘겼어요. 내일 새 책이 오고,{' '}
-          <Link href="/discover" style={{ color: 'var(--color-accent)', fontWeight: 700 }}>
-            발견 탭
-          </Link>
-          에는 지난 카드가 남아 있어요
+        <div className="bj-callout" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/assets/icons/secret-envelope.png" alt="" style={{ display: 'block', width: 'clamp(32px, 5vw, 48px)', height: 'clamp(32px, 5vw, 48px)', objectFit: 'contain', flexShrink: 0 }} />
+          <span>
+            오늘 카드는 전부 넘겼어요. 내일 새 책이 오고,{' '}
+            <Link href="/discover" style={{ color: 'var(--color-accent)', fontWeight: 700 }}>
+              발견 탭
+            </Link>
+            에는 지난 카드가 남아 있어요
+          </span>
         </div>
       ) : (
         <div className={RAIL_CLASS}>
@@ -99,7 +102,18 @@ export default function DiscoverRail({ books, dateKey }: DiscoverRailProps) {
               <article key={book.id} className="bj-discover-card">
                 <div className="bj-discover-card__top">
                   <div className="bj-discover-card__cover">
-                    <span className="bj-discover-card__q">?</span>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/assets/icons/question.png"
+                      alt="블라인드 책"
+                      style={{ display: 'block', width: '70%', height: '70%', objectFit: 'contain' }}
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/assets/icons/lock.png"
+                      alt=""
+                      style={{ position: 'absolute', top: 4, right: 4, width: '22%', height: 'auto', objectFit: 'contain' }}
+                    />
                   </div>
                   <div className="bj-discover-card__info">
                     <span className="bj-discover-card__ai">
