@@ -15,13 +15,13 @@ const STAR_POINTS = '12 2 15.09 8.63 22 9.27 16.5 13.97 18.18 21 12 17.27 5.82 2
 
 function Star({ frac, size }: { frac: number; size: number }) {
   return (
-    <span style={{ position: 'relative', display: 'inline-block', width: size, height: size, lineHeight: 0 }}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-hint)" strokeWidth="1.5" strokeLinejoin="round">
+    <span className="bj-star" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-caption)" strokeWidth="1.5" strokeLinejoin="round">
         <polygon points={STAR_POINTS} />
       </svg>
       {frac > 0 && (
-        <span style={{ position: 'absolute', left: 0, top: 0, width: `${frac * 100}%`, height: '100%', overflow: 'hidden' }}>
-          <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-action)" stroke="var(--color-action)" strokeWidth="1.5" strokeLinejoin="round">
+        <span className="bj-star__fill" style={{ width: `${frac * 100}%` }}>
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-accent)" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinejoin="round">
             <polygon points={STAR_POINTS} />
           </svg>
         </span>
@@ -40,20 +40,19 @@ export default function StarRating({ value, onChange, size = 26 }: StarRatingPro
   }
 
   return (
-    <div style={{ display: 'flex', gap: 6 }} onMouseLeave={() => setHover(0)}>
+    <div className="bj-star-rating" onMouseLeave={() => setHover(0)}>
       {[1, 2, 3, 4, 5].map((n) => (
         <button
           key={n}
           type="button"
-          className="no-drag"
+          className="bj-star-btn no-drag"
           onClick={(e) => {
             e.preventDefault()
             e.stopPropagation()
             const v = pointValue(n, e)
-            onChange(v === value ? 0 : v) // 같은 값을 다시 누르면 취소
+            onChange(v === value ? 0 : v)
           }}
           onMouseMove={(e) => setHover(pointValue(n, e))}
-          style={{ background: 'none', border: 'none', padding: 2, cursor: 'pointer', lineHeight: 0 }}
           aria-label={`${n}점`}
         >
           <Star frac={Math.max(0, Math.min(1, display - (n - 1)))} size={size} />

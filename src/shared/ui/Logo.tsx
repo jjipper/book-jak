@@ -5,13 +5,11 @@ interface LogoProps {
   mark?: boolean
   /** 리소 미스레지스트레이션을 * 마크에 적용 (문서 5번 시그니처) — 화면당 1회만 사용 */
   riso?: boolean
-  /** BOOKJAK 레터스페이스 캡션 표시 (상단바 로고 블록용) */
-  caption?: boolean
 }
 
-export default function Logo({ mark = true, riso = false, caption = false }: LogoProps) {
+export default function Logo({ mark = true, riso = false }: LogoProps) {
   return (
-    <span className="bj-logo" style={{ display: 'inline-block' }}>
+    <span className="bj-logo">
       <span>
         북작
         {mark &&
@@ -26,7 +24,6 @@ export default function Logo({ mark = true, riso = false, caption = false }: Log
             </span>
           ))}
       </span>
-      {caption && <span className="bj-logo__caption">BOOKJAK</span>}
     </span>
   )
 }

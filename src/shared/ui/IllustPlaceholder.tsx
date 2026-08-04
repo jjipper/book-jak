@@ -69,8 +69,8 @@ export default function IllustPlaceholder({
 
   return (
     <div
-      className={`bj-illust${className ? ` ${className}` : ''}`}
-      style={{ aspectRatio, width: '100%', background, overflow: 'hidden', position: 'relative' }}
+      className={`bj-illust bj-illust-wrap${className ? ` ${className}` : ''}`}
+      style={{ aspectRatio, background }}
     >
       {!failed ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -78,39 +78,17 @@ export default function IllustPlaceholder({
           ref={imgRef}
           src={`/assets/illust/${resolveIllustPath(code)}.png`}
           alt={alt}
-          style={{
-            display: 'block',
-            width: '100%',
-            height: '100%',
-            objectFit: fit === 'contain' ? 'contain' : 'cover',
-            objectPosition: 'center',
-          }}
+          className="bj-illust-wrap__img"
+          style={{ objectFit: fit === 'contain' ? 'contain' : 'cover' }}
           onError={() => setFailed(true)}
         />
       ) : fallback === 'slot' ? (
         <div
           role="img"
           aria-label={alt}
-          style={{
-            width: '100%',
-            height: '100%',
-            background:
-              'repeating-linear-gradient(135deg, var(--color-bg-sunken) 0 12px, var(--color-bg) 12px 24px)',
-            display: 'grid',
-            placeItems: 'center',
-            boxSizing: 'border-box',
-            padding: '8%',
-          }}
+          className="bj-illust-wrap__slot"
         >
-          <span
-            style={{
-              fontSize: 10,
-              color: 'var(--color-text-caption)',
-              textAlign: 'center',
-              wordBreak: 'break-all',
-              lineHeight: 1.3,
-            }}
-          >
+          <span className="bj-illust-wrap__slot-label">
             illust/{code}.png
           </span>
         </div>
@@ -118,36 +96,17 @@ export default function IllustPlaceholder({
         <div
           role="img"
           aria-label={alt}
-          style={{
-            width: '100%',
-            height: '100%',
-            background: palette.bg,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            padding: '12% 10%',
-            boxSizing: 'border-box',
-            overflow: 'hidden',
-            containerType: 'inline-size',
-          }}
+          className="bj-illust-wrap__cover"
+          style={{ background: palette.bg }}
         >
-          <span style={{ display: 'block', width: '28%', height: 3, background: palette.deco, borderRadius: 2 }} />
+          <span className="bj-illust-wrap__cover-bar" style={{ width: '28%', background: palette.deco }} />
           <span
-            style={{
-              color: palette.text,
-              fontWeight: 700,
-              fontSize: 'clamp(9px, 14cqw, 15px)',
-              lineHeight: 1.35,
-              wordBreak: 'keep-all',
-              display: '-webkit-box',
-              WebkitLineClamp: 4,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-            }}
+            className="bj-illust-wrap__cover-title"
+            style={{ color: palette.text }}
           >
             {alt}
           </span>
-          <span style={{ display: 'block', width: '46%', height: 3, background: palette.deco, borderRadius: 2, alignSelf: 'flex-end' }} />
+          <span className="bj-illust-wrap__cover-bar bj-illust-wrap__cover-bar--end" style={{ width: '46%', background: palette.deco }} />
         </div>
       )}
     </div>
