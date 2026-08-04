@@ -36,16 +36,16 @@ export default function SocialClubNewView() {
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/social/clubs" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">모임 만들기</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="bj-content--new">
         <div>
-          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>모임 이름</p>
+          <p className="bj-caption bj-bold bj-mb-8">모임 이름</p>
           <input
             type="text"
             className="bj-input"
@@ -57,19 +57,18 @@ export default function SocialClubNewView() {
         </div>
 
         <div>
-          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>한 줄 소개</p>
+          <p className="bj-caption bj-bold bj-mb-8">한 줄 소개</p>
           <textarea
-            className="bj-textarea"
+            className="bj-textarea bj-textarea--sm"
             placeholder="어떤 모임인지 소개해주세요"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            style={{ minHeight: 72 }}
           />
         </div>
 
         <div>
-          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>모임 분위기 선택</p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+          <p className="bj-caption bj-bold bj-mb-8">모임 분위기 선택</p>
+          <div className="bj-illust-grid">
             {CLUB_ILLUSTS.map(({ code, label }) => {
               const active = illust === code
               return (
@@ -77,33 +76,15 @@ export default function SocialClubNewView() {
                   key={code}
                   type="button"
                   onClick={() => setIllust(active ? undefined : code)}
-                  style={{
-                    border: `2px solid ${active ? 'var(--color-action)' : 'var(--color-border)'}`,
-                    borderRadius: 'var(--radius-card)',
-                    background: active ? 'var(--color-action-tint)' : 'var(--color-surface)',
-                    padding: 0,
-                    cursor: 'pointer',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
+                  className={`bj-illust-pick${active ? ' bj-illust-pick--active' : ''}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`/assets/illust/club/${code}.png`}
                     alt={label}
-                    style={{ width: '100%', aspectRatio: '4 / 3', objectFit: 'cover', display: 'block' }}
+                    className="bj-illust-pick__img"
                   />
-                  <span
-                    className="bj-caption"
-                    style={{
-                      display: 'block',
-                      padding: '4px 0',
-                      textAlign: 'center',
-                      fontWeight: active ? 700 : 400,
-                      color: active ? 'var(--color-action)' : 'var(--color-text)',
-                    }}
-                  >
+                  <span className={`bj-caption bj-illust-pick__label${active ? ' bj-illust-pick__label--active' : ''}`}>
                     {label}
                   </span>
                 </button>
@@ -113,15 +94,14 @@ export default function SocialClubNewView() {
         </div>
 
         <div>
-          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>정원</p>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <p className="bj-caption bj-bold bj-mb-8">정원</p>
+          <div className="bj-choice-row">
             {CAPACITY_OPTIONS.map((n) => (
               <button
                 key={n}
                 type="button"
                 onClick={() => setCapacity(n)}
-                className={`bj-choice${capacity === n ? ' is-active' : ''}`}
-                style={{ flex: 1, textAlign: 'center', padding: '10px 0' }}
+                className={`bj-choice bj-choice--flex bj-text-center${capacity === n ? ' is-active' : ''}`}
               >
                 {n}명
               </button>
@@ -130,15 +110,14 @@ export default function SocialClubNewView() {
         </div>
 
         <div>
-          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>형태</p>
-          <div style={{ display: 'flex', gap: 8 }}>
+          <p className="bj-caption bj-bold bj-mb-8">형태</p>
+          <div className="bj-choice-row">
             {FORMAT_OPTIONS.map((f) => (
               <button
                 key={f}
                 type="button"
                 onClick={() => setFormat(f)}
-                className={`bj-choice${format === f ? ' is-active' : ''}`}
-                style={{ flex: 1, textAlign: 'center', padding: '10px 0' }}
+                className={`bj-choice bj-choice--flex bj-text-center${format === f ? ' is-active' : ''}`}
               >
                 {f}
               </button>
@@ -147,15 +126,14 @@ export default function SocialClubNewView() {
         </div>
 
         <div>
-          <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>태그 (여러 개 선택 가능)</p>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <p className="bj-caption bj-bold bj-mb-8">태그 (여러 개 선택 가능)</p>
+          <div className="bj-tag-group">
             {CLUB_TAGS.map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => toggleTag(tag)}
-                className={`bj-chip${tags.includes(tag) ? ' bj-chip--active' : ''}`}
-                style={{ border: '1px solid var(--color-border)', cursor: 'pointer', padding: '6px 12px' }}
+                className={`bj-chip bj-chip--outline${tags.includes(tag) ? ' bj-chip--active' : ''}`}
               >
                 {tag}
               </button>
@@ -167,8 +145,7 @@ export default function SocialClubNewView() {
           type="button"
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className="bj-btn bj-btn--primary bj-btn--block"
-          style={{ padding: '14px 0', opacity: canSubmit ? 1 : 0.4, cursor: canSubmit ? 'pointer' : 'not-allowed' }}
+          className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
         >
           모임 만들기
         </button>

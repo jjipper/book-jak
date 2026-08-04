@@ -26,18 +26,18 @@ export default function SocialPeopleView() {
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/social" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">취향 맞는 사람 찾기</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div className="bj-content--new">
         {!hasResult ? (
-          <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
-            <p className="bj-h1" style={{ marginBottom: 10 }}>취향 맞는 사람 찾기</p>
-            <p className="bj-body" style={{ color: 'var(--color-text-muted)', marginBottom: 20 }}>
+          <div className="bj-empty-card">
+            <p className="bj-h1 bj-mb-10">취향 맞는 사람 찾기</p>
+            <p className="bj-body bj-text-muted bj-mb-20">
               독서유형 테스트를 먼저 하면<br />나와 취향 맞는 사람을 보여드려요
             </p>
             <Link href="/test" className="bj-btn bj-btn--primary bj-btn--block">
@@ -46,50 +46,49 @@ export default function SocialPeopleView() {
           </div>
         ) : (
           <>
-            <p className="bj-body" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
+            <p className="bj-body bj-text-muted bj-text-sm">
               내 독서유형과 얼마나 잘 맞는지 순서대로 보여드려요
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="bj-col-10">
               {ranked.map(({ person, affinity, sharedTags }) => {
                 const type = READING_TYPES[person.typeCode]
                 const following = followingIds.includes(person.id)
                 return (
-                  <div key={person.id} className="bj-row" style={{ alignItems: 'flex-start' }}>
+                  <div key={person.id} className="bj-row bj-row--top">
                     <Link
                       href={`/people/${person.id}`}
-                      style={{ textDecoration: 'none', color: 'inherit', display: 'flex', gap: 12, flex: 1, minWidth: 0 }}
+                      className="bj-people-link--social"
                     >
-                      <div style={{ width: 48, flexShrink: 0 }}>
+                      <div className="bj-people-avatar">
                         <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
                       </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 2 }}>
-                          <p className="bj-body" style={{ fontWeight: 700, fontSize: 14 }}>{person.nickname}</p>
+                      <div className="bj-flex-1">
+                        <div className="bj-meta-row bj-mb-2">
+                          <p className="bj-body bj-bold bj-discuss-text">{person.nickname}</p>
                           <span className="bj-caption">· {type.name}</span>
                         </div>
-                        <p className="bj-caption" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        <p className="bj-caption bj-truncate">
                           {person.bio}
                         </p>
                         {sharedTags.length > 0 && (
-                          <p className="bj-caption" style={{ color: 'var(--color-action)', marginTop: 2 }}>
+                          <p className="bj-caption bj-shared-tags">
                             공통 관심사 · {sharedTags.join(', ')}
                           </p>
                         )}
                       </div>
                     </Link>
-                    <div style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minWidth: 48 }}>
-                      <div style={{ textAlign: 'center' }}>
-                        <p className="bj-display bj-display--lg" style={{ fontSize: 18, color: 'var(--color-action)' }}>
+                    <div className="bj-affinity-col">
+                      <div className="bj-text-center">
+                        <p className="bj-display bj-display--lg bj-affinity-pct">
                           {affinity}%
                         </p>
-                        <p className="bj-caption" style={{ fontSize: 10 }}>{affinityLabel(affinity)}</p>
+                        <p className="bj-caption bj-caption--xs">{affinityLabel(affinity)}</p>
                       </div>
                       <button
                         type="button"
                         onClick={() => handleToggleFollow(person.id)}
-                        className={`bj-chip${following ? ' bj-chip--active' : ''}`}
-                        style={{ border: following ? undefined : '1px solid var(--color-border-strong)', cursor: 'pointer' }}
+                        className={`bj-chip${following ? ' bj-chip--active' : ' bj-chip--outline-strong'}`}
                       >
                         {following ? '팔로잉' : '팔로우'}
                       </button>

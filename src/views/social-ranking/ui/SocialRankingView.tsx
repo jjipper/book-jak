@@ -34,16 +34,16 @@ export default function SocialRankingView() {
     : []
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/social" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">독서 랭킹</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="bj-content--lg">
         <div className="bj-card--flat">
-          <p className="bj-body" style={{ fontWeight: 600, marginBottom: 6 }}>내 활동 내역 · {myScore}점</p>
+          <p className="bj-body bj-semibold bj-mb-6">내 활동 내역 · {myScore}점</p>
           {summaryEntries.length > 0 ? (
             <p className="bj-caption">
               {summaryEntries.map(([type, count]) => `${ACTIVITY_LABELS[type]} ${count}번`).join(' · ')}
@@ -53,32 +53,31 @@ export default function SocialRankingView() {
           )}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="bj-col-10">
           {ranked.map((entry, i) => {
             const type = entry.typeCode ? READING_TYPES[entry.typeCode] : null
             return (
               <div
                 key={entry.id}
-                className="bj-row"
-                style={entry.isMe ? { background: 'var(--color-action-tint)' } : undefined}
+                className={`bj-row${entry.isMe ? ' bj-row--me' : ''}`}
               >
-                <p className="bj-display bj-display--lg" style={{ fontSize: 18, width: 28, flexShrink: 0, color: i < 3 ? 'var(--color-action)' : 'var(--color-text-hint)' }}>
+                <p className={`bj-display bj-display--lg bj-rank-num${i < 3 ? ' bj-rank-num--top' : ' bj-rank-num--rest'}`}>
                   {i + 1}
                 </p>
                 {type ? (
-                  <div style={{ width: 40, flexShrink: 0 }}>
+                  <div className="bj-rank-avatar">
                     <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
                   </div>
                 ) : (
-                  <div style={{ width: 40, height: 40, flexShrink: 0, borderRadius: 'var(--radius-control)', background: 'var(--color-bg-sunken)' }} />
+                  <div className="bj-rank-avatar bj-rank-avatar--empty" />
                 )}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p className="bj-body" style={{ fontWeight: 700, fontSize: 14 }}>
+                <div className="bj-flex-1">
+                  <p className="bj-body bj-bold bj-discuss-text">
                     {entry.nickname}{entry.isMe && ' (나)'}
                   </p>
                   <p className="bj-caption">{type ? type.name : '유형 미진단'}</p>
                 </div>
-                <p className="bj-body" style={{ fontWeight: 700, fontSize: 15, color: entry.isMe ? 'var(--color-action-on-tint)' : undefined }}>
+                <p className={`bj-body bj-bold bj-rank-score${entry.isMe ? ' bj-rank-score--me' : ''}`}>
                   {entry.score}점
                 </p>
               </div>

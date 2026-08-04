@@ -63,46 +63,42 @@ export default function SocialDiscussView() {
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/social" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/social" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">의견 나누기</span>
       </header>
 
-      <div style={{ paddingBottom: 100, display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <p className="bj-body" style={{ color: 'var(--color-text-muted)', fontSize: 13 }}>
+      <div className="bj-content--discuss">
+        <p className="bj-body bj-text-muted bj-text-sm">
           책 읽고 생긴 질문을 남기면 다른 사람이 답해요
         </p>
 
-        <button type="button" onClick={() => setShowComposer(true)} className="bj-btn bj-btn--primary bj-btn--block" style={{ padding: '14px 0' }}>
+        <button type="button" onClick={() => setShowComposer(true)} className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall">
           질문 남기기
         </button>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="bj-col-10">
           {questions.map((q) => {
             const author = resolveAuthor(q.authorId)
             const answerCount = loadAnswers(q.id).length
             const liked = likedIds.includes(q.id)
             return (
-              <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row" style={{ textDecoration: 'none', color: 'inherit', alignItems: 'flex-start' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 4 }}>{bookTitle(q.bookId)}</p>
-                  <p className="bj-body" style={{ fontSize: 14, marginBottom: 6 }}>{q.text}</p>
+              <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row bj-row--top bj-unstyled-link">
+                <div className="bj-flex-1">
+                  <p className="bj-caption bj-bold bj-mb-4">{bookTitle(q.bookId)}</p>
+                  <p className="bj-body bj-discuss-text">{q.text}</p>
                   <p className="bj-caption">{author.nickname} · 답변 {answerCount}개</p>
                 </div>
                 <button
                   type="button"
                   onClick={(e) => handleToggleLike(e, q.id)}
                   aria-label="좋아요"
-                  style={{
-                    flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
-                    background: 'none', border: 'none', cursor: 'pointer',
-                    color: liked ? 'var(--color-action)' : 'var(--color-text-hint)',
-                  }}
+                  className={`bj-like-col${liked ? ' bj-like-col--active' : ''}`}
                 >
                   <HeartIcon filled={liked} />
-                  <span className="bj-caption" style={{ fontSize: 11, color: 'inherit' }}>{likeCountFor(q)}</span>
+                  <span className="bj-caption bj-like-count">{likeCountFor(q)}</span>
                 </button>
               </Link>
             )
@@ -113,15 +109,14 @@ export default function SocialDiscussView() {
       {showComposer && (
         <div className="bj-sheet__overlay" onClick={() => setShowComposer(false)}>
           <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
-            <p className="bj-h2" style={{ marginBottom: 16 }}>질문 남기기</p>
+            <p className="bj-h2 bj-mb-16">질문 남기기</p>
 
-            <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>어떤 책에 대한 질문인가요?</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
+            <p className="bj-caption bj-bold bj-mb-8">어떤 책에 대한 질문인가요?</p>
+            <div className="bj-book-grid">
               <button
                 type="button"
                 onClick={() => setSelectedBookId(null)}
-                className={`bj-choice${selectedBookId === null ? ' is-active' : ''}`}
-                style={{ fontSize: 13, padding: '10px 12px' }}
+                className={`bj-choice bj-choice--sm${selectedBookId === null ? ' is-active' : ''}`}
               >
                 자유주제
               </button>
@@ -130,29 +125,26 @@ export default function SocialDiscussView() {
                   key={book.id}
                   type="button"
                   onClick={() => setSelectedBookId(book.id)}
-                  className={`bj-choice${selectedBookId === book.id ? ' is-active' : ''}`}
-                  style={{ fontSize: 13, padding: '10px 12px' }}
+                  className={`bj-choice bj-choice--sm${selectedBookId === book.id ? ' is-active' : ''}`}
                 >
                   {book.title}
                 </button>
               ))}
             </div>
 
-            <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8 }}>질문 내용</p>
+            <p className="bj-caption bj-bold bj-mb-8">질문 내용</p>
             <textarea
-              className="bj-textarea"
+              className="bj-textarea bj-textarea--mb"
               placeholder="궁금한 걸 자유롭게 물어보세요"
               value={text}
               onChange={(e) => setText(e.target.value)}
-              style={{ marginBottom: 16 }}
             />
 
             <button
               type="button"
               onClick={handleSubmit}
               disabled={!text.trim()}
-              className="bj-btn bj-btn--primary bj-btn--block"
-              style={{ padding: '14px 0', opacity: text.trim() ? 1 : 0.4, cursor: text.trim() ? 'pointer' : 'not-allowed' }}
+              className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
             >
               등록하기
             </button>

@@ -52,10 +52,10 @@ export default function SocialDiscussDetailView() {
 
   if (!question) {
     return (
-      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-          <div style={{ padding: 'var(--space-lg) 0' }}>
-            <Link href="/social/discuss" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+      <main className="bj-shell">
+        <div className="bj-frame">
+          <div className="bj-subpage-loading">
+            <Link href="/social/discuss" className="bj-icon-btn">←</Link>
           </div>
         </div>
       </main>
@@ -65,42 +65,40 @@ export default function SocialDiscussDetailView() {
   const author = resolveAuthor(question.authorId)
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/social/discuss" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/social/discuss" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">{bookTitle(question.bookId)}</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="bj-content--lg">
         <div className="bj-callout">
-          <p style={{ marginBottom: 8 }}>{question.text}</p>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p className="bj-caption" style={{ color: 'inherit', opacity: 0.8 }}>{author.nickname}</p>
+          <p className="bj-callout__body">{question.text}</p>
+          <div className="bj-row-between">
+            <p className="bj-caption bj-callout__author">{author.nickname}</p>
             <button
               type="button"
               onClick={handleToggleLike}
               aria-label="좋아요"
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4, background: 'none', border: 'none', cursor: 'pointer',
-                color: 'inherit', opacity: liked ? 1 : 0.7,
-              }}
+              className="bj-like-btn"
+              style={{ opacity: liked ? 1 : 0.7 }}
             >
               <HeartIcon filled={liked} />
-              <span className="bj-caption" style={{ color: 'inherit' }}>{(question.likeCount ?? 0) + (liked ? 1 : 0)}</span>
+              <span className="bj-caption">{(question.likeCount ?? 0) + (liked ? 1 : 0)}</span>
             </button>
           </div>
         </div>
 
-        <p className="bj-caption" style={{ fontWeight: 700 }}>답변 {answers.length}개</p>
+        <p className="bj-caption bj-bold">답변 {answers.length}개</p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="bj-col-10">
           {answers.map((a) => {
             const answerAuthor = resolveAuthor(a.authorId)
             return (
-              <div key={a.id} className="bj-row" style={{ alignItems: 'flex-start' }}>
-                <div style={{ flex: 1 }}>
-                  <p className="bj-body" style={{ fontSize: 14, marginBottom: 4 }}>{a.text}</p>
+              <div key={a.id} className="bj-row bj-row--top">
+                <div className="bj-flex-1">
+                  <p className="bj-body bj-answer-text">{a.text}</p>
                   <p className="bj-caption">{answerAuthor.nickname}</p>
                 </div>
               </div>
@@ -108,20 +106,18 @@ export default function SocialDiscussDetailView() {
           })}
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="bj-col-10">
           <textarea
-            className="bj-textarea"
+            className="bj-textarea bj-textarea--sm"
             placeholder="답변을 남겨보세요"
             value={text}
             onChange={(e) => setText(e.target.value)}
-            style={{ minHeight: 72 }}
           />
           <button
             type="button"
             onClick={handleSubmit}
             disabled={!text.trim()}
-            className="bj-btn bj-btn--primary bj-btn--block"
-            style={{ padding: '14px 0', opacity: text.trim() ? 1 : 0.4, cursor: text.trim() ? 'pointer' : 'not-allowed' }}
+            className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
           >
             답변 등록
           </button>

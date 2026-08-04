@@ -20,10 +20,10 @@ export default function SocialClubDetailView() {
 
   if (!club) {
     return (
-      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-          <div style={{ padding: 'var(--space-lg) 0' }}>
-            <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+      <main className="bj-shell">
+        <div className="bj-frame">
+          <div className="bj-subpage-loading">
+            <Link href="/social/clubs" className="bj-icon-btn">←</Link>
           </div>
         </div>
       </main>
@@ -46,62 +46,56 @@ export default function SocialClubDetailView() {
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
+    <main className="bj-shell">
       {club.illust && (
-        <div className="bj-illust" style={{ width: '100%', maxHeight: 220, overflow: 'hidden', position: 'relative' }}>
+        <div className="bj-club-hero">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`/assets/illust/club/${club.illust}.png`}
             alt={club.name}
-            style={{ width: '100%', height: 220, objectFit: 'cover', display: 'block' }}
+            className="bj-club-hero__img"
           />
-          <div
-            style={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(to bottom, transparent 40%, var(--color-bg) 100%)',
-            }}
-          />
+          <div className="bj-club-hero__fade" />
         </div>
       )}
 
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/social/clubs" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/social/clubs" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">모임 상세</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="bj-content--lg">
         <div className="bj-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+          <div className="bj-meta-row bj-mb-8">
             <p className="bj-h1">{club.name}</p>
             <span className="bj-chip">{club.format}</span>
           </div>
-          <p className="bj-body" style={{ color: 'var(--color-text-muted)', marginBottom: 12 }}>{club.description}</p>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
+          <p className="bj-body bj-text-muted bj-mb-12">{club.description}</p>
+          <div className="bj-tag-group bj-mb-16">
             {club.tags.map((tag) => <span key={tag} className="bj-chip bj-chip--active">{tag}</span>)}
           </div>
           <div className="bj-row">
-            <div style={{ flex: 1 }}>
+            <div className="bj-flex-1">
               <p className="bj-caption">주최자</p>
-              <p className="bj-body" style={{ fontSize: 14, fontWeight: 600 }}>{organizer.nickname}</p>
+              <p className="bj-body bj-discuss-text bj-semibold">{organizer.nickname}</p>
             </div>
-            <div style={{ textAlign: 'right' }}>
+            <div className="bj-text-right">
               <p className="bj-caption">인원</p>
-              <p className="bj-body" style={{ fontSize: 14, fontWeight: 600 }}>{memberCount}/{club.capacity}</p>
+              <p className="bj-body bj-discuss-text bj-semibold">{memberCount}/{club.capacity}</p>
             </div>
           </div>
         </div>
 
         {isMine ? (
-          <p className="bj-caption" style={{ textAlign: 'center' }}>내가 만든 모임이에요</p>
+          <p className="bj-caption bj-text-center">내가 만든 모임이에요</p>
         ) : (
           <button
             type="button"
             onClick={handleToggleJoin}
             disabled={!joined && isFull}
-            className={`bj-btn ${joined ? '' : 'bj-btn--primary'} bj-btn--block`}
-            style={{ padding: '14px 0', opacity: !joined && isFull ? 0.4 : 1, cursor: !joined && isFull ? 'not-allowed' : 'pointer' }}
+            className={`bj-btn ${joined ? '' : 'bj-btn--primary'} bj-btn--block bj-btn--tall`}
+            style={{ opacity: !joined && isFull ? 0.4 : 1 }}
           >
             {joined ? '참여 취소하기' : isFull ? '정원이 찼어요' : '참여하기'}
           </button>
