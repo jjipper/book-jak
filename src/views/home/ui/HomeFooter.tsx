@@ -9,13 +9,13 @@ export default function HomeFooter() {
   return (
     <footer className="bj-footer">
       <Logo />
-      <p className="bj-footer__tag" style={{ margin: 0 }}>읽는 취향이, 나를 만든다</p>
+      <p className="bj-footer__tag">읽는 취향이, 나를 만든다</p>
       <div className="bj-footer__links">
         {FOOTER_LINKS.map((label) => (
           <span key={label}>{label}</span>
         ))}
       </div>
-      <p className="bj-footer__copy" style={{ margin: 0 }}>
+      <p className="bj-footer__copy">
         북작(BOOKJAK) · 독서 취향 소셜
         <br />© 2026 BOOKJAK. All rights reserved.
       </p>

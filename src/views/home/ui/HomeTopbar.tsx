@@ -16,13 +16,13 @@ export default function HomeTopbar({ typeCode }: HomeTopbarProps) {
   return (
     <header className="bj-topbar">
       <div className="bj-topbar__brand">
-        <Link href="/home" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <Logo riso caption />
+        <Link href="/home" className="bj-unstyled-link">
+          <Logo riso />
         </Link>
         <span className="bj-topbar__divider" aria-hidden="true" />
         <div className="bj-topbar__slogan">
-          <p className="bj-topbar__slogan-main" style={{ margin: 0 }}>읽는 취향이, 나를 만든다</p>
-          <p className="bj-topbar__slogan-sub" style={{ margin: 0 }}>독서 취향 소셜 앱</p>
+          <p className="bj-topbar__slogan-main">읽는 취향이, 나를 만든다</p>
+          <p className="bj-topbar__slogan-sub">독서 취향 소셜 앱</p>
         </div>
       </div>
       <div className="bj-topbar__actions">
@@ -37,7 +37,7 @@ export default function HomeTopbar({ typeCode }: HomeTopbarProps) {
           {typeCode ? (
             <IllustPlaceholder code={typeCode} alt="내 유형" aspectRatio="1 / 1" fallback="slot" />
           ) : (
-            <span style={{ color: 'var(--color-text-muted)', display: 'inline-flex' }}>
+            <span className="bj-avatar__fallback">
               <PersonIcon />
             </span>
           )}

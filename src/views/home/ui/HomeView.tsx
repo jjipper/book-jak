@@ -44,8 +44,8 @@ export default function HomeView() {
   }, [])
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+    <main className="bj-shell">
+      <div className="bj-frame">
         <HomeTopbar typeCode={savedResult?.typeCode ?? null} />
         <HomeHero typeCode={savedResult?.typeCode ?? null} />
         {dailyBooks.length > 0 && <DiscoverRail books={dailyBooks} dateKey={dateKey} />}

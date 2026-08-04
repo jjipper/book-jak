@@ -27,8 +27,8 @@ export default function FriendRail({ matches }: FriendRailProps) {
             <div className="bj-friend-card__face">
               <IllustPlaceholder code={person.typeCode} alt={person.nickname} aspectRatio="1 / 1" fallback="slot" />
             </div>
-            <p className="bj-friend-card__name" style={{ margin: 0 }}>{person.nickname}</p>
-            <p className="bj-friend-card__match" style={{ margin: 0 }}>궁합 {affinity}%</p>
+            <p className="bj-friend-card__name">{person.nickname}</p>
+            <p className="bj-friend-card__match">궁합 {affinity}%</p>
           </Link>
         ))}
       </div>
