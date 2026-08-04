@@ -33,7 +33,7 @@ function MetaGrid({ book }: { book: BlindBook }) {
     >
       {book.meta.map((m) => (
         <div key={m.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.06em' }}>{m.key}</span>
+          <span className="bj-caption bj-bold" style={{ letterSpacing: '0.06em' }}>{m.key}</span>
           <span className="bj-body" style={{ fontSize: 13, fontWeight: 700 }}>{m.value}</span>
         </div>
       ))}
@@ -43,7 +43,7 @@ function MetaGrid({ book }: { book: BlindBook }) {
 
 function TagChips({ book }: { book: BlindBook }) {
   return (
-    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+    <div className="bj-tag-group">
       {book.tags.map((tag) => (
         <span key={tag.text} className={tag.kind === 'primary' ? 'bj-chip bj-chip--active' : 'bj-chip'}>
           {tag.text}
@@ -56,10 +56,10 @@ function TagChips({ book }: { book: BlindBook }) {
 function Hints({ book, count }: { book: BlindBook; count: number }) {
   return (
     <div>
-      <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 8 }}>
+      <p className="bj-caption bj-bold" style={{ letterSpacing: '0.1em', marginBottom: 8 }}>
         먼저 읽은 사람들의 후기
       </p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="bj-col-10" style={{ gap: 8 }}>
         {book.hints.slice(0, count).map((hint, i) => (
           <div key={i} className="bj-callout bj-callout--muted">
             &ldquo;{hint}&rdquo;
@@ -208,7 +208,7 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
       }}
       onTransitionEnd={handleTransitionEnd}
     >
-      {/* 드래그 힌트 */}
+      {/* 드래그 힌트 — opacity는 JS로 직접 제어 (동적) */}
       <span
         ref={leftHintRef}
         style={{
@@ -238,10 +238,10 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
 
       {!revealed ? (
         /* ── 공개 전: 설명 → 장르/분위기/난이도 → 키워드 → 후기 → 선택 버튼 ── */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div className="bj-col-16" style={{ gap: 14 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-hint)' }}>
             <LockIcon />
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em' }}>
+            <span className="bj-caption bj-bold" style={{ letterSpacing: '0.1em' }}>
               제목·표지는 궁금해요를 누르면 공개돼요
             </span>
           </div>
@@ -287,14 +287,14 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
         </div>
       ) : (
         /* ── 공개 후: 책 정보 → 매칭도(+AI 메시지) → 줄거리 → 메타 → 키워드 → 후기 → 버튼 ── */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'flex', gap: 14 }}>
+        <div className="bj-col-16">
+          <div className="bj-book-head" style={{ gap: 14 }}>
             <div style={{ width: 88, flexShrink: 0 }}>
               <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 4" />
             </div>
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div className="bj-book-head__body" style={{ justifyContent: 'center' }}>
               <h2 className="bj-h2" style={{ fontSize: 20, lineHeight: 1.25 }}>{book.title}</h2>
-              <p className="bj-body" style={{ fontSize: 14, fontWeight: 700, marginTop: 4 }}>{book.author}</p>
+              <p className="bj-body bj-bold" style={{ fontSize: 14, marginTop: 4 }}>{book.author}</p>
               <p className="bj-caption" style={{ marginTop: 1 }}>{book.publisher}</p>
             </div>
           </div>
@@ -303,7 +303,7 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
             {match ? (
               <>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                  <span style={{ fontWeight: 700 }}>나와의 예상 매칭도</span>
+                  <span className="bj-bold">나와의 예상 매칭도</span>
                   <span className="bj-display" style={{ fontSize: 24, lineHeight: 1 }}>{match.percent}%</span>
                 </div>
                 <p className="bj-caption" style={{ color: 'inherit', opacity: 0.85 }}>
@@ -312,7 +312,7 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
               </>
             ) : (
               <>
-                <p style={{ fontWeight: 700, marginBottom: 4 }}>나와의 예상 매칭도</p>
+                <p className="bj-bold" style={{ marginBottom: 4 }}>나와의 예상 매칭도</p>
                 <p className="bj-caption" style={{ color: 'inherit', opacity: 0.85 }}>
                   아직 데이터가 부족해요. 카드를 몇 장 더 고르면 매칭도를 계산해드릴게요.
                 </p>
@@ -324,7 +324,7 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
           </div>
 
           <div>
-            <p className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.1em', marginBottom: 6 }}>줄거리</p>
+            <p className="bj-caption bj-bold" style={{ letterSpacing: '0.1em', marginBottom: 6 }}>줄거리</p>
             <p className="bj-body" style={{ fontSize: 14, lineHeight: 1.7, color: 'var(--color-text-muted)' }}>
               {book.synopsis}
             </p>

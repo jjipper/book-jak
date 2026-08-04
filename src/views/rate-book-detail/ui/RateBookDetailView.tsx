@@ -69,11 +69,11 @@ function CatalogBookDetail({ id }: { id: string }) {
 
   if (!book) {
     return (
-      <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-        <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-          <div style={{ padding: 'var(--space-lg) 0' }}>
-            <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-            <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>책을 찾을 수 없어요.</p>
+      <main className="bj-shell">
+        <div className="bj-frame">
+          <div className="bj-page-head">
+            <Link href="/rate" className="bj-icon-btn">←</Link>
+            <p className="bj-body bj-mt-24 bj-text-muted">책을 찾을 수 없어요.</p>
           </div>
         </div>
       </main>
@@ -128,36 +128,36 @@ function CatalogBookDetail({ id }: { id: string }) {
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-        <span className="bj-display bj-display--lg" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>책 정보</span>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/rate" className="bj-icon-btn">←</Link>
+        <span className="bj-display bj-display--lg bj-truncate">책 정보</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div className="bj-content--24">
         {/* ① 책 기본 정보 */}
-        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-          <div style={{ width: 104, flexShrink: 0 }}>
+        <div className="bj-book-head">
+          <div className="bj-book-head__cover bj-book-head__cover--104">
             <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 4" />
           </div>
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-            <p className="bj-h1" style={{ fontSize: 22, lineHeight: 1.25 }}>{book.title}</p>
-            <Link href={`/rate/authors/${book.authorId}`} className="bj-body" style={{ fontSize: 15, color: 'var(--color-action)', textDecoration: 'none', fontWeight: 700, marginTop: 6 }}>
+          <div className="bj-book-head__body">
+            <p className="bj-h1 bj-h1--book">{book.title}</p>
+            <Link href={`/rate/authors/${book.authorId}`} className="bj-body bj-book-author-link">
               {author?.name ?? '작자 미상'} →
             </Link>
-            <p className="bj-caption" style={{ marginTop: 2, color: 'var(--color-text-hint)' }}>{book.genre} · {book.year} · {book.pages}p</p>
+            <p className="bj-caption bj-caption--meta">{book.genre} · {book.year} · {book.pages}p</p>
           </div>
         </div>
 
         {/* ② 내 점수 + 내 평가 — 별 아이콘은 내 점수 전용, 예상·평균은 텍스트로 */}
-        <div className="bj-card bj-card--flat" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div style={{ display: 'flex', gap: 16, alignItems: 'baseline' }}>
-            <span className="bj-caption" style={{ fontWeight: 700 }}>
-              예상 별점 <span style={{ color: 'var(--color-action)', fontSize: 17, fontWeight: 800 }}>★ {predicted ? predicted.score.toFixed(1) : '—'}</span>
+        <div className="bj-card bj-card--flat bj-col-10">
+          <div className="bj-row-baseline-16">
+            <span className="bj-caption bj-bold">
+              예상 별점 <span className="bj-stat-star--action">★ {predicted ? predicted.score.toFixed(1) : '—'}</span>
             </span>
-            <span className="bj-caption" style={{ fontWeight: 700 }}>
-              평균 별점 <span style={{ color: 'var(--color-text)', fontSize: 17, fontWeight: 800 }}>★ {book.avgRating.toFixed(1)}</span> ({book.ratingCount.toLocaleString()}명)
+            <span className="bj-caption bj-bold">
+              평균 별점 <span className="bj-stat-star">★ {book.avgRating.toFixed(1)}</span> ({book.ratingCount.toLocaleString()}명)
             </span>
           </div>
           <StarRating value={stars} onChange={handleRate} size={32} />
@@ -167,19 +167,17 @@ function CatalogBookDetail({ id }: { id: string }) {
               : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
           </p>
           {stars > 0 && (
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="bj-row-8">
               <textarea
-                className="bj-textarea"
+                className="bj-textarea bj-textarea--review"
                 placeholder="한 줄 리뷰 남기기 (선택)"
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
-                style={{ minHeight: 44, flex: 1 }}
               />
               <button
                 type="button"
                 onClick={handleSaveReview}
-                className="bj-btn"
-                style={{ padding: '0 16px', fontSize: 13, cursor: 'pointer', flexShrink: 0 }}
+                className="bj-btn bj-btn--save"
               >
                 저장
               </button>
@@ -190,7 +188,7 @@ function CatalogBookDetail({ id }: { id: string }) {
         {/* ③ 책 줄거리 */}
         <section>
           <SectionLabel>줄거리</SectionLabel>
-          <p className="bj-body" style={{ fontSize: 14, lineHeight: 1.7, marginTop: 12, color: 'var(--color-text-muted)' }}>
+          <p className="bj-body bj-description bj-mt-12">
             {book.description}
           </p>
         </section>
@@ -199,13 +197,13 @@ function CatalogBookDetail({ id }: { id: string }) {
         {author && (
           <section>
             <SectionLabel>작가</SectionLabel>
-            <Link href={`/rate/authors/${author.id}`} className="bj-card bj-card--flat" style={{ display: 'block', textDecoration: 'none', color: 'inherit', marginTop: 12, padding: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                <p className="bj-body" style={{ fontWeight: 700 }}>{author.name}</p>
-                <span className="bj-caption" style={{ color: 'var(--color-action)', fontWeight: 700 }}>책 {authorBooks.length}권 →</span>
+            <Link href={`/rate/authors/${author.id}`} className="bj-card bj-card--flat bj-unstyled-link bj-mt-12 bj-block">
+              <div className="bj-row-between bj-mb-6">
+                <p className="bj-body bj-bold">{author.name}</p>
+                <span className="bj-caption bj-text-action-bold">책 {authorBooks.length}권 →</span>
               </div>
-              <p className="bj-caption" style={{ marginBottom: 6 }}>{author.origin}</p>
-              <p className="bj-body" style={{ fontSize: 13, lineHeight: 1.6, color: 'var(--color-text-muted)' }}>{author.bio}</p>
+              <p className="bj-caption bj-mb-6">{author.origin}</p>
+              <p className="bj-body bj-text-bio">{author.bio}</p>
             </Link>
           </section>
         )}
@@ -213,27 +211,21 @@ function CatalogBookDetail({ id }: { id: string }) {
         {/* ⑤ 장르 · 분위기 · 난이도 + 관련 키워드 */}
         <section>
           <SectionLabel>이런 책이에요</SectionLabel>
-          <div
-            style={{
-              display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8,
-              padding: '12px 0', marginTop: 12,
-              borderTop: '1px dashed var(--color-border)', borderBottom: '1px dashed var(--color-border)',
-            }}
-          >
+          <div className="bj-meta-grid">
             {[
               { key: '장르', value: book.genre },
               { key: '분위기', value: book.mood },
               { key: '난이도', value: book.difficulty },
             ].map((m) => (
-              <div key={m.key} style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.06em' }}>{m.key}</span>
-                <span className="bj-body" style={{ fontSize: 13, fontWeight: 700 }}>{m.value}</span>
+              <div key={m.key} className="bj-col-3">
+                <span className="bj-caption bj-bold bj-caption--spaced">{m.key}</span>
+                <span className="bj-body bj-text-13-bold">{m.value}</span>
               </div>
             ))}
           </div>
-          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
+          <div className="bj-tag-group bj-mt-12">
             {book.tags.map((t) => (
-              <span key={t} className="bj-chip" style={{ fontSize: 11 }}>#{t}</span>
+              <span key={t} className="bj-chip bj-text-11">#{t}</span>
             ))}
           </div>
         </section>
@@ -241,39 +233,39 @@ function CatalogBookDetail({ id }: { id: string }) {
         {/* ⑥ 사람들 리뷰 — 목업 + 서버(다른 사용자) + 내 리뷰(로컬) */}
         <section>
           <SectionLabel>리뷰 {reviews.length + otherRemoteReviews.length + (myRating?.review ? 1 : 0)}</SectionLabel>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+          <div className="bj-col-10 bj-mt-12">
             {myRating?.review && (
-              <div className="bj-row" style={{ alignItems: 'flex-start', borderColor: 'var(--color-action)' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <div className="bj-row bj-row--top bj-row--review-me">
+                <div className="bj-flex-1">
+                  <div className="bj-review-meta">
                     <Stars value={myRating.stars} size={12} />
-                    <span className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>{getNickname() ?? '나'} (내 리뷰)</span>
+                    <span className="bj-caption bj-bold bj-text-action">{getNickname() ?? '나'} (내 리뷰)</span>
                   </div>
-                  <p className="bj-body" style={{ fontSize: 14 }}>{myRating.review}</p>
+                  <p className="bj-body bj-body--sm">{myRating.review}</p>
                 </div>
               </div>
             )}
             {otherRemoteReviews.map((r) => (
-              <div key={r.userId + r.createdAt} className="bj-row" style={{ alignItems: 'flex-start' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <div key={r.userId + r.createdAt} className="bj-row bj-row--top">
+                <div className="bj-flex-1">
+                  <div className="bj-review-meta">
                     <Stars value={r.stars} size={12} />
-                    <span className="bj-caption" style={{ fontWeight: 700 }}>{r.nickname}</span>
+                    <span className="bj-caption bj-bold">{r.nickname}</span>
                   </div>
-                  <p className="bj-body" style={{ fontSize: 14 }}>{r.review}</p>
+                  <p className="bj-body bj-body--sm">{r.review}</p>
                 </div>
               </div>
             ))}
             {reviews.map((r, i) => {
               const person = MOCK_PEOPLE.find((p) => p.id === r.personId)
               return (
-                <div key={i} className="bj-row" style={{ alignItems: 'flex-start' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                <div key={i} className="bj-row bj-row--top">
+                  <div className="bj-flex-1">
+                    <div className="bj-review-meta">
                       <Stars value={r.stars} size={12} />
-                      <span className="bj-caption" style={{ fontWeight: 700 }}>{person?.nickname ?? '익명'}</span>
+                      <span className="bj-caption bj-bold">{person?.nickname ?? '익명'}</span>
                     </div>
-                    <p className="bj-body" style={{ fontSize: 14 }}>{r.text}</p>
+                    <p className="bj-body bj-body--sm">{r.text}</p>
                   </div>
                 </div>
               )
@@ -284,21 +276,21 @@ function CatalogBookDetail({ id }: { id: string }) {
         {/* ⑦ 비슷한 책 — 표지 기준 3열, 내 별점이 있으면 그것, 없으면 예상 별점 */}
         <section>
           <SectionLabel>이 책과 결이 비슷한 책</SectionLabel>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 12 }}>
+          <div className="bj-grid-3 bj-mt-12">
             {relatedBooks.map((b) => {
               const mine = allMyRatings.find((r) => r.bookId === b.id)?.stars
               const pred = relatedPredictions[b.id]
               return (
-                <Link key={b.id} href={`/rate/books/${b.id}`} style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Link key={b.id} href={`/rate/books/${b.id}`} className="bj-related-book-link">
                   <IllustPlaceholder code={b.illustCode} alt={b.title} aspectRatio="3 / 4" />
-                  <p className="bj-body" style={{ fontSize: 12, fontWeight: 700, lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  <p className="bj-body bj-clamp-2 bj-text-book-title">
                     {b.title}
                   </p>
-                  <p className="bj-caption" style={{ fontSize: 11 }}>{getAuthor(b.authorId)?.name ?? '작자 미상'}</p>
+                  <p className="bj-caption bj-text-11">{getAuthor(b.authorId)?.name ?? '작자 미상'}</p>
                   {mine !== undefined ? (
-                    <span className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>내 별점 ★ {mine}</span>
+                    <span className="bj-caption bj-bold bj-text-action">내 별점 ★ {mine}</span>
                   ) : pred !== undefined ? (
-                    <span className="bj-caption" style={{ fontWeight: 700 }}>예상 ★ {pred.toFixed(1)}</span>
+                    <span className="bj-caption bj-bold">예상 ★ {pred.toFixed(1)}</span>
                   ) : null}
                 </Link>
               )
@@ -309,25 +301,25 @@ function CatalogBookDetail({ id }: { id: string }) {
         {/* ⑧ 별점 분포 — 맨 아래 */}
         <section>
           <SectionLabel>별점 분포</SectionLabel>
-          <div className="bj-card bj-card--flat" style={{ display: 'flex', gap: 20, alignItems: 'center', padding: 16, marginTop: 12 }}>
-            <div style={{ textAlign: 'center', flexShrink: 0 }}>
-              <p className="bj-display" style={{ fontSize: 34, lineHeight: 1 }}>{book.avgRating.toFixed(1)}</p>
+          <div className="bj-card bj-card--flat bj-rating-dist">
+            <div className="bj-text-center bj-shrink-0">
+              <p className="bj-display bj-display--rating">{book.avgRating.toFixed(1)}</p>
               <Stars value={book.avgRating} size={13} />
-              <p className="bj-caption" style={{ marginTop: 4 }}>{book.ratingCount.toLocaleString()}명 평가</p>
+              <p className="bj-caption bj-mt-4">{book.ratingCount.toLocaleString()}명 평가</p>
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div className="bj-flex-1 bj-col-10--gap4">
               {[5, 4, 3, 2, 1].map((n) => {
                 const pct = book.distribution[n - 1]
                 return (
-                  <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span className="bj-caption" style={{ width: 20, textAlign: 'right' }}>{n}★</span>
-                    <div className="bj-progress__track" style={{ flex: 1 }}>
+                  <div key={n} className="bj-meta-row">
+                    <span className="bj-caption bj-dist-star-label">{n}★</span>
+                    <div className="bj-progress__track bj-flex-1">
                       <div
                         className="bj-progress__fill"
                         style={{ width: `${pct}%`, opacity: pct === maxDist ? 1 : 0.45 }}
                       />
                     </div>
-                    <span className="bj-caption" style={{ width: 32 }}>{pct}%</span>
+                    <span className="bj-caption bj-dist-pct">{pct}%</span>
                   </div>
                 )
               })}

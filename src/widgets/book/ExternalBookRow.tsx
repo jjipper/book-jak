@@ -29,23 +29,23 @@ export default function ExternalBookRow({ book, myStars }: ExternalBookRowProps)
   }
 
   return (
-    <Link href={`/rate/books/${book.id}`} className="bj-row" style={{ textDecoration: 'none', color: 'inherit', alignItems: 'stretch', gap: 14 }}>
-      <div className="bj-illust" style={{ width: 52, flexShrink: 0, aspectRatio: '3 / 4', background: 'var(--color-bg-sunken)' }}>
+    <Link href={`/rate/books/${book.id}`} className="bj-row bj-book-link bj-unstyled-link">
+      <div className="bj-ext-book-cover">
         {book.thumbnail && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={book.thumbnail} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={book.thumbnail} alt={book.title} className="bj-cover-img" />
         )}
       </div>
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3 }}>
-        <p className="bj-body" style={{ fontWeight: 800, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div className="bj-book-row__body">
+        <p className="bj-body bj-truncate bj-book-title-sm">
           {book.title}
         </p>
-        <p className="bj-caption" style={{ color: 'var(--color-text-hint)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <p className="bj-caption bj-truncate bj-caption--hint">
           {book.authors.join(', ') || '작자 미상'} · {book.publisher}{book.year ? ` · ${book.year}` : ''}
         </p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+        <div className="bj-book-row__meta-row">
           <StarRating value={stars} onChange={handleRate} size={16} />
-          {stars > 0 && <span className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>내 별점 {stars}점</span>}
+          {stars > 0 && <span className="bj-caption bj-bold bj-caption--action">내 별점 {stars}점</span>}
         </div>
       </div>
     </Link>

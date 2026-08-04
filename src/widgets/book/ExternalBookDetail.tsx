@@ -55,18 +55,18 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
 
   if (loading) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-        <p className="bj-caption" style={{ textAlign: 'center', marginTop: 60 }}>책 정보를 불러오는 중…</p>
+      <main className="bj-ext-shell--loading">
+        <Link href="/rate" className="bj-icon-btn">←</Link>
+        <p className="bj-caption bj-text-center" style={{ marginTop: 60 }}>책 정보를 불러오는 중…</p>
       </main>
     )
   }
 
   if (!book) {
     return (
-      <main style={{ minHeight: '100dvh', padding: '52px 20px' }}>
-        <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
-        <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>책 정보를 불러올 수 없어요.</p>
+      <main className="bj-ext-shell--loading">
+        <Link href="/rate" className="bj-icon-btn">←</Link>
+        <p className="bj-body bj-text-muted" style={{ marginTop: 24 }}>책 정보를 불러올 수 없어요.</p>
       </main>
     )
   }
@@ -110,33 +110,33 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   }
 
   return (
-    <main style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '52px 20px 16px' }}>
-        <Link href="/rate" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-ext-shell">
+      <header className="bj-ext-shell__header">
+        <Link href="/rate" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">책 정보</span>
       </header>
 
-      <div style={{ padding: '0 20px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div className="bj-ext-shell__body">
         {/* 책 기본 정보 */}
-        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-          <div className="bj-illust" style={{ width: 104, flexShrink: 0, aspectRatio: '3 / 4', background: 'var(--color-bg-sunken)' }}>
+        <div className="bj-book-head">
+          <div className="bj-book-cover--lg">
             {book.thumbnail && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={book.thumbnail} alt={book.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={book.thumbnail} alt={book.title} className="bj-cover-img" />
             )}
           </div>
-          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-            <p className="bj-h1" style={{ fontSize: 22, lineHeight: 1.25 }}>{book.title}</p>
-            <p className="bj-body" style={{ fontSize: 15, fontWeight: 700, marginTop: 6 }}>{book.authors.join(', ') || '작자 미상'}</p>
-            <p className="bj-caption" style={{ marginTop: 2, color: 'var(--color-text-hint)' }}>{book.publisher}{book.year ? ` · ${book.year}` : ''} · ISBN {book.isbn}</p>
+          <div className="bj-book-head__body">
+            <p className="bj-h1 bj-book-title">{book.title}</p>
+            <p className="bj-body bj-book-author">{book.authors.join(', ') || '작자 미상'}</p>
+            <p className="bj-caption bj-book-meta-hint">{book.publisher}{book.year ? ` · ${book.year}` : ''} · ISBN {book.isbn}</p>
           </div>
         </div>
 
         {/* 내 점수 + 내 평가 — 별 아이콘은 내 점수 전용, 평균은 텍스트로 */}
-        <div className="bj-card bj-card--flat" style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <span className="bj-caption" style={{ fontWeight: 700 }}>
+        <div className="bj-card bj-card--flat bj-col-10 bj-card-flat--p16">
+          <span className="bj-caption bj-bold">
             {stats && stats.count > 0
-              ? <>평균 별점 <span style={{ color: 'var(--color-text)', fontSize: 17, fontWeight: 800 }}>★ {stats.avg.toFixed(1)}</span> (북작 {stats.count}명)</>
+              ? <>평균 별점 <span className="bj-stat-star">★ {stats.avg.toFixed(1)}</span> (북작 {stats.count}명)</>
               : '아직 이 책을 평가한 북작 사용자가 없어요'}
           </span>
           <StarRating value={stars} onChange={handleRate} size={32} />
@@ -146,19 +146,17 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
               : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
           </p>
           {stars > 0 && (
-            <div style={{ display: 'flex', gap: 8 }}>
+            <div className="bj-review-input-row">
               <textarea
-                className="bj-textarea"
+                className="bj-textarea bj-textarea--flex"
                 placeholder="한 줄 리뷰 남기기 (선택)"
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
-                style={{ minHeight: 44, flex: 1 }}
               />
               <button
                 type="button"
                 onClick={handleSaveReview}
-                className="bj-btn"
-                style={{ padding: '0 16px', fontSize: 13, cursor: 'pointer', flexShrink: 0 }}
+                className="bj-btn bj-btn--review-save"
               >
                 저장
               </button>
@@ -170,10 +168,10 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
         {book.description && (
           <section>
             <SectionLabel>책 소개</SectionLabel>
-            <p className="bj-body" style={{ fontSize: 14, lineHeight: 1.7, marginTop: 12, color: 'var(--color-text-muted)' }}>
+            <p className="bj-body bj-book-desc">
               {book.description}
             </p>
-            <a href={book.url} target="_blank" rel="noreferrer" className="bj-caption" style={{ display: 'inline-block', marginTop: 8, color: 'var(--color-action)', fontWeight: 700, textDecoration: 'none' }}>
+            <a href={book.url} target="_blank" rel="noreferrer" className="bj-caption bj-unstyled-link bj-book-more-link">
               다음 책 정보에서 전체 소개 보기 →
             </a>
           </section>
@@ -186,31 +184,31 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
           return (
             <section>
               <SectionLabel>리뷰 {total}</SectionLabel>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+              <div className="bj-col-10 bj-col-10--mt12">
                 {myRating?.review && (
-                  <div className="bj-row" style={{ alignItems: 'flex-start', borderColor: 'var(--color-action)' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div className="bj-row bj-row--my-review">
+                    <div className="bj-flex-1">
+                      <div className="bj-review-meta">
                         <Stars value={myRating.stars} size={12} />
-                        <span className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>{getNickname() ?? '나'} (내 리뷰)</span>
+                        <span className="bj-caption bj-bold bj-caption--action">{getNickname() ?? '나'} (내 리뷰)</span>
                       </div>
-                      <p className="bj-body" style={{ fontSize: 14 }}>{myRating.review}</p>
+                      <p className="bj-body bj-review-body">{myRating.review}</p>
                     </div>
                   </div>
                 )}
                 {otherReviews.map((r) => (
-                  <div key={r.userId + r.createdAt} className="bj-row" style={{ alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div key={r.userId + r.createdAt} className="bj-row bj-row--review">
+                    <div className="bj-flex-1">
+                      <div className="bj-review-meta">
                         <Stars value={r.stars} size={12} />
-                        <span className="bj-caption" style={{ fontWeight: 700 }}>{r.nickname}</span>
+                        <span className="bj-caption bj-bold">{r.nickname}</span>
                       </div>
-                      <p className="bj-body" style={{ fontSize: 14 }}>{r.review}</p>
+                      <p className="bj-body bj-review-body">{r.review}</p>
                     </div>
                   </div>
                 ))}
                 {total === 0 && (
-                  <p className="bj-caption" style={{ padding: '16px 0', textAlign: 'center' }}>
+                  <p className="bj-caption bj-text-center bj-review-empty">
                     아직 리뷰가 없어요. 이 책의 첫 리뷰를 남겨보세요!
                   </p>
                 )}
@@ -223,23 +221,23 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
         {stats && stats.count > 0 && (
           <section>
             <SectionLabel>별점 분포</SectionLabel>
-            <div className="bj-card bj-card--flat" style={{ display: 'flex', gap: 20, alignItems: 'center', padding: 16, marginTop: 12 }}>
-              <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                <p className="bj-display" style={{ fontSize: 34, lineHeight: 1 }}>{stats.avg.toFixed(1)}</p>
+            <div className="bj-card bj-card--flat bj-dist-card">
+              <div className="bj-dist-avg bj-text-center">
+                <p className="bj-display bj-dist-avg-num">{stats.avg.toFixed(1)}</p>
                 <Stars value={stats.avg} size={13} />
-                <p className="bj-caption" style={{ marginTop: 4 }}>북작 {stats.count}명 평가</p>
+                <p className="bj-caption bj-dist-avg-caption">북작 {stats.count}명 평가</p>
               </div>
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div className="bj-flex-1 bj-col-4">
                 {[5, 4, 3, 2, 1].map((n) => {
                   const pct = stats.distribution[n - 1]
                   const maxDist = Math.max(...stats.distribution)
                   return (
-                    <div key={n} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span className="bj-caption" style={{ width: 20, textAlign: 'right' }}>{n}★</span>
-                      <div className="bj-progress__track" style={{ flex: 1 }}>
+                    <div key={n} className="bj-meta-row">
+                      <span className="bj-caption bj-dist-label">{n}★</span>
+                      <div className="bj-progress__track bj-flex-1">
                         <div className="bj-progress__fill" style={{ width: `${pct}%`, opacity: pct === maxDist ? 1 : 0.45 }} />
                       </div>
-                      <span className="bj-caption" style={{ width: 32 }}>{pct}%</span>
+                      <span className="bj-caption bj-dist-pct">{pct}%</span>
                     </div>
                   )
                 })}

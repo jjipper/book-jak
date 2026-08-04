@@ -57,39 +57,38 @@ export default function RateView() {
   const myStarsOf = (bookId: string) => myRatings.find((r) => r.bookId === bookId)?.stars
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh', paddingBottom: 40 }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ padding: 'var(--space-lg) 0 var(--space-md)' }}>
+    <main className="bj-shell bj-content">
+      <div className="bj-frame">
+      <header className="bj-page-head">
         <span className="bj-display bj-display--lg">평가</span>
-        <p className="bj-caption" style={{ marginTop: 6 }}>
+        <p className="bj-caption bj-mt-6">
           읽은 책을 평가할수록 예상 점수가 정확해져요
-          {ratedCount > 0 && <span style={{ fontWeight: 700, color: 'var(--color-action)' }}> · {ratedCount}권 평가함</span>}
+          {ratedCount > 0 && <span className="bj-bold bj-caption--action"> · {ratedCount}권 평가함</span>}
         </p>
       </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div className="bj-col-14">
         <input
-          className="bj-input"
+          className="bj-input bj-search-input"
           type="search"
           placeholder="책 제목이나 작가를 검색해보세요"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          style={{ maxWidth: 560 }}
         />
 
         {isSearchMode ? (
           <>
-            {searching && <p className="bj-caption" style={{ textAlign: 'center', padding: '24px 0' }}>검색 중…</p>}
+            {searching && <p className="bj-caption bj-search-loading">검색 중…</p>}
 
             {!searching && searchError && (
-              <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                <p className="bj-body" style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>검색에 실패했어요</p>
+              <div className="bj-search-empty">
+                <p className="bj-body bj-text-muted bj-mb-4">검색에 실패했어요</p>
                 <p className="bj-caption">네트워크 상태를 확인하고 다시 시도해보세요</p>
               </div>
             )}
 
             {!searching && !searchError && results.length > 0 && (
-              <div className="bj-list bj-list--lg-grid-2" style={{ gap: 10 }}>
+              <div className="bj-list bj-list--lg-grid-2 bj-list--gap10">
                 {results.map((book) => (
                   <ExternalBookRow key={book.id} book={book} myStars={myStarsOf(book.id)} />
                 ))}
@@ -97,8 +96,8 @@ export default function RateView() {
             )}
 
             {!searching && !searchError && results.length === 0 && (
-              <div style={{ padding: '40px 0', textAlign: 'center' }}>
-                <p className="bj-body" style={{ color: 'var(--color-text-muted)', marginBottom: 4 }}>
+              <div className="bj-search-empty">
+                <p className="bj-body bj-text-muted bj-mb-4">
                   &lsquo;{query}&rsquo; 검색 결과가 없어요
                 </p>
                 <p className="bj-caption">제목이나 작가 이름으로 다시 검색해보세요</p>
@@ -107,22 +106,21 @@ export default function RateView() {
           </>
         ) : (
           <>
-            <div className="bj-rail bj-rail--lg-wrap" style={{ gap: 8, paddingBottom: 2 }}>
+            <div className="bj-rail bj-rail--lg-wrap bj-genre-rail">
               {BOOK_GENRES.map((g) => (
                 <button
                   key={g}
                   type="button"
                   onClick={() => setGenre(g)}
-                  className={`bj-chip${genre === g ? ' bj-chip--active' : ''}`}
-                  style={{ flexShrink: 0, cursor: 'pointer' }}
+                  className={`bj-chip bj-genre-chip${genre === g ? ' bj-chip--active' : ''}`}
                 >
                   {g}
                 </button>
               ))}
             </div>
 
-            <p className="bj-caption" style={{ fontWeight: 700 }}>북작 추천 서가</p>
-            <div className="bj-list bj-list--lg-grid-2" style={{ gap: 10 }}>
+            <p className="bj-caption bj-bold">북작 추천 서가</p>
+            <div className="bj-list bj-list--lg-grid-2 bj-list--gap10">
               {curated.map((book) => (
                 <BookRow key={book.id} book={book} myStars={myStarsOf(book.id)} />
               ))}

@@ -13,11 +13,12 @@ interface ResultDetailViewProps {
   params: Promise<{ typeCode: string }>
 }
 
-const sectionLabelStyle: React.CSSProperties = {
-  fontSize: 10, fontWeight: 700,
-  letterSpacing: '0.14em', textTransform: 'uppercase',
-  color: 'var(--color-action)', marginBottom: 14,
-  display: 'flex', alignItems: 'center', gap: 8,
+function SectionLabelInline({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="bj-section-label--inline">
+      {children}
+    </p>
+  )
 }
 
 export default function ResultDetailView({ params }: ResultDetailViewProps) {
@@ -68,34 +69,34 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
   const showTestPrompt = !result
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+    <main className="bj-shell">
+      <div className="bj-frame">
       {/* 헤더 */}
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/home" className="bj-display bj-display--lg" style={{ textDecoration: 'none' }}>
+      <header className="bj-subpage-head--between">
+        <Link href="/home" className="bj-display bj-display--lg">
           북작
         </Link>
-        <Link href="/test" className="bj-btn" style={{ padding: '8px 14px', fontSize: 12 }}>
+        <Link href="/test" className="bj-btn bj-btn--sm">
           다시 하기
         </Link>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 20 }}>
+      <div className="bj-content--center-20">
 
         {/* 공유 링크 유입 안내 */}
         {showTestPrompt && (
-          <div className="bj-card--flat" style={{ width: '100%', textAlign: 'center' }}>
-            <p className="bj-body" style={{ color: 'var(--color-text-muted)', marginBottom: 12 }}>
+          <div className="bj-card--flat bj-text-center bj-w-full">
+            <p className="bj-body bj-text-muted bj-mb-12">
               친구가 공유한 카드예요.<br />나의 유형은 뭘까요?
             </p>
-            <Link href="/test" className="bj-btn bj-btn--primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+            <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">
               나도 테스트해보기 →
             </Link>
           </div>
         )}
 
         {/* 결과 카드 */}
-        <div style={{ width: '100%' }}>
+        <div className="bj-w-full">
           <TypeCard
             typeCode={typeCode}
             result={result ?? { typeCode, axisScores: { FT: { F: 2, T: 1 }, IC: { I: 2, C: 1 }, EG: { E: 2, G: 1 }, RW: { R: 2, W: 1 } }, variantStats: type.baseStats, badgeCandidates: [] }}
@@ -104,65 +105,63 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
         </div>
 
         {/* 버튼들 */}
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="bj-col-10 bj-w-full">
           <button
             onClick={handleSaveImage} disabled={saving}
-            className="bj-btn bj-btn--primary bj-btn--block"
-            style={{ padding: '16px 0', fontSize: 16, opacity: saving ? 0.7 : 1 }}
+            className="bj-btn bj-btn--primary bj-btn--block bj-btn--action-lg"
+            style={{ opacity: saving ? 0.7 : 1 }}
           >
             {saving ? '이미지 저장 중...' : '이미지로 저장하기'}
           </button>
 
           <button
             onClick={() => setShowShareMenu(!showShareMenu)}
-            className="bj-btn bj-btn--block"
-            style={{ padding: '16px 0', fontSize: 16 }}
+            className="bj-btn bj-btn--block bj-btn--action-lg"
           >
             테스트 링크 공유하기
           </button>
 
           {showShareMenu && (
-            <div className="bj-card--flat" style={{ padding: 0, overflow: 'hidden' }}>
-              <button onClick={handleCopyLink} className="bj-row" style={{ width: '100%', borderRadius: 0, textAlign: 'left', border: 'none', borderBottom: '1px solid var(--color-border)', cursor: 'pointer' }}>
-                <span className="bj-body" style={{ fontWeight: 500 }}>링크 복사</span>
+            <div className="bj-card--flat bj-card--no-pad">
+              <button onClick={handleCopyLink} className="bj-row bj-share-btn bj-share-btn--border-bottom">
+                <span className="bj-body bj-semibold">링크 복사</span>
               </button>
               <button onClick={() => { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`나의 독서 유형은 "${type.name}"이래! 너도 해봐`)}&url=${encodeURIComponent(window.location.origin + '/test')}`, '_blank'); setShowShareMenu(false) }}
-                className="bj-row" style={{ width: '100%', borderRadius: 0, textAlign: 'left', border: 'none', cursor: 'pointer' }}>
-                <span className="bj-body" style={{ fontWeight: 500 }}>트위터에 공유</span>
+                className="bj-row bj-share-btn">
+                <span className="bj-body bj-semibold">트위터에 공유</span>
               </button>
             </div>
           )}
 
           <button
             onClick={() => setShowFullReport(!showFullReport)}
-            className="bj-btn bj-btn--ghost bj-btn--block"
-            style={{ padding: '16px 0', fontSize: 16 }}
+            className="bj-btn bj-btn--ghost bj-btn--block bj-btn--action-lg"
           >
             {showFullReport ? '접기 ↑' : '풀 리포트 보기 ↓'}
           </button>
         </div>
 
         {/* 궁합 카드 (요약) */}
-        <div className="bj-card--flat" style={{ width: '100%' }}>
-          <p className="bj-body" style={{ fontWeight: 600, marginBottom: 4 }}>
+        <div className="bj-card--flat bj-w-full">
+          <p className="bj-body bj-semibold bj-mb-4">
             {type.compatibility.matchName}이(가) 최고의 독서 파트너래요
           </p>
-          <p className="bj-caption" style={{ marginBottom: 12 }}>
+          <p className="bj-caption bj-mb-12">
             &ldquo;{type.compatibility.matchLine}&rdquo;
           </p>
-          <Link href="/result/compare" style={{ fontSize: 12, fontWeight: 700, color: 'var(--color-action)', textDecoration: 'none' }}>
+          <Link href="/result/compare" className="bj-unstyled-link bj-text-11 bj-text-action-bold">
             친구와 궁합 비교하기 →
           </Link>
         </div>
 
         {/* 풀 리포트 (토글) */}
         {showFullReport && (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="bj-col-12 bj-w-full">
 
             {/* 어록 */}
             <div className="bj-card">
-              <p style={sectionLabelStyle}>입에 달고 사는 말<span className="bj-section-label__line" /></p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <SectionLabelInline>입에 달고 사는 말<span className="bj-section-label__line" /></SectionLabelInline>
+              <div className="bj-col-10">
                 {type.quote.map((q, i) => (
                   <div key={i} className="bj-callout">{q}</div>
                 ))}
@@ -171,31 +170,31 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 궁합 상세 */}
             <div className="bj-card">
-              <p style={sectionLabelStyle}>독서 궁합<span className="bj-section-label__line" /></p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                <div className="bj-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
-                  <p className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>환상의 짝</p>
-                  <p className="bj-body" style={{ fontWeight: 600 }}>{type.compatibility.matchName}</p>
-                  <p className="bj-caption" style={{ fontStyle: 'italic' }}>&ldquo;{type.compatibility.matchLine}&rdquo;</p>
+              <SectionLabelInline>독서 궁합<span className="bj-section-label__line" /></SectionLabelInline>
+              <div className="bj-col-10">
+                <div className="bj-row bj-row--col">
+                  <p className="bj-caption bj-bold bj-text-action">환상의 짝</p>
+                  <p className="bj-body bj-semibold">{type.compatibility.matchName}</p>
+                  <p className="bj-caption bj-italic">&ldquo;{type.compatibility.matchLine}&rdquo;</p>
                 </div>
-                <div className="bj-row" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 6 }}>
-                  <p className="bj-caption" style={{ fontWeight: 700 }}>상극</p>
-                  <p className="bj-body" style={{ fontWeight: 600 }}>{type.compatibility.oppName}</p>
-                  <p className="bj-caption" style={{ fontStyle: 'italic' }}>&ldquo;{type.compatibility.oppLine}&rdquo;</p>
+                <div className="bj-row bj-row--col">
+                  <p className="bj-caption bj-bold">상극</p>
+                  <p className="bj-body bj-semibold">{type.compatibility.oppName}</p>
+                  <p className="bj-caption bj-italic">&ldquo;{type.compatibility.oppLine}&rdquo;</p>
                 </div>
               </div>
-              <Link href="/result/compare" className="bj-btn bj-btn--ghost bj-btn--block" style={{ marginTop: 14 }}>
+              <Link href="/result/compare" className="bj-btn bj-btn--ghost bj-btn--block bj-mt-14">
                 친구와 궁합 비교하기 →
               </Link>
             </div>
 
             {/* 칭호 */}
             <div className="bj-card">
-              <p style={sectionLabelStyle}>획득 가능 칭호<span className="bj-section-label__line" /></p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <SectionLabelInline>획득 가능 칭호<span className="bj-section-label__line" /></SectionLabelInline>
+              <div className="bj-col-8">
                 {type.titles.map((title, i) => (
                   <div key={i} className="bj-row">
-                    <p className="bj-body" style={{ margin: 0, fontSize: 13 }}>
+                    <p className="bj-body bj-text-sm">
                       {title.slice(title.indexOf(' ') + 1)}
                     </p>
                   </div>
@@ -205,39 +204,38 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 취급주의 */}
             <div className="bj-card">
-              <p style={sectionLabelStyle}>취급주의<span className="bj-section-label__line" /></p>
-              <div className="bj-callout bj-callout--muted" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-action)', flexShrink: 0 }}>경고</span>
-                  <p style={{ margin: 0 }}>{type.warning.alert}</p>
+              <SectionLabelInline>취급주의<span className="bj-section-label__line" /></SectionLabelInline>
+              <div className="bj-callout bj-callout--muted bj-col-14">
+                <div className="bj-warning-row">
+                  <span className="bj-warning-label">경고</span>
+                  <p>{type.warning.alert}</p>
                 </div>
-                <div style={{ height: 1, background: 'var(--color-border)' }} />
-                <div style={{ display: 'flex', gap: 10 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-action)', flexShrink: 0 }}>부작용</span>
-                  <p style={{ margin: 0 }}>{type.warning.sideEffect}</p>
+                <div className="bj-divider" />
+                <div className="bj-warning-row">
+                  <span className="bj-warning-label">부작용</span>
+                  <p>{type.warning.sideEffect}</p>
                 </div>
               </div>
             </div>
 
             {/* 독서 운세 */}
             <div className="bj-card">
-              <p style={sectionLabelStyle}>독서 운세<span className="bj-section-label__line" /></p>
-              <p className="bj-body" style={{ marginBottom: 14 }}>{type.fortune.text}</p>
+              <SectionLabelInline>독서 운세<span className="bj-section-label__line" /></SectionLabelInline>
+              <p className="bj-body bj-mb-14">{type.fortune.text}</p>
               <div className="bj-callout">처방: {type.fortune.prescription}</div>
             </div>
 
             {/* 1년 후 예언 */}
             <div className="bj-card">
-              <p style={sectionLabelStyle}>1년 후 예언<span className="bj-section-label__line" /></p>
-              <div className="bj-card--flat" style={{ textAlign: 'center' }}>
-                <p className="bj-body" style={{ margin: 0 }}>{type.prophecy}</p>
+              <SectionLabelInline>1년 후 예언<span className="bj-section-label__line" /></SectionLabelInline>
+              <div className="bj-card--flat bj-text-center">
+                <p className="bj-body">{type.prophecy}</p>
               </div>
             </div>
 
             <button
               onClick={() => setShowFullReport(false)}
-              className="bj-btn bj-btn--block"
-              style={{ padding: '16px 0', fontSize: 15 }}
+              className="bj-btn bj-btn--block bj-btn--action-md"
             >
               접기 ↑
             </button>

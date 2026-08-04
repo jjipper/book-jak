@@ -32,18 +32,18 @@ export default function BookRow({ book, myStars }: BookRowProps) {
   }
 
   return (
-    <Link href={`/rate/books/${book.id}`} className="bj-row" style={{ textDecoration: 'none', color: 'inherit', alignItems: 'stretch', gap: 14 }}>
-      <div style={{ width: 52, flexShrink: 0 }}>
+    <Link href={`/rate/books/${book.id}`} className="bj-row bj-book-link bj-unstyled-link">
+      <div className="bj-book-thumb">
         <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 4" />
       </div>
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3 }}>
-        <p className="bj-body" style={{ fontWeight: 800, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+      <div className="bj-book-row__body">
+        <p className="bj-body bj-truncate bj-book-title-sm">
           {book.title}
         </p>
-        <p className="bj-caption" style={{ color: 'var(--color-text-hint)' }}>{authorName} · {book.genre} · {book.year}</p>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 2 }}>
+        <p className="bj-caption bj-caption--hint">{authorName} · {book.genre} · {book.year}</p>
+        <div className="bj-book-row__meta-row">
           <StarRating value={stars} onChange={handleRate} size={16} />
-          {stars > 0 && <span className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>내 별점 {stars}점</span>}
+          {stars > 0 && <span className="bj-caption bj-bold bj-caption--action">내 별점 {stars}점</span>}
         </div>
       </div>
     </Link>

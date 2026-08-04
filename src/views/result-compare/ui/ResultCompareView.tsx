@@ -37,60 +37,60 @@ function CompareContent() {
   const cardBox = (t: typeof myType): React.ReactNode => {
     if (!t) return null
     return (
-      <div className="bj-card" style={{ padding: 12, textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="bj-card bj-col-10 bj-text-center bj-card--p12">
         <IllustPlaceholder code={t.code} alt={t.name} aspectRatio="1 / 1" />
-        <p className="bj-caption" style={{ fontWeight: 700 }}>{t.code}</p>
-        <p className="bj-body" style={{ fontSize: 12, fontWeight: 600, lineHeight: 1.3 }}>{t.name}</p>
+        <p className="bj-caption bj-bold">{t.code}</p>
+        <p className="bj-body bj-name-sm">{t.name}</p>
       </div>
     )
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+    <main className="bj-shell">
+      <div className="bj-frame">
       {/* 헤더 */}
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href={myTypeCode ? `/result/${myTypeCode}` : '/home'} className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+      <header className="bj-subpage-head">
+        <Link href={myTypeCode ? `/result/${myTypeCode}` : '/home'} className="bj-icon-btn">←</Link>
         <div>
           <p className="bj-h2">친구 궁합 비교</p>
-          <p className="bj-caption" style={{ marginTop: 2 }}>독서 취향이 얼마나 맞을까?</p>
+          <p className="bj-caption bj-mt-2">독서 취향이 얼마나 맞을까?</p>
         </div>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="bj-content--lg">
 
         {/* 나 vs 친구 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="bj-row-center">
           {/* 내 카드 */}
-          <div style={{ flex: 1 }}>
-            <p className="bj-caption" style={{ fontWeight: 700, textAlign: 'center', marginBottom: 8 }}>나</p>
+          <div className="bj-flex-1">
+            <p className="bj-caption bj-bold bj-text-center bj-mb-8">나</p>
             {myType
               ? cardBox(myType)
-              : <Link href="/test" className="bj-card--flat" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
-                  <p style={{ fontSize: 28, marginBottom: 4 }}>?</p>
+              : <Link href="/test" className="bj-card--flat bj-unstyled-link bj-text-center bj-block">
+                  <p className="bj-pick-placeholder">?</p>
                   <p className="bj-caption">테스트 먼저!</p>
                 </Link>
             }
           </div>
 
           {/* 가운데 */}
-          <div style={{ flexShrink: 0, textAlign: 'center', minWidth: 56 }}>
+          <div className="bj-compare-mid bj-text-center">
             {affinity !== null
               ? <>
-                  <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 4 }}>취향 일치</p>
-                  <p className="bj-display bj-display--lg" style={{ fontSize: 22, color: 'var(--color-action)' }}>{affinity}%</p>
+                  <p className="bj-caption bj-bold bj-mb-4">취향 일치</p>
+                  <p className="bj-display bj-display--lg bj-affinity-lg">{affinity}%</p>
                 </>
-              : <p className="bj-display bj-display--lg" style={{ fontSize: 18, color: 'var(--color-text-hint)' }}>VS</p>
+              : <p className="bj-display bj-display--lg bj-vs-text">VS</p>
             }
           </div>
 
           {/* 친구 카드 */}
-          <div style={{ flex: 1 }}>
-            <p className="bj-caption" style={{ fontWeight: 700, textAlign: 'center', marginBottom: 8 }}>친구</p>
+          <div className="bj-flex-1">
+            <p className="bj-caption bj-bold bj-text-center bj-mb-8">친구</p>
             {friendTypeData
               ? cardBox(friendTypeData)
-              : <button onClick={() => setShowPicker(true)} className="bj-card--flat" style={{ width: '100%', textAlign: 'center', cursor: 'pointer', border: 'none' }}>
-                  <p style={{ fontSize: 28, marginBottom: 4 }}>+</p>
+              : <button onClick={() => setShowPicker(true)} className="bj-card--flat bj-friend-pick-btn">
+                  <p className="bj-pick-placeholder">+</p>
                   <p className="bj-caption">친구 유형 선택</p>
                 </button>
             }
@@ -100,22 +100,22 @@ function CompareContent() {
         {/* 궁합 결과 */}
         {affinity !== null && myType && friendTypeData && (
           <div className="bj-card">
-            <div style={{ textAlign: 'center', marginBottom: 16 }}>
-              <p className="bj-display bj-display--xl" style={{ color: 'var(--color-action)', marginBottom: 4 }}>{affinity}%</p>
-              <p className="bj-body" style={{ fontWeight: 600 }}>{affinityLabel(affinity)}</p>
+            <div className="bj-affinity-result-head">
+              <p className="bj-display bj-display--xl bj-affinity-xl">{affinity}%</p>
+              <p className="bj-body bj-semibold">{affinityLabel(affinity)}</p>
             </div>
-            <div className="bj-progress__track" style={{ height: 10, marginBottom: 16 }}>
+            <div className="bj-progress__track bj-progress--affinity">
               <div className="bj-progress__fill" style={{ width: `${affinity}%`, transition: 'width 1s ease' }} />
             </div>
             {myType.compatibility.match === friendType && (
-              <div className="bj-callout" style={{ textAlign: 'center' }}>
-                <p style={{ fontWeight: 700, marginBottom: 4 }}>환상의 조합!</p>
-                <p className="bj-caption" style={{ color: 'inherit' }}>&ldquo;{myType.compatibility.matchLine}&rdquo;</p>
+              <div className="bj-callout bj-text-center">
+                <p className="bj-callout-title">환상의 조합!</p>
+                <p className="bj-caption bj-caption--inherit">&ldquo;{myType.compatibility.matchLine}&rdquo;</p>
               </div>
             )}
             {myType.compatibility.opposite === friendType && (
-              <div className="bj-callout bj-callout--muted" style={{ textAlign: 'center' }}>
-                <p style={{ fontWeight: 700, marginBottom: 4 }}>완전 상극!</p>
+              <div className="bj-callout bj-callout--muted bj-text-center">
+                <p className="bj-callout-title">완전 상극!</p>
                 <p className="bj-caption">&ldquo;{myType.compatibility.oppLine}&rdquo;</p>
               </div>
             )}
@@ -130,8 +130,8 @@ function CompareContent() {
         )}
 
         {/* 링크 공유 유도 */}
-        <div className="bj-card--flat" style={{ textAlign: 'center' }}>
-          <p className="bj-body" style={{ color: 'var(--color-text-muted)', marginBottom: 12 }}>
+        <div className="bj-card--flat bj-text-center">
+          <p className="bj-body bj-text-muted bj-mb-12">
             친구한테 테스트 링크를 보내고<br />결과를 직접 넣어보세요
           </p>
           <button onClick={async () => { await navigator.clipboard.writeText(`${window.location.origin}/test`); alert('테스트 링크 복사됐어요!') }} className="bj-btn bj-btn--ghost">
@@ -144,7 +144,7 @@ function CompareContent() {
       {showPicker && (
         <div className="bj-sheet__overlay" onClick={() => setShowPicker(false)}>
           <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="bj-row-between bj-mb-16">
               <p className="bj-h2">친구 유형 선택</p>
               <button onClick={() => setShowPicker(false)} className="bj-icon-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -153,7 +153,7 @@ function CompareContent() {
                 </svg>
               </button>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+            <div className="bj-grid-2-sheet">
               {TYPE_CODES.map((code) => {
                 const t = READING_TYPES[code]
                 const isSelected = friendType === code
@@ -161,12 +161,11 @@ function CompareContent() {
                   <button
                     key={code}
                     onClick={() => { setFriendType(code); setShowPicker(false) }}
-                    className={`bj-choice${isSelected ? ' is-active' : ''}`}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: 12 }}
+                    className={`bj-choice bj-picker-inner${isSelected ? ' is-active' : ''}`}
                   >
-                    <div style={{ minWidth: 0 }}>
-                      <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 2 }}>{code}</p>
-                      <p style={{ fontSize: 12, lineHeight: 1.3 }}>{t.name}</p>
+                    <div className="bj-min-w-0">
+                      <p className="bj-caption bj-bold bj-mb-2">{code}</p>
+                      <p className="bj-name-sm">{t.name}</p>
                     </div>
                   </button>
                 )
