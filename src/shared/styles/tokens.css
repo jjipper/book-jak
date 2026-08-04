@@ -40,6 +40,9 @@
   --p-riso-orange: #FF5A1F;
   --p-riso-blue:   #2B4CFF;
 
+  /* 에러/경고 */
+  --p-red-500: #C0392B;
+
   /* ---------------------------------------------------------------------
      TYPO PRIMITIVE
      폰트 역할 분리(엄격): Pretendard=모든 정보성/본문,
@@ -120,6 +123,9 @@
   /* interactive states */
   --color-focus-ring:    var(--p-orange-500);
 
+  /* 에러 상태 */
+  --color-error:         var(--p-red-500);
+
   /* overlay (바텀시트 등 딤 배경) */
   --color-overlay: color-mix(in srgb, var(--p-ink-900) 45%, transparent);
 
@@ -129,7 +135,7 @@
 
   --fs-caption-sm: var(--p-fs-11);   /* 희소도 뱃지 서브 등 최소 텍스트 */
   --fs-caption: var(--p-fs-12);
-  --fs-body-sm: var(--p-fs-13);      /* 칩/태그 등 컴팩트 텍스트 */
+  --fs-body-sm: var(--p-fs-12);      /* 칩/태그 등 컴팩트 텍스트 */
   --fs-body:    var(--p-fs-14);
   --fs-body-lg: var(--p-fs-16);
   --fs-title:   var(--p-fs-16);
