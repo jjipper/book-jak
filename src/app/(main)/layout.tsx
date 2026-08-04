@@ -1,10 +1,13 @@
 import BottomNav from '@/widgets/bottom-nav/BottomNav'
+import AuthProvider from '@/widgets/auth-provider/AuthProvider'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="pb-nav">
-      {children}
-      <BottomNav />
-    </div>
+    <AuthProvider>
+      <div className="pb-nav">
+        {children}
+        <BottomNav />
+      </div>
+    </AuthProvider>
   )
 }

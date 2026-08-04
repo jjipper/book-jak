@@ -15,7 +15,7 @@ export function useRequireNickname() {
     }
   }, [])
 
-  function handleNicknameSubmit(name: string) {
+  async function handleNicknameSubmit(name: string): Promise<void> {
     saveNickname(name)
     const action = pendingAction
     setPendingAction(null)
