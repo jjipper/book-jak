@@ -1,18 +1,13 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
-/* v2 디자인시스템 (정본) */
+/* 초기화 → 토큰 → 컴포넌트 순서로 로드 */
+@import "../shared/styles/reset.css";
 @import "../shared/styles/tokens.css";
 @import "../shared/styles/components.css";
-
-* {
-  box-sizing: border-box;
-}
 
 html,
 body {
   height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 #app-root {
