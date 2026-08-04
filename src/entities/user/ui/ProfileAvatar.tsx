@@ -69,17 +69,14 @@ export default function ProfileAvatar({ src, size = 64, onChange }: ProfileAvata
   }
 
   return (
-    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+    <div className="bj-avatar-wrap" style={{ width: size, height: size }}>
       <div
-        style={{
-          width: size, height: size, borderRadius: '50%', overflow: 'hidden',
-          background: 'var(--color-bg-sunken)', color: 'var(--color-text-hint)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}
+        className="bj-avatar-circle"
+        style={{ width: size, height: size }}
       >
         {src ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt="프로필 사진" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={src} alt="프로필 사진" className="bj-avatar-img" />
         ) : (
           <DefaultAvatarIcon />
         )}
@@ -88,16 +85,11 @@ export default function ProfileAvatar({ src, size = 64, onChange }: ProfileAvata
         type="button"
         onClick={() => inputRef.current?.click()}
         aria-label="프로필 사진 바꾸기"
-        style={{
-          position: 'absolute', bottom: -2, right: -2, width: 24, height: 24, borderRadius: '50%',
-          background: 'var(--color-action)', color: 'var(--color-text-on-action)',
-          border: '2px solid var(--color-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer',
-        }}
+        className="bj-avatar-btn"
       >
         <CameraIcon />
       </button>
-      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} style={{ display: 'none' }} />
+      <input ref={inputRef} type="file" accept="image/*" onChange={handleFile} className="bj-hidden" />
     </div>
   )
 }

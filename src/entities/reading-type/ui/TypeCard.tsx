@@ -36,25 +36,11 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
 
   const brainShades = [1, 0.78, 0.58, 0.4, 0.24]
 
-  const sectionLabelStyle: React.CSSProperties = {
-    fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-    textTransform: 'uppercase', color: 'var(--color-action)', marginBottom: 10,
-    display: 'flex', alignItems: 'center', gap: 8,
-  }
-
   return (
-    <div
-      ref={shareRef}
-      style={{
-        width: '100%',
-        background: 'var(--color-surface)',
-        borderRadius: 'var(--radius-card)',
-        overflow: 'hidden',
-      }}
-    >
+    <div ref={shareRef} className="bj-typecard">
       {/* 상단 바 */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '14px 18px' }}>
-        <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em' }}>
+      <div className="bj-typecard__topbar">
+        <span className="bj-caption bj-bold" style={{ letterSpacing: '0.14em' }}>
           {type.code}
         </span>
       </div>
@@ -79,7 +65,7 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
       </div>
 
       {/* 이름 */}
-      <div style={{ padding: '18px 20px 6px', textAlign: 'center' }}>
+      <div className="bj-typecard__name-block">
         <h2 className="bj-display bj-display--xl">
           {type.name}
         </h2>
@@ -89,12 +75,12 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
       </div>
 
       {/* 스탯 */}
-      <div style={{ padding: '14px 20px 0' }}>
-        <div style={sectionLabelStyle}>
+      <div className="bj-typecard__stats">
+        <div className="bj-card-section-head--mb10 bj-typecard__section-label">
           독서 스탯
           <span className="bj-section-label__line" />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <div className="bj-col-10">
           {STAT_KEYS.map((key, i) => (
             <div key={key} className="bj-stat">
               <div className="bj-stat__head">
@@ -114,8 +100,8 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
       </div>
 
       {/* 뇌구조 */}
-      <div style={{ padding: '16px 20px 20px' }}>
-        <div style={sectionLabelStyle}>
+      <div className="bj-typecard__brain">
+        <div className="bj-card-section-head--mb10 bj-typecard__section-label">
           독서 뇌구조
           <span className="bj-section-label__line" />
         </div>
@@ -124,28 +110,21 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
             <div key={seg.label} className="bj-segmented__seg" style={{ width: seg.pct + '%', opacity: brainShades[i] }} />
           ))}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px 12px' }}>
+        <div className="bj-typecard__brain-legend">
           {type.brain.map((item, i) => (
-            <div key={item.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span style={{
-                width: 9, height: 9, borderRadius: 2, flexShrink: 0,
-                background: 'var(--color-fill)', opacity: brainShades[i], display: 'inline-block',
-              }} />
-              <span className="bj-caption" style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div key={item.label} className="bj-typecard__brain-row">
+              <span className="bj-typecard__brain-dot" style={{ opacity: brainShades[i] }} />
+              <span className="bj-caption bj-flex-1 bj-truncate">
                 {item.label}
               </span>
-              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--color-text)' }}>{item.pct}%</span>
+              <span className="bj-typecard__brain-pct">{item.pct}%</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* 푸터 */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        padding: '12px 20px',
-        borderTop: '1px dashed var(--color-border)',
-      }}>
+      <div className="bj-typecard__footer">
         <span className="bj-display" style={{ fontSize: 14, letterSpacing: '0.18em' }}>
           북작
         </span>
