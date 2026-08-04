@@ -25,17 +25,17 @@ export default function MyFollowersView() {
   const people = MOCK_PEOPLE.filter((p) => followerIds.includes(p.id))
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/my" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/my" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">팔로워</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="bj-content">
         {people.length === 0 ? (
-          <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
-            <p className="bj-body" style={{ fontWeight: 700, marginBottom: 6 }}>아직 나를 팔로우한 사람이 없어요</p>
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 나를 팔로우한 사람이 없어요</p>
             <p className="bj-caption">활동을 남기면 나를 팔로우하는 사람이 생겨요</p>
           </div>
         ) : (
@@ -44,20 +44,19 @@ export default function MyFollowersView() {
             const following = followingIds.includes(person.id)
             return (
               <div key={person.id} className="bj-row">
-                <Link href={`/people/${person.id}`} style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0, textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ width: 44, flexShrink: 0 }}>
+                <Link href={`/people/${person.id}`} className="bj-people-link">
+                  <div className="bj-people-thumb">
                     <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p className="bj-body" style={{ fontWeight: 700, fontSize: 14 }}>{person.nickname}</p>
+                  <div className="bj-flex-1">
+                    <p className="bj-body bj-bold bj-body--sm">{person.nickname}</p>
                     <p className="bj-caption">{type.name}</p>
                   </div>
                 </Link>
                 <button
                   type="button"
                   onClick={() => handleToggleFollow(person.id)}
-                  className={`bj-chip${following ? ' bj-chip--active' : ''}`}
-                  style={{ border: following ? undefined : '1px solid var(--color-border-strong)', cursor: 'pointer' }}
+                  className={`bj-chip${following ? ' bj-chip--active bj-follow-chip--active' : ' bj-follow-chip'}`}
                 >
                   {following ? '팔로잉' : '팔로우'}
                 </button>

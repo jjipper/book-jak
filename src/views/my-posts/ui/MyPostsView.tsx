@@ -19,18 +19,18 @@ export default function MyPostsView() {
   }, [])
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/my" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/my" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">남긴 글</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="bj-content">
         {questions.length === 0 ? (
-          <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
-            <p className="bj-body" style={{ fontWeight: 700, marginBottom: 6 }}>아직 남긴 글이 없어요</p>
-            <Link href="/social/discuss" className="bj-btn bj-btn--primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 남긴 글이 없어요</p>
+            <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--cta">
               질문 남기러 가기
             </Link>
           </div>
@@ -38,10 +38,10 @@ export default function MyPostsView() {
           questions.map((q) => {
             const answerCount = loadAnswers(q.id).length
             return (
-              <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row" style={{ textDecoration: 'none', color: 'inherit', alignItems: 'flex-start' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 4 }}>{bookTitle(q.bookId)}</p>
-                  <p className="bj-body" style={{ fontSize: 14, marginBottom: 6 }}>{q.text}</p>
+              <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row bj-row--top bj-unstyled-link">
+                <div className="bj-flex-1">
+                  <p className="bj-caption bj-bold bj-mb-4">{bookTitle(q.bookId)}</p>
+                  <p className="bj-body bj-body--sm bj-mb-6">{q.text}</p>
                   <p className="bj-caption">답변 {answerCount}개</p>
                 </div>
               </Link>

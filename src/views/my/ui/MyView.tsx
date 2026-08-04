@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { BADGE_LIST } from '@/entities/reading-type/model/badges'
-import { getAvatar, setAvatar, ensureNickname, setNickname } from '@/entities/user/model/profile'
+import { setAvatar, setNickname } from '@/entities/user/model/profile'
+import { fetchProfile, upsertProfile, signOut } from '@/entities/user/api/profileRemote'
 import { getFollowingIds, getFollowerIds } from '@/features/follow/model/follows'
 import { getLikedIds } from '@/features/like/model/likes'
 import { loadQuestions, loadAllAnswers } from '@/entities/discussion/model/discussionActions'
@@ -37,15 +39,16 @@ function ChevronRightIcon() {
 
 function ActivityRow({ href, label, count }: { href: string; label: string; count: number }) {
   return (
-    <Link href={href} className="bj-row" style={{ textDecoration: 'none', color: 'inherit', padding: '9px 14px' }}>
-      <p className="bj-body" style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>{label}</p>
-      <span className="bj-caption" style={{ fontWeight: 700 }}>{count}</span>
-      <span style={{ color: 'var(--color-text-hint)', display: 'flex' }}><ChevronRightIcon /></span>
+    <Link href={href} className="bj-row bj-row--compact bj-unstyled-link">
+      <p className="bj-activity-label">{label}</p>
+      <span className="bj-caption bj-bold">{count}</span>
+      <span className="bj-icon-hint"><ChevronRightIcon /></span>
     </Link>
   )
 }
 
 export default function MyView() {
+  const router = useRouter()
   const [savedResult, setSavedResult] = useState<ReturnType<typeof loadResult>>(null)
   const [nickname, setNicknameState] = useState('')
   const [avatar, setAvatarState] = useState<string | null>(null)
@@ -65,8 +68,16 @@ export default function MyView() {
 
   useEffect(() => {
     setSavedResult(loadResult())
-    setNicknameState(ensureNickname())
-    setAvatarState(getAvatar())
+    fetchProfile().then((profile) => {
+      if (profile) {
+        setNicknameState(profile.nickname)
+        setNickname(profile.nickname)
+        if (profile.avatar_url) {
+          setAvatarState(profile.avatar_url)
+          setAvatar(profile.avatar_url)
+        }
+      }
+    })
     setFollowingCount(getFollowingIds().length)
     setFollowerCount(getFollowerIds().length)
     setLikedCount(getLikedIds().length)
@@ -100,16 +111,17 @@ export default function MyView() {
 
   const unlockedBadges = BADGE_LIST.filter((b) => savedResult?.badgeCandidates?.includes(b.key))
 
-  function handleAvatarChange(dataUrl: string) {
-    setAvatar(dataUrl)
+  async function handleAvatarChange(dataUrl: string) {
     setAvatarState(dataUrl)
+    setAvatar(dataUrl)
+    await upsertProfile(nickname, dataUrl)
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
+    <main className="bj-shell">
+      <div className="bj-frame">
       {/* 헤더 */}
-      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--space-lg) 0 var(--space-md)' }}>
+      <header className="bj-my-header">
         <span className="bj-display bj-display--lg">마이</span>
         <button className="bj-icon-btn" onClick={() => setShowSettings(true)} aria-label="설정">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -119,32 +131,31 @@ export default function MyView() {
         </button>
       </header>
 
-      <div style={{ padding: '0 0 40px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <div className="bj-content--lg">
 
         {/* 프로필 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div className="bj-my-profile">
           <ProfileAvatar src={avatar} onChange={handleAvatarChange} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span className="bj-h2" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{nickname}</span>
+          <div className="bj-flex-1">
+            <div className="bj-my-nickname-row">
+              <span className="bj-h2 bj-truncate">{nickname}</span>
               <button
                 type="button"
                 onClick={() => setShowNicknameSheet(true)}
                 aria-label="닉네임 수정"
-                className="bj-icon-btn"
-                style={{ width: 26, height: 26, color: 'var(--color-text-muted)' }}
+                className="bj-icon-btn bj-icon-btn--sm"
               >
                 <PencilIcon />
               </button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 2 }}>
-              <Link href="/my/following" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                <span className="bj-body" style={{ fontWeight: 800, fontSize: 16 }}>{followingCount}</span>
-                <span className="bj-caption" style={{ fontSize: 13 }}>팔로잉</span>
+            <div className="bj-my-stats">
+              <Link href="/my/following" className="bj-my-stat-link">
+                <span className="bj-stat-num">{followingCount}</span>
+                <span className="bj-caption">팔로잉</span>
               </Link>
-              <Link href="/my/followers" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'baseline', gap: 5 }}>
-                <span className="bj-body" style={{ fontWeight: 800, fontSize: 16 }}>{followerCount}</span>
-                <span className="bj-caption" style={{ fontSize: 13 }}>팔로워</span>
+              <Link href="/my/followers" className="bj-my-stat-link">
+                <span className="bj-stat-num">{followerCount}</span>
+                <span className="bj-caption">팔로워</span>
               </Link>
             </div>
           </div>
@@ -152,40 +163,40 @@ export default function MyView() {
 
         {/* 테스트 결과 */}
         {myType && savedResult ? (
-          <Link href={`/result/${savedResult.typeCode}?full=1`} className="bj-card" style={{ display: 'flex', alignItems: 'center', gap: 16, textDecoration: 'none', color: 'inherit' }}>
-            <div style={{ width: 64, flexShrink: 0 }}>
+          <Link href={`/result/${savedResult.typeCode}?full=1`} className="bj-card bj-my-result-link">
+            <div className="bj-my-result-thumb">
               <IllustPlaceholder code={myType.code} alt={myType.name} aspectRatio="1 / 1" />
             </div>
             <div>
-              <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 4 }}>{myType.code}</p>
+              <p className="bj-caption bj-bold bj-mb-4">{myType.code}</p>
               <p className="bj-display bj-display--lg">{myType.name}</p>
-              <p className="bj-caption" style={{ marginTop: 4 }}>내 결과 보기 →</p>
+              <p className="bj-caption bj-mt-4">내 결과 보기 →</p>
             </div>
           </Link>
         ) : (
-          <div className="bj-card" style={{ textAlign: 'center', padding: '28px 20px' }}>
-            <p className="bj-body" style={{ fontWeight: 700, marginBottom: 6 }}>아직 테스트 전이에요</p>
-            <p className="bj-caption" style={{ marginBottom: 16 }}>나의 독서 유형을 먼저 알아보세요</p>
-            <Link href="/test" className="bj-btn bj-btn--primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+          <div className="bj-card bj-card--empty-lg">
+            <p className="bj-body bj-bold bj-mb-6">아직 테스트 전이에요</p>
+            <p className="bj-caption bj-mb-16">나의 독서 유형을 먼저 알아보세요</p>
+            <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">
               테스트 시작하기 →
             </Link>
           </div>
         )}
 
         {/* 스타일 분석 + 배지 — 데스크톱(≥900px)에서 2열 */}
-        <div className="bj-list bj-list--lg-grid-2" style={{ gap: 16 }}>
+        <div className="bj-list bj-list--lg-grid-2">
 
         {/* 좋아하는 책 스타일 분석 */}
         <div className="bj-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em', color: 'var(--color-action)' }}>좋아하는 책 스타일 분석</span>
+          <div className="bj-card-section-head">
+            <span className="bj-section-tag">좋아하는 책 스타일 분석</span>
             <span className="bj-section-label__line" />
           </div>
           {styleTags.length > 0 ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="bj-col-14">
               <div>
-                <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 6 }}>선호 태그</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <p className="bj-caption bj-bold bj-mb-6">선호 태그</p>
+                <div className="bj-tag-group">
                   {styleTags.map((tag) => (
                     <span key={tag} className="bj-chip bj-chip--active">#{tag}</span>
                   ))}
@@ -193,8 +204,8 @@ export default function MyView() {
               </div>
               {favoriteGenres.length > 0 && (
                 <div>
-                  <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 6 }}>좋아하는 장르</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <p className="bj-caption bj-bold bj-mb-6">좋아하는 장르</p>
+                  <div className="bj-tag-group">
                     {favoriteGenres.map((genre) => (
                       <span key={genre} className="bj-chip">{genre}</span>
                     ))}
@@ -203,8 +214,8 @@ export default function MyView() {
               )}
               {favoriteAuthors.length > 0 && (
                 <div>
-                  <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 6 }}>좋아하는 작가</p>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <p className="bj-caption bj-bold bj-mb-6">좋아하는 작가</p>
+                  <div className="bj-tag-group">
                     {favoriteAuthors.map((author) => (
                       <span key={author} className="bj-chip">{author}</span>
                     ))}
@@ -214,10 +225,10 @@ export default function MyView() {
             </div>
           ) : (
             <>
-              <p className="bj-caption" style={{ textAlign: 'center', padding: '8px 0 12px' }}>
+              <p className="bj-caption bj-text-center bj-mb-12 bj-pt-8">
                 블라인드 북카드를 평가하면<br />내가 좋아하는 책 스타일을 분석해드려요
               </p>
-              <Link href="/discover" className="bj-btn bj-btn--block" style={{ padding: '10px 0', fontSize: 13 }}>
+              <Link href="/discover" className="bj-btn bj-btn--block bj-btn--block-sm">
                 블라인드 북카드 평가하기
               </Link>
             </>
@@ -226,37 +237,37 @@ export default function MyView() {
 
         {/* 배지 섹션 */}
         <div className="bj-card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em', color: 'var(--color-action)' }}>나의 배지</span>
+          <div className="bj-card-section-head--mb16">
+            <span className="bj-section-tag">나의 배지</span>
             <span className="bj-section-label__line" />
             <span className="bj-caption">{unlockedBadges.length}/{BADGE_LIST.length}</span>
           </div>
 
           {unlockedBadges.length > 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+            <div className="bj-badge-grid">
               {unlockedBadges.map((badge) => (
-                <span key={badge.key} className="bj-badge bj-badge--rare" style={{ justifyContent: 'center', padding: '8px 10px' }}>
+                <span key={badge.key} className="bj-badge bj-badge--rare bj-badge--centered">
                   {badge.name}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="bj-caption" style={{ textAlign: 'center' }}>테스트로 배지를 획득해보세요</p>
+            <p className="bj-caption bj-text-center">테스트로 배지를 획득해보세요</p>
           )}
         </div>
 
         </div>
 
         {/* 보관함 + 활동 — 데스크톱(≥900px)에서 2열 */}
-        <div className="bj-list bj-list--lg-grid-2" style={{ gap: 16 }}>
+        <div className="bj-list bj-list--lg-grid-2">
 
         {/* 보관함 */}
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em', color: 'var(--color-action)' }}>보관함</span>
+          <div className="bj-card-section-head--mb10">
+            <span className="bj-section-tag">보관함</span>
             <span className="bj-section-label__line" />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="bj-col-8">
             <ActivityRow href="/my/rated" label="내가 읽고 별점 준 책" count={ratedCount} />
             <ActivityRow href="/my/wishlist" label="읽고 싶어요 한 책" count={wishCount} />
           </div>
@@ -264,11 +275,11 @@ export default function MyView() {
 
         {/* 활동 */}
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <span className="bj-caption" style={{ fontWeight: 700, letterSpacing: '0.14em', color: 'var(--color-action)' }}>나의 활동</span>
+          <div className="bj-card-section-head--mb10">
+            <span className="bj-section-tag">나의 활동</span>
             <span className="bj-section-label__line" />
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="bj-col-8">
             <ActivityRow href="/my/likes" label="좋아요 한 글" count={likedCount} />
             <ActivityRow href="/my/posts" label="남긴 글" count={myPostCount} />
             <ActivityRow href="/my/comments" label="남긴 댓글" count={myCommentCount} />
@@ -283,7 +294,8 @@ export default function MyView() {
         <NicknameSheet
           initialValue={nickname}
           onClose={() => setShowNicknameSheet(false)}
-          onSubmit={(name) => {
+          onSubmit={async (name) => {
+            await upsertProfile(name)
             setNickname(name)
             setNicknameState(name)
             setShowNicknameSheet(false)
@@ -294,7 +306,7 @@ export default function MyView() {
       {showSettings && (
         <div className="bj-sheet__overlay" onClick={() => setShowSettings(false)}>
           <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <div className="bj-sheet-header">
               <p className="bj-h2">설정</p>
               <button onClick={() => setShowSettings(false)} className="bj-icon-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -303,15 +315,30 @@ export default function MyView() {
               </button>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <div className="bj-card--flat" style={{ padding: 16 }}>
-                <p className="bj-display bj-display--lg" style={{ marginBottom: 4 }}>북작</p>
+            <div className="bj-col-16">
+              <div className="bj-card--flat">
+                <p className="bj-display bj-display--lg bj-settings-app-name">북작</p>
                 <p className="bj-caption">취향으로 북적이는 독서 취향 소셜</p>
-                <p className="bj-caption" style={{ marginTop: 2, color: 'var(--color-text-hint)' }}>v2 프리뷰</p>
+                <p className="bj-caption bj-settings-version">v2 프리뷰</p>
               </div>
 
               <div>
-                <p className="bj-caption" style={{ fontWeight: 700, marginBottom: 8, color: 'var(--color-text-muted)', letterSpacing: '0.1em' }}>데이터</p>
+                <p className="bj-caption bj-settings-section-label">계정</p>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await signOut()
+                    localStorage.clear()
+                    router.push('/login')
+                  }}
+                  className="bj-btn bj-btn--block bj-btn--tall"
+                >
+                  로그아웃
+                </button>
+              </div>
+
+              <div>
+                <p className="bj-caption bj-settings-section-label">데이터</p>
                 <button
                   type="button"
                   onClick={() => {
@@ -320,8 +347,7 @@ export default function MyView() {
                       window.location.href = '/'
                     }
                   }}
-                  className="bj-btn bj-btn--block"
-                  style={{ padding: '14px 0', fontSize: 13 }}
+                  className="bj-btn bj-btn--block bj-btn--tall"
                 >
                   데이터 전체 초기화
                 </button>

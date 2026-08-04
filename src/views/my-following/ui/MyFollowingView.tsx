@@ -20,19 +20,19 @@ export default function MyFollowingView() {
   }
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/my" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/my" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">팔로잉</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="bj-content">
         {people.length === 0 ? (
-          <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
-            <p className="bj-body" style={{ fontWeight: 700, marginBottom: 6 }}>아직 팔로우한 사람이 없어요</p>
-            <p className="bj-caption" style={{ marginBottom: 16 }}>취향 맞는 사람을 찾아 팔로우해보세요</p>
-            <Link href="/social/people" className="bj-btn bj-btn--primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 팔로우한 사람이 없어요</p>
+            <p className="bj-caption bj-mb-16">취향 맞는 사람을 찾아 팔로우해보세요</p>
+            <Link href="/social/people" className="bj-btn bj-btn--primary bj-btn--cta">
               취향 맞는 사람 찾기
             </Link>
           </div>
@@ -41,20 +41,19 @@ export default function MyFollowingView() {
             const type = READING_TYPES[person.typeCode]
             return (
               <div key={person.id} className="bj-row">
-                <Link href={`/people/${person.id}`} style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1, minWidth: 0, textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ width: 44, flexShrink: 0 }}>
+                <Link href={`/people/${person.id}`} className="bj-people-link">
+                  <div className="bj-people-thumb">
                     <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <p className="bj-body" style={{ fontWeight: 700, fontSize: 14 }}>{person.nickname}</p>
+                  <div className="bj-flex-1">
+                    <p className="bj-body bj-bold bj-body--sm">{person.nickname}</p>
                     <p className="bj-caption">{type.name}</p>
                   </div>
                 </Link>
                 <button
                   type="button"
                   onClick={() => handleUnfollow(person.id)}
-                  className="bj-chip bj-chip--active"
-                  style={{ cursor: 'pointer' }}
+                  className="bj-chip bj-chip--active bj-follow-chip--active"
                 >
                   팔로잉
                 </button>

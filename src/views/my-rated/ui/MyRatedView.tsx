@@ -18,18 +18,18 @@ export default function MyRatedView() {
   }, [])
 
   return (
-    <main className="bj-shell" style={{ minHeight: '100dvh' }}>
-      <div className="bj-frame" style={{ maxWidth: 1120, margin: '0 auto' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, padding: 'var(--space-lg) 0 var(--space-md)' }}>
-        <Link href="/my" className="bj-icon-btn" style={{ textDecoration: 'none' }}>←</Link>
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
+        <Link href="/my" className="bj-icon-btn">←</Link>
         <span className="bj-display bj-display--lg">별점 준 책</span>
       </header>
 
-      <div style={{ paddingBottom: 40, display: 'flex', flexDirection: 'column', gap: 10 }}>
+      <div className="bj-content">
         {ratings.length === 0 ? (
-          <div className="bj-card" style={{ textAlign: 'center', padding: '32px 20px' }}>
-            <p className="bj-body" style={{ fontWeight: 700, marginBottom: 6 }}>아직 별점 준 책이 없어요</p>
-            <Link href="/rate" className="bj-btn bj-btn--primary" style={{ padding: '12px 24px', fontSize: 14 }}>
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 별점 준 책이 없어요</p>
+            <Link href="/rate" className="bj-btn bj-btn--primary bj-btn--cta">
               읽은 책 평가하러 가기
             </Link>
           </div>
@@ -39,21 +39,21 @@ export default function MyRatedView() {
             const title = book?.title ?? r.title ?? '제목 없음'
             const authorName = book ? getAuthor(book.authorId)?.name : undefined
             return (
-              <Link key={r.bookId} href={`/rate/books/${r.bookId}`} className="bj-row" style={{ textDecoration: 'none', color: 'inherit', alignItems: 'stretch', gap: 14 }}>
-                <div style={{ width: 52, flexShrink: 0 }}>
+              <Link key={r.bookId} href={`/rate/books/${r.bookId}`} className="bj-row bj-book-link">
+                <div className="bj-book-cover">
                   <IllustPlaceholder code={book?.illustCode ?? r.bookId} alt={title} aspectRatio="3 / 4" />
                 </div>
-                <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3 }}>
-                  <p className="bj-body" style={{ fontWeight: 700, fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <div className="bj-book-info bj-flex-1">
+                  <p className="bj-body bj-bold bj-truncate bj-body--sm">
                     {title}
                   </p>
                   {authorName && <p className="bj-caption">{authorName}</p>}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <div className="bj-meta-row">
                     <Stars value={r.stars} size={12} />
-                    <span className="bj-caption" style={{ fontWeight: 700, color: 'var(--color-action)' }}>{r.stars}점</span>
+                    <span className="bj-caption bj-bold bj-caption--action">{r.stars}점</span>
                   </div>
                   {r.review && (
-                    <p className="bj-caption" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>&ldquo;{r.review}&rdquo;</p>
+                    <p className="bj-caption bj-truncate">&ldquo;{r.review}&rdquo;</p>
                   )}
                 </div>
               </Link>
