@@ -1,6 +1,24 @@
--- 북작 — 평가·리뷰 공유 스키마
+-- 북작 — 스키마
 -- Supabase 대시보드 > SQL Editor에 전체 붙여넣고 Run 하면 끝.
--- 사전 조건: Authentication > Sign In / Providers 에서 "Anonymous sign-ins" 활성화
+-- 사전 조건: Authentication > Providers 에서 Kakao OAuth 설정
+
+-- 사용자 프로필 (카카오 OAuth 로그인 후 최초 닉네임 설정 시 생성)
+create table if not exists public.profiles (
+  id uuid primary key references auth.users (id) on delete cascade,
+  nickname text not null,
+  avatar_url text,             -- base64 dataUrl (작은 앱 기준, 추후 Storage 이관 가능)
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.profiles enable row level security;
+
+create policy "profiles: 누구나 조회" on public.profiles
+  for select using (true);
+create policy "profiles: 본인 등록·수정" on public.profiles
+  for insert to authenticated with check (auth.uid() = id);
+create policy "profiles: 본인 수정" on public.profiles
+  for update to authenticated using (auth.uid() = id);
 
 -- 책 (평가가 달리는 순간 upsert되는 메타데이터 스냅샷)
 create table public.books (
