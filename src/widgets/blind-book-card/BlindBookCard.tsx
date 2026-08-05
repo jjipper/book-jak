@@ -213,10 +213,10 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
         ref={leftHintRef}
         style={{
           position: 'absolute', top: 14, left: 14, zIndex: 5,
-          padding: '5px 12px', borderRadius: 'var(--radius-badge)',
+          padding: '5px 12px', borderRadius: 'var(--radius-pill)',
           fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
-          border: '1.5px solid var(--color-border-strong)',
-          background: 'var(--color-surface)', color: 'var(--color-text-hint)',
+          border: '1.5px solid var(--color-border)',
+          background: 'var(--color-surface)', color: 'var(--color-text-caption)',
           opacity: 0, pointerEvents: 'none',
         }}
       >
@@ -226,10 +226,10 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
         ref={rightHintRef}
         style={{
           position: 'absolute', top: 14, right: 14, zIndex: 5,
-          padding: '5px 12px', borderRadius: 'var(--radius-badge)',
+          padding: '5px 12px', borderRadius: 'var(--radius-pill)',
           fontSize: 11, fontWeight: 700, letterSpacing: '0.08em',
-          border: '1.5px solid var(--color-action)',
-          background: 'var(--color-action-tint)', color: 'var(--color-action-on-tint)',
+          border: '1.5px solid var(--color-accent)',
+          background: 'var(--color-accent-weak)', color: 'var(--color-accent-hover)',
           opacity: 0, pointerEvents: 'none',
         }}
       >
@@ -239,7 +239,7 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
       {!revealed ? (
         /* ── 공개 전: 설명 → 장르/분위기/난이도 → 키워드 → 후기 → 선택 버튼 ── */
         <div className="bj-col-16" style={{ gap: 14 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-hint)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-text-caption)' }}>
             <LockIcon />
             <span className="bj-caption bj-bold" style={{ letterSpacing: '0.1em' }}>
               제목·표지는 궁금해요를 누르면 공개돼요
@@ -266,7 +266,7 @@ export default function BlindBookCard({ book, onSkip, onCurious, onWish, onNext 
 
           <p className="bj-body" style={{ fontSize: 15, lineHeight: 1.7 }}>
             {book.desc.map((seg, i) => (
-              <span key={i} style={seg.emphasis ? { color: 'var(--color-action)', fontWeight: 700 } : undefined}>
+              <span key={i} style={seg.emphasis ? { color: 'var(--color-accent)', fontWeight: 700 } : undefined}>
                 {seg.text}
               </span>
             ))}

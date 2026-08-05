@@ -175,8 +175,8 @@ export default function TestView() {
                 <span
                   className="bj-choice-badge"
                   style={{
-                    background: isSelected ? 'var(--color-action)' : 'var(--color-bg-sunken)',
-                    color: isSelected ? 'var(--color-text-on-action)' : 'var(--color-text-hint)',
+                    background: isSelected ? 'var(--color-accent)' : 'var(--color-bg-sunken)',
+                    color: isSelected ? 'var(--color-text-on-accent)' : 'var(--color-text-caption)',
                   }}
                 >
                   {option.id}

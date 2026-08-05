@@ -1852,7 +1852,7 @@ body.bj-body {
   border-radius: 50%;
   overflow: hidden;
   background: var(--color-bg-sunken);
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1873,8 +1873,8 @@ body.bj-body {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--color-action);
-  color: var(--color-text-on-action);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
   border: 2px solid var(--color-bg);
   display: flex;
   align-items: center;
@@ -1886,7 +1886,7 @@ body.bj-body {
 .bj-typecard {
   width: 100%;
   background: var(--color-surface);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -2031,7 +2031,7 @@ body.bj-body {
 
 /* 퍼슨 상세 — 팔로우/팔로잉 chip 버튼 공통 */
 .bj-follow-chip {
-  border: 1px solid var(--color-border-strong);
+  border: 1px solid var(--color-border);
   cursor: pointer;
   flex-shrink: 0;
 }
@@ -2066,7 +2066,7 @@ body.bj-body {
 
 /* 아이콘 hint 색 flex 래퍼 */
 .bj-icon-hint {
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
   display: flex;
 }
 
@@ -2295,7 +2295,7 @@ body.bj-body {
 /* 일러스트 선택 버튼 */
 .bj-illust-pick {
   border: 2px solid var(--color-border-soft);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
   padding: 0;
   cursor: pointer;
@@ -2402,7 +2402,7 @@ body.bj-body {
 }
 .bj-rank-avatar--empty {
   height: 40px;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-md);
   background: var(--color-bg-sunken);
 }
 
@@ -2466,7 +2466,7 @@ body.bj-body {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.14em;
-  color: var(--color-action);
+  color: var(--color-accent);
 }
 
 /* TypeCard 섹션 라벨 — uppercase + 10px */
@@ -2475,7 +2475,7 @@ body.bj-body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-action);
+  color: var(--color-accent);
 }
 
 /* 팔로잉/팔로워 숫자 강조 */
@@ -2555,7 +2555,7 @@ body.bj-body {
 /* 설정 시트 — 버전 텍스트 (hint 색, marginTop 2) */
 .bj-settings-version {
   margin-top: 2px;
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
 }
 
 /* 설정 시트 — 데이터 섹션 라벨 */
@@ -2578,7 +2578,7 @@ body.bj-body {
 
 /* PersonDetail — 궁합 % 강조색 (action) */
 .bj-affinity-pct--xl {
-  color: var(--color-action);
+  color: var(--color-accent);
   margin-bottom: 4px;
 }
 
@@ -2646,7 +2646,7 @@ body.bj-body {
 /* ExternalBookDetail — 출판사/ISBN (hint 색) */
 .bj-book-meta-hint {
   margin-top: 2px;
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
 }
 
 /* ExternalBookDetail — 평가 카드 패딩 */
@@ -2685,7 +2685,7 @@ body.bj-body {
 .bj-book-more-link {
   display: inline-block;
   margin-top: 8px;
-  color: var(--color-action);
+  color: var(--color-accent);
   font-weight: 700;
 }
 
@@ -2697,7 +2697,7 @@ body.bj-body {
 /* ExternalBookDetail — 내 리뷰 행 (action 테두리) */
 .bj-row--my-review {
   align-items: flex-start;
-  border-color: var(--color-action);
+  border-color: var(--color-accent);
 }
 
 /* ExternalBookDetail — 일반 리뷰 행 */
@@ -2782,7 +2782,7 @@ body.bj-body {
 
 /* BookRow / ExternalBookRow — 저자/출판사 caption (hint 색) */
 .bj-caption--hint {
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
 }
 
 /* RateView — 검색 입력 최대 폭 */
@@ -2830,7 +2830,7 @@ body.bj-body {
 
 /* 별점 강조 (action 색) — MyRated, BookRow 등 */
 .bj-caption--action {
-  color: var(--color-action);
+  color: var(--color-accent);
 }
 .bj-caption--error {
   color: var(--color-error);
@@ -2978,7 +2978,7 @@ body.bj-body {
 /* 작가 링크 (action 색 + bold + mt 6) */
 .bj-book-author-link {
   font-size: 15px;
-  color: var(--color-action);
+  color: var(--color-accent);
   font-weight: 700;
   margin-top: 6px;
   text-decoration: none;
@@ -2986,13 +2986,13 @@ body.bj-body {
 
 /* 책 메타 캡션 (hint 색 + mt 2) */
 .bj-caption--meta {
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
   margin-top: 2px;
 }
 
 /* 별점 숫자 — 액션 색 17px 800 */
 .bj-stat-star--action {
-  color: var(--color-action);
+  color: var(--color-accent);
   font-size: 17px;
   font-weight: 800;
 }
@@ -3033,12 +3033,12 @@ body.bj-body {
 
 /* 액션 색 텍스트 */
 .bj-text-action {
-  color: var(--color-action);
+  color: var(--color-accent);
 }
 
 /* 액션 색 + bold */
 .bj-text-action-bold {
-  color: var(--color-action);
+  color: var(--color-accent);
   font-weight: 700;
 }
 
@@ -3115,7 +3115,7 @@ body.bj-body {
 
 /* 내 리뷰 행 — action 테두리 (align-items는 bj-row--top과 조합) */
 .bj-row--review-me {
-  border-color: var(--color-action);
+  border-color: var(--color-accent);
 }
 
 /* ResultDetail — SectionLabel 인라인 */
@@ -3124,7 +3124,7 @@ body.bj-body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-action);
+  color: var(--color-accent);
   margin-bottom: 14px;
   display: flex;
   align-items: center;
@@ -3166,7 +3166,7 @@ body.bj-body {
 .bj-warning-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--color-action);
+  color: var(--color-accent);
   flex-shrink: 0;
 }
 
@@ -3186,13 +3186,13 @@ body.bj-body {
 /* ResultCompare — 취향 일치 % 22px action */
 .bj-affinity-lg {
   font-size: 22px;
-  color: var(--color-action);
+  color: var(--color-accent);
 }
 
 /* ResultCompare — VS 18px hint */
 .bj-vs-text {
   font-size: 18px;
-  color: var(--color-text-hint);
+  color: var(--color-text-caption);
 }
 
 /* ResultCompare — 궁합 진행바 (h 10 + mb 16) */
@@ -3209,7 +3209,7 @@ body.bj-body {
 
 /* ResultCompare — xl % (action + mb 4) */
 .bj-affinity-xl {
-  color: var(--color-action);
+  color: var(--color-accent);
   margin-bottom: 4px;
 }
 
@@ -3369,7 +3369,7 @@ body.bj-body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-action);
+  color: var(--color-accent);
   margin-bottom: 12px;
 }
 
@@ -3400,7 +3400,7 @@ body.bj-body {
 /* TestView — 인트로 스탯 값 (20px + action + mb 4) */
 .bj-stat-value {
   font-size: 20px;
-  color: var(--color-action);
+  color: var(--color-accent);
   margin-bottom: 4px;
 }
 
@@ -3411,7 +3411,7 @@ body.bj-body {
 
 /* TestView — 진행 % 라벨 (action 색) */
 .bj-progress-pct {
-  color: var(--color-action);
+  color: var(--color-accent);
 }
 
 /* TestView — 문항 카드 영역 */
@@ -3424,7 +3424,7 @@ body.bj-body {
 /* TestView — Q 라벨 (action + 자간 + mb 14) */
 .bj-question-num {
   letter-spacing: 0.14em;
-  color: var(--color-action);
+  color: var(--color-accent);
   margin-bottom: 14px;
 }
 
@@ -3481,7 +3481,7 @@ body.bj-body {
   position: absolute;
   inset: 10px;
   border: 2px solid transparent;
-  border-top-color: var(--color-action);
+  border-top-color: var(--color-accent);
   border-radius: 50%;
   animation: spin 1.4s linear infinite;
 }
@@ -3577,7 +3577,7 @@ body.bj-body {
 .bj-riso__a--action {
   width: 26px;
   height: 26px;
-  background: var(--color-action);
+  background: var(--color-accent);
 }
 .bj-riso__b--blue {
   width: 26px;
@@ -3649,7 +3649,7 @@ body.bj-body {
 }
 
 .bj-login-error {
-  color: var(--color-action);
+  color: var(--color-accent);
   text-align: center;
 }
 
