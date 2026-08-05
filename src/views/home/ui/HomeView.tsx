@@ -46,7 +46,7 @@ export default function HomeView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <HomeTopbar typeCode={savedResult?.typeCode ?? null} />
+        <HomeTopbar />
         <HomeHero typeCode={savedResult?.typeCode ?? null} />
         {dailyBooks.length > 0 && <DiscoverRail books={dailyBooks} dateKey={dateKey} />}
         {questions.length > 0 && <DiscussSection questions={questions} answerCounts={answerCounts} />}
