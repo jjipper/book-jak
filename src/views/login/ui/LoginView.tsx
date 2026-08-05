@@ -10,6 +10,7 @@ export default function LoginView() {
 
   async function handleKakaoLogin() {
     const sb = createSupabaseBrowser();
+    const next = searchParams.get("next") ?? "/home";
     await sb.auth.signInWithOAuth({
       provider: "kakao",
       options: {
@@ -17,7 +18,7 @@ export default function LoginView() {
         queryParams: {
           scope: "profile_nickname profile_image",
         },
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
   }
