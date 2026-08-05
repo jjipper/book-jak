@@ -244,7 +244,7 @@ export default function DiscoverView() {
 
                     <p className="bj-body bj-browse-desc">
                       {book.desc.map((seg, i) => (
-                        <span key={i} style={seg.emphasis ? { color: 'var(--color-action)', fontWeight: 700 } : undefined}>
+                        <span key={i} style={seg.emphasis ? { color: 'var(--color-accent)', fontWeight: 700 } : undefined}>
                           {seg.text}
                         </span>
                       ))}

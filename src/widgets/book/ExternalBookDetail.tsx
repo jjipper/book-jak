@@ -10,6 +10,9 @@ import { lookupExternalBook, type ExternalBook } from '@/entities/external-book/
 import { getBookRating, saveBookRating, removeBookRating, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import { pushRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
 import { getNickname } from '@/entities/user/model/profile'
+import { toast } from '@/shared/lib/toast'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
 
@@ -28,6 +31,7 @@ interface ExternalBookDetailProps {
 
 export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) {
   const isbn = bookId.replace(/^isbn-/, '')
+  const { showGate, closeGate, requireAuth } = useAuthGate()
   const [book, setBook] = useState<ExternalBook | null>(null)
   const [loading, setLoading] = useState(true)
   const [myRating, setMyRating] = useState<BookRatingRecord | undefined>(undefined)
@@ -73,13 +77,15 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
 
   // 별을 누르는 즉시 저장 — 같은 지점을 다시 누르면 취소, 리뷰는 아래 입력창에서 따로 저장
   function handleRate(n: number) {
-    setStars(n)
-    if (n === 0) {
-      removeBookRating(bookId)
-      setMyRating(undefined)
-      return
-    }
-    persist(n, review)
+    requireAuth(() => {
+      setStars(n)
+      if (n === 0) {
+        removeBookRating(bookId)
+        setMyRating(undefined)
+        return
+      }
+      persist(n, review)
+    })
   }
 
   function handleSaveReview() {
@@ -106,7 +112,10 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       { id: bookId, title: book.title, authors: book.authors, publisher: book.publisher, year: book.year, thumbnail: book.thumbnail },
       n,
       reviewText,
-    ).then(() => fetchBookStats(bookId)).then((s) => setStats(s))
+    )
+      .then(() => fetchBookStats(bookId))
+      .then((s) => setStats(s))
+      .catch(() => toast.error('서버 동기화에 실패했어요. 로컬에는 저장됐어요'))
   }
 
   return (
@@ -140,7 +149,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
               : '아직 이 책을 평가한 북작 사용자가 없어요'}
           </span>
           <StarRating value={stars} onChange={handleRate} size={32} />
-          <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-action)' : undefined }}>
+          <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-accent)' : undefined }}>
             {stars > 0
               ? `내 별점 ${stars}점 · 같은 별을 다시 누르면 취소돼요${justSaved ? ' · 저장됐어요!' : ''}`
               : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
@@ -245,6 +254,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
             </div>
           </section>
         )}
+      <LoginGateSheet open={showGate} onClose={closeGate} next={`/rate/books/${bookId}`} />
       </div>
     </main>
   )

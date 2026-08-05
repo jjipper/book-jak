@@ -170,7 +170,7 @@ function CatalogBookDetail({ id }: { id: string }) {
             </span>
           </div>
           <StarRating value={stars} onChange={handleRate} size={32} />
-          <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-action)' : undefined }}>
+          <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-accent)' : undefined }}>
             {stars > 0
               ? `내 별점 ${stars}점 · 같은 별을 다시 누르면 취소돼요${justSaved ? ' · 저장됐어요!' : ''}`
               : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
