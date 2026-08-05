@@ -1,4 +1,9 @@
 // Phase 4 — 질문 기반 토론: 시드 데이터 + 로컬(내가 쓴 글) 병합
+// TODO: Supabase 연동 계획
+//   - addQuestion → sb.from('discussion_questions').insert
+//   - addAnswer → sb.from('discussion_answers').insert
+//   - loadQuestions/loadAnswers → sb.from('...').select
+//   - 좋아요(likes)도 sb.from('likes').insert/delete로 서버 저장 필요
 
 import { recordActivity } from '@/shared/lib/activity'
 import { ME_ID } from '@/shared/config/currentUser'

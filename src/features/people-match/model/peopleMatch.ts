@@ -1,4 +1,8 @@
 // Phase 3 — 취향 맞는 사람 계산 (허브 미리보기·people 목록 공용)
+// TODO: 실 사용자 매칭 서버 연동
+//   - MOCK_PEOPLE → sb.from('profiles').select('id, nickname, type_code, favorite_tags, ...')
+//   - 취향 일치율은 calcAffinity 유지, 공유 태그는 서버 데이터로 계산
+//   - 내가 이미 팔로우한 사람 제외 옵션 추가 고려
 
 import { MOCK_PEOPLE, type MockPerson } from '@/entities/person/model/people'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'

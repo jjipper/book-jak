@@ -10,6 +10,10 @@ import { getNickname } from '@/entities/user/model/profile'
 import { ME_ID } from '@/features/resolve-author/model/author'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 
+// TODO: 랭킹 서버 연동
+//   - MOCK_PEOPLE 점수 → sb.from('profiles').select('id, nickname, activity_score, type_code') 로 교체
+//   - 내 점수는 activity_score 컬럼에 upsert (현재는 localStorage getActivityScore()만 사용)
+//   - 기간별 랭킹(주간/월간/전체) 필터 추가 고려
 export default function SocialRankingView() {
   const [myScore, setMyScore] = useState(0)
   const [mySummary, setMySummary] = useState<Record<ActivityType, number> | null>(null)

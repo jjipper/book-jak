@@ -9,14 +9,20 @@ import { BADGE_LIST } from '@/entities/reading-type/model/badges'
 import { affinityLabel } from '@/entities/reading-type/model/affinity'
 import { getPersonInsight, type PersonInsight } from '@/features/people-match/model/peopleMatch'
 import { isFollowing, toggleFollow } from '@/features/follow/model/follows'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 
+// TODO: 실 사용자 프로필 Supabase 연동
+//   - MOCK_PEOPLE.find → sb.from('profiles').select().eq('id', id).single()
+//   - 팔로우 액션도 서버 반영 필요 (현재 localStorage만)
 export default function PersonDetailView() {
   const params = useParams<{ id: string }>()
   const person = MOCK_PEOPLE.find((p) => p.id === params.id) ?? null
 
   const [following, setFollowing] = useState(false)
   const [insight, setInsight] = useState<PersonInsight | null>(null)
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
     if (!person) return
@@ -41,7 +47,7 @@ export default function PersonDetailView() {
   const badges = BADGE_LIST.filter((b) => person.badgeKeys.includes(b.key))
 
   function handleToggleFollow() {
-    setFollowing(toggleFollow(person!.id))
+    requireAuth(() => setFollowing(toggleFollow(person!.id)))
   }
 
   return (
@@ -182,6 +188,7 @@ export default function PersonDetailView() {
           )}
         </div>
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next={`/people/${params.id}`} />
       </div>
     </main>
   )
