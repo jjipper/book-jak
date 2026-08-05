@@ -4,9 +4,6 @@ import Link from 'next/link'
 import { Logo, IconButton } from '@/shared/ui'
 import { SearchIcon, BellIcon } from './icons'
 
-/* 상단바 — 로고 블록(리소 * 마크 + BOOKJAK) | 슬로건 | 검색·알림
-   검색/알림은 대응 라우트가 아직 없어 비활성 버튼으로만 자리를 잡는다. */
-
 export default function HomeTopbar() {
   return (
     <header className="bj-topbar">
@@ -25,7 +22,6 @@ export default function HomeTopbar() {
           <SearchIcon />
         </IconButton>
         <IconButton label="알림">
-          <span className="bj-icon-btn__dot" aria-hidden="true" />
           <BellIcon />
         </IconButton>
       </div>
