@@ -19,7 +19,9 @@ import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { ME_ID } from '@/features/resolve-author/model/author'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import ProfileAvatar from '@/entities/user/ui/ProfileAvatar'
+import ConfirmSheet from '@/shared/ui/ConfirmSheet'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import { toast } from '@/shared/lib/toast'
 
 function PencilIcon() {
   return (
@@ -54,6 +56,7 @@ export default function MyView() {
   const [avatar, setAvatarState] = useState<string | null>(null)
   const [showNicknameSheet, setShowNicknameSheet] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [followingCount, setFollowingCount] = useState(0)
   const [followerCount, setFollowerCount] = useState(0)
   const [likedCount, setLikedCount] = useState(0)
@@ -77,7 +80,7 @@ export default function MyView() {
           setAvatar(profile.avatar_url)
         }
       }
-    })
+    }).catch(() => toast.error('프로필 로드에 실패했어요'))
     setFollowingCount(getFollowingIds().length)
     setFollowerCount(getFollowerIds().length)
     setLikedCount(getLikedIds().length)
@@ -114,7 +117,11 @@ export default function MyView() {
   async function handleAvatarChange(dataUrl: string) {
     setAvatarState(dataUrl)
     setAvatar(dataUrl)
-    await upsertProfile(nickname, dataUrl)
+    try {
+      await upsertProfile(nickname, dataUrl)
+    } catch {
+      toast.error('프로필 사진 저장에 실패했어요')
+    }
   }
 
   return (
@@ -295,7 +302,11 @@ export default function MyView() {
           initialValue={nickname}
           onClose={() => setShowNicknameSheet(false)}
           onSubmit={async (name) => {
-            await upsertProfile(name)
+            try {
+              await upsertProfile(name)
+            } catch {
+              toast.error('닉네임 변경에 실패했어요')
+            }
             setNickname(name)
             setNicknameState(name)
             setShowNicknameSheet(false)
@@ -327,7 +338,12 @@ export default function MyView() {
                 <button
                   type="button"
                   onClick={async () => {
-                    await signOut()
+                    try {
+                      await signOut()
+                    } catch {
+                      toast.error('로그아웃에 실패했어요')
+                      return
+                    }
                     localStorage.clear()
                     router.push('/login')
                   }}
@@ -341,12 +357,7 @@ export default function MyView() {
                 <p className="bj-caption bj-settings-section-label">데이터</p>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (window.confirm('평가, 글, 팔로우 등 모든 활동 데이터가 삭제됩니다. 계속할까요?')) {
-                      localStorage.clear()
-                      window.location.href = '/'
-                    }
-                  }}
+                  onClick={() => setShowResetConfirm(true)}
                   className="bj-btn bj-btn--block bj-btn--tall"
                 >
                   데이터 전체 초기화
@@ -356,6 +367,18 @@ export default function MyView() {
           </div>
         </div>
       )}
+
+      <ConfirmSheet
+        open={showResetConfirm}
+        message="평가, 글, 팔로우 등 모든 활동 데이터가 삭제됩니다. 계속할까요?"
+        confirmLabel="초기화"
+        cancelLabel="취소"
+        onConfirm={() => {
+          localStorage.clear()
+          window.location.href = '/'
+        }}
+        onCancel={() => setShowResetConfirm(false)}
+      />
       </div>
     </main>
   )

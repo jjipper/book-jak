@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
+import { toast } from '@/shared/lib/toast'
 import { READING_TYPES, type TypeCode, TYPE_CODES } from '@/entities/reading-type/model/readingTypes'
 import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
@@ -134,7 +135,7 @@ function CompareContent() {
           <p className="bj-body bj-text-muted bj-mb-12">
             친구한테 테스트 링크를 보내고<br />결과를 직접 넣어보세요
           </p>
-          <button onClick={async () => { await navigator.clipboard.writeText(`${window.location.origin}/test`); alert('테스트 링크 복사됐어요!') }} className="bj-btn bj-btn--ghost">
+          <button onClick={async () => { await navigator.clipboard.writeText(`${window.location.origin}/test`); toast.show('테스트 링크 복사됐어요!') }} className="bj-btn bj-btn--ghost">
             테스트 링크 복사하기
           </button>
         </div>

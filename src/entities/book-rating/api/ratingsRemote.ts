@@ -44,10 +44,7 @@ export async function pushRating(book: RemoteBookInput, stars: number, review?: 
     year: book.year ?? null,
     thumbnail: book.thumbnail ?? null,
   })
-  if (bookError) {
-    console.warn('책 등록 실패:', bookError.message)
-    return
-  }
+  if (bookError) throw new Error(bookError.message)
 
   const { error } = await sb.from('ratings').upsert(
     {
@@ -60,7 +57,7 @@ export async function pushRating(book: RemoteBookInput, stars: number, review?: 
     },
     { onConflict: 'user_id,book_id' },
   )
-  if (error) console.warn('평가 동기화 실패:', error.message)
+  if (error) throw new Error(error.message)
 }
 
 // 책 하나의 커뮤니티 통계 + 리뷰 목록

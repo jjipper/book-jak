@@ -20,6 +20,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setNickname(profile.nickname)
         if (profile.avatar_url) setAvatar(profile.avatar_url)
       }
+    }).catch(() => {
+      // 네트워크 오류 등으로 인증 확인 실패 — 닉네임 게이트 미진입으로 처리
     })
   }, [])
 
@@ -28,7 +30,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       {children}
       {needsNickname && (
         <NicknameSheet
-          onClose={() => {}}
+          onClose={() => {
+            if (navigator.vibrate) navigator.vibrate(80)
+          }}
           onSubmit={async (name) => {
             await upsertProfile(name)
             setNickname(name)

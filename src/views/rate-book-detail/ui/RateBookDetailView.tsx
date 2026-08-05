@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { getBook, getBookReviews, BOOKS } from '@/entities/book/model/books'
 import { getAuthor } from '@/entities/author/model/authors'
@@ -10,7 +10,10 @@ import { getBookRating, saveBookRating, removeBookRating, loadBookRatings, type 
 import { pushRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
 import { predictScore, type PredictedScore } from '@/features/predicted-score/model/predict'
 import { getNickname } from '@/entities/user/model/profile'
+import { toast } from '@/shared/lib/toast'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
 import ExternalBookDetail from '@/widgets/book/ExternalBookDetail'
@@ -33,6 +36,8 @@ export default function RateBookDetailView() {
 
 function CatalogBookDetail({ id }: { id: string }) {
   const book = getBook(id)
+  const pathname = usePathname()
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   const [myRating, setMyRating] = useState<BookRatingRecord | undefined>(undefined)
   const [predicted, setPredicted] = useState<PredictedScore | null>(null)
@@ -87,16 +92,17 @@ function CatalogBookDetail({ id }: { id: string }) {
   const otherRemoteReviews = (stats?.reviews ?? []).filter((r) => r.userId !== stats?.myUserId)
   const maxDist = Math.max(...book.distribution)
 
-  // 별을 누르는 즉시 저장 — 같은 지점을 다시 누르면 취소, 리뷰는 아래 입력창에서 따로 저장
   function handleRate(n: number) {
     if (!book) return
-    setStars(n)
-    if (n === 0) {
-      removeBookRating(book.id)
-      setMyRating(undefined)
-      return
-    }
-    persist(n, review)
+    requireAuth(() => {
+      setStars(n)
+      if (n === 0) {
+        removeBookRating(book.id)
+        setMyRating(undefined)
+        return
+      }
+      persist(n, review)
+    })
   }
 
   function handleSaveReview() {
@@ -124,7 +130,10 @@ function CatalogBookDetail({ id }: { id: string }) {
       { id: book.id, title: book.title, authors: authorName ? [authorName] : [], year: book.year },
       n,
       reviewText,
-    ).then(() => fetchBookStats(book.id)).then((s) => setStats(s))
+    )
+      .then(() => fetchBookStats(book.id))
+      .then((s) => setStats(s))
+      .catch(() => toast.error('서버 동기화에 실패했어요. 로컬에는 저장됐어요'))
   }
 
   return (
@@ -328,6 +337,7 @@ function CatalogBookDetail({ id }: { id: string }) {
         </section>
       </div>
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next={pathname ?? `/rate/${id}`} />
     </main>
   )
 }

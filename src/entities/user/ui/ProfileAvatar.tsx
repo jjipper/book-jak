@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { toast } from '@/shared/lib/toast'
 
 interface ProfileAvatarProps {
   src: string | null
@@ -61,8 +62,8 @@ export default function ProfileAvatar({ src, size = 64, onChange }: ProfileAvata
     try {
       const dataUrl = await resizeToDataUrl(file, 240)
       onChange(dataUrl)
-    } catch (err) {
-      console.error(err)
+    } catch {
+      toast.error('사진 변환에 실패했어요')
     } finally {
       e.target.value = ''
     }

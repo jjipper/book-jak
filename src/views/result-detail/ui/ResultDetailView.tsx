@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { toPng } from 'html-to-image'
+import { toast } from '@/shared/lib/toast'
 import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { READING_TYPES, type TypeCode } from '@/entities/reading-type/model/readingTypes'
@@ -56,13 +57,19 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     try {
       const dataUrl = await toPng(cardRef.current, { cacheBust: true, backgroundColor: '#ffffff', pixelRatio: 2 })
       const a = document.createElement('a'); a.download = `BOOKJAK_${typeCode}.png`; a.href = dataUrl; a.click()
-    } catch (e) { console.error(e) } finally { setSaving(false) }
+    } catch {
+      toast.error('이미지 저장에 실패했어요')
+    } finally { setSaving(false) }
   }
 
   async function handleCopyLink() {
     const url = `${window.location.origin}/test`
-    try { await navigator.clipboard.writeText(url); alert('테스트 링크 복사됐어요! 친구에게 공유해보세요') }
-    catch { prompt('링크를 복사하세요:', url) }
+    try {
+      await navigator.clipboard.writeText(url)
+      toast.show('테스트 링크 복사됐어요! 친구에게 공유해보세요')
+    } catch {
+      toast.error('링크 복사에 실패했어요')
+    }
     setShowShareMenu(false)
   }
 
