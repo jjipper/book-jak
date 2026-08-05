@@ -7,6 +7,8 @@ import { createClub } from '@/entities/club/model/clubActions'
 import { CLUB_TAGS, CLUB_ILLUSTS, type ClubFormat, type ClubIllustCode } from '@/entities/club/model/clubs'
 import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNickname'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 
 const CAPACITY_OPTIONS = [4, 6, 8, 10]
 const FORMAT_OPTIONS: ClubFormat[] = ['온라인', '오프라인']
@@ -20,6 +22,7 @@ export default function SocialClubNewView() {
   const [tags, setTags] = useState<string[]>([])
   const [illust, setIllust] = useState<ClubIllustCode | undefined>(undefined)
   const { showNicknameSheet, requireNickname, handleNicknameSubmit, closeNicknameSheet } = useRequireNickname()
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   const canSubmit = name.trim().length > 0 && description.trim().length > 0
 
@@ -29,9 +32,11 @@ export default function SocialClubNewView() {
 
   function handleSubmit() {
     if (!canSubmit) return
-    requireNickname(() => {
-      const club = createClub({ name: name.trim(), description: description.trim(), tags, capacity, format, illust })
-      router.push(`/social/clubs/${club.id}`)
+    requireAuth(() => {
+      requireNickname(() => {
+        const club = createClub({ name: name.trim(), description: description.trim(), tags, capacity, format, illust })
+        router.push(`/social/clubs/${club.id}`)
+      })
     })
   }
 
@@ -152,6 +157,7 @@ export default function SocialClubNewView() {
       </div>
 
       {showNicknameSheet && <NicknameSheet onSubmit={handleNicknameSubmit} onClose={closeNicknameSheet} />}
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/social/clubs/new" />
       </div>
     </main>
   )

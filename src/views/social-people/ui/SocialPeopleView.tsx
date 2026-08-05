@@ -6,12 +6,15 @@ import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getMatchedPeople, type MatchedPerson } from '@/features/people-match/model/peopleMatch'
 import { affinityLabel } from '@/entities/reading-type/model/affinity'
 import { isFollowing, toggleFollow } from '@/features/follow/model/follows'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 
 export default function SocialPeopleView() {
   const [ranked, setRanked] = useState<MatchedPerson[]>([])
   const [hasResult, setHasResult] = useState(true)
   const [followingIds, setFollowingIds] = useState<string[]>([])
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
     const matched = getMatchedPeople()
@@ -21,8 +24,10 @@ export default function SocialPeopleView() {
   }, [])
 
   function handleToggleFollow(id: string) {
-    const nowFollowing = toggleFollow(id)
-    setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+    requireAuth(() => {
+      const nowFollowing = toggleFollow(id)
+      setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+    })
   }
 
   return (
@@ -100,6 +105,7 @@ export default function SocialPeopleView() {
           </>
         )}
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/social/people" />
       </div>
     </main>
   )
