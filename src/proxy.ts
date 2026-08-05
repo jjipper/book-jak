@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-const PROTECTED = ['/home', '/discover', '/rate', '/my', '/social', '/people']
+// 로그인 없이도 둘러볼 수 있는 페이지는 여기서 제외
+const PROTECTED = ['/rate', '/my', '/social', '/people']
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -30,6 +31,7 @@ export async function proxy(request: NextRequest) {
   if (!user && PROTECTED.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
+    url.searchParams.set('next', pathname)
     return NextResponse.redirect(url)
   }
 
