@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createSupabaseBrowser } from "@/shared/api/supabase-browser";
 
 // ── 랜덤 닉네임 풀
 const ADJECTIVES = [
@@ -118,14 +119,14 @@ function containsBlocked(s: string) {
   return BLOCKED_WORDS.some((w) => lower.includes(w.toLowerCase()));
 }
 
-// Mock 중복 체크 — 실제 연동 시 아래 주석 참고
 async function isDuplicate(nickname: string): Promise<boolean> {
-  // TODO: 실제 연동 시 아래로 교체
-  // const sb = createSupabaseBrowser()
-  // const { data } = await sb.from('profiles').select('id').eq('nickname', nickname).single()
-  // return !!data
-  const TAKEN = ["북작독자", "다 읽은 고양이"];
-  return TAKEN.includes(nickname);
+  try {
+    const sb = createSupabaseBrowser()
+    const { data } = await sb.from('profiles').select('id').eq('nickname', nickname).maybeSingle()
+    return !!data
+  } catch {
+    return false
+  }
 }
 
 async function runValidation(raw: string): Promise<string> {
