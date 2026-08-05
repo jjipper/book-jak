@@ -1,5 +1,6 @@
 import BottomNav from '@/widgets/bottom-nav/BottomNav'
 import AuthProvider from '@/widgets/auth-provider/AuthProvider'
+import ToastContainer from '@/shared/ui/Toast'
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         {children}
         <BottomNav />
       </div>
+      <ToastContainer />
     </AuthProvider>
   )
 }
