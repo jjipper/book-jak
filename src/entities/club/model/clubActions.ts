@@ -1,4 +1,9 @@
 // Phase 5 — 책 모임: 시드 데이터 + 로컬(내가 만든 모임/참여 상태) 병합
+// TODO: Supabase 연동 계획
+//   - createClub → sb.from('clubs').insert (현재 localStorage만 저장)
+//   - joinClub/leaveClub → sb.from('club_members').insert/delete
+//   - loadClubs → sb.from('clubs').select (현재 SEED_CLUBS + localStorage 병합)
+//   - 모임 멤버 카운트도 실시간 집계 필요
 
 import { recordActivity } from '@/shared/lib/activity'
 import { ME_ID } from '@/shared/config/currentUser'

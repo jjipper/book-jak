@@ -1,4 +1,8 @@
-// 마이페이지 — 팔로우 (localStorage 임시, MOCK_PEOPLE id만 대상)
+// TODO: 팔로우/언팔로우 Supabase 연동
+//   - followPerson/unfollowPerson → sb.from('follows').insert/delete
+//   - getFollowingIds → sb.from('follows').select('followee_id').eq('follower_id', myId)
+//   - getFollowerIds → sb.from('follows').select('follower_id').eq('followee_id', myId)
+//   - 현재는 MOCK_PEOPLE id만 로컬에 저장, 실서비스에서는 UUID 기반
 
 const STORAGE_KEY = 'book_following_ids'
 
@@ -36,7 +40,7 @@ export function toggleFollow(id: string): boolean {
   return nowFollowing
 }
 
-// 나를 팔로우하는 사람. 실서비스에서는 서버가 내려주는 값, 현재는 고정 목업.
+// TODO: 팔로워 목록 서버 연동 — 현재는 고정 목업 ID
 const MOCK_FOLLOWER_IDS = ['p02', 'p04', 'p07', 'p09', 'p11']
 
 export function getFollowerIds(): string[] {
