@@ -5,12 +5,15 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { loadClub, displayMemberCount, isJoined, joinClub, leaveClub } from '@/entities/club/model/clubActions'
 import { resolveAuthor, ME_ID } from '@/features/resolve-author/model/author'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import type { BookClub } from '@/entities/club/model/clubs'
 
 export default function SocialClubDetailView() {
   const params = useParams<{ id: string }>()
   const [club, setClub] = useState<BookClub | null>(null)
   const [joined, setJoined] = useState(false)
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
     const c = loadClub(params.id) ?? null
@@ -36,13 +39,15 @@ export default function SocialClubDetailView() {
   const isMine = club.organizerId === ME_ID
 
   function handleToggleJoin() {
-    if (joined) {
-      leaveClub(club!.id)
-      setJoined(false)
-    } else {
-      joinClub(club!.id)
-      setJoined(true)
-    }
+    requireAuth(() => {
+      if (joined) {
+        leaveClub(club!.id)
+        setJoined(false)
+      } else {
+        joinClub(club!.id)
+        setJoined(true)
+      }
+    })
   }
 
   return (
@@ -102,6 +107,7 @@ export default function SocialClubDetailView() {
         )}
       </div>
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next={`/social/clubs/${params.id}`} />
     </main>
   )
 }

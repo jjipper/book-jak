@@ -1,8 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// 로그인 없이도 둘러볼 수 있는 페이지는 여기서 제외
-const PROTECTED = ['/rate', '/my', '/social', '/people']
+// 로그인 필수 페이지: /my만 남김
+// /rate·/social·/people은 비로그인도 열람 가능하고, 각 액션 단에서 게이트 처리
+const PROTECTED = ['/my']
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })

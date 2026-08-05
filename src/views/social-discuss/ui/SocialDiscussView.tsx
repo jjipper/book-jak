@@ -9,6 +9,8 @@ import { resolveAuthor } from '@/features/resolve-author/model/author'
 import { isLiked, toggleLike } from '@/features/like/model/likes'
 import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNickname'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -37,8 +39,10 @@ export default function SocialDiscussView() {
   function handleToggleLike(e: React.MouseEvent, id: string) {
     e.preventDefault()
     e.stopPropagation()
-    const nowLiked = toggleLike(id)
-    setLikedIds((prev) => (nowLiked ? [...prev, id] : prev.filter((i) => i !== id)))
+    requireAuth(() => {
+      const nowLiked = toggleLike(id)
+      setLikedIds((prev) => (nowLiked ? [...prev, id] : prev.filter((i) => i !== id)))
+    })
   }
 
   function likeCountFor(q: DiscussionQuestion) {
@@ -50,15 +54,18 @@ export default function SocialDiscussView() {
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null)
   const [text, setText] = useState('')
   const { showNicknameSheet, requireNickname, handleNicknameSubmit, closeNicknameSheet } = useRequireNickname()
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   function handleSubmit() {
     if (!text.trim()) return
-    requireNickname(() => {
-      const q = addQuestion({ bookId: selectedBookId, text: text.trim() })
-      setShowComposer(false)
-      setText('')
-      setSelectedBookId(null)
-      router.push(`/social/discuss/${q.id}`)
+    requireAuth(() => {
+      requireNickname(() => {
+        const q = addQuestion({ bookId: selectedBookId, text: text.trim() })
+        setShowComposer(false)
+        setText('')
+        setSelectedBookId(null)
+        router.push(`/social/discuss/${q.id}`)
+      })
     })
   }
 
@@ -153,6 +160,7 @@ export default function SocialDiscussView() {
       )}
 
       {showNicknameSheet && <NicknameSheet onSubmit={handleNicknameSubmit} onClose={closeNicknameSheet} />}
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/social/discuss" />
       </div>
     </main>
   )

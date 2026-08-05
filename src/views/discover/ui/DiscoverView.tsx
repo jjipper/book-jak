@@ -7,6 +7,8 @@ import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { pickDailyBooks, dateKeyOf, BOOKS_PER_DAY, MAX_PAST_DAYS } from '@/entities/blind-book/model/dailyDiscover'
 import BlindBookCard from '@/widgets/blind-book-card/BlindBookCard'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
@@ -25,6 +27,7 @@ export default function DiscoverView() {
   const [showBrowse, setShowBrowse] = useState(false)
   const [browseTag, setBrowseTag] = useState<string | null>(null)
   const [revealedIds, setRevealedIds] = useState<Set<number>>(new Set())
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   const allBrowseTags = useMemo(() => {
     const seen = new Set<string>()
@@ -71,28 +74,31 @@ export default function DiscoverView() {
     goNext()
   }
 
-  // 궁금해요 = 긍정 취향 신호로 기록 (별점 4점 상당)
   function handleCurious() {
     if (!book) return
-    saveBlindRating({
-      bookId: book.id,
-      title: book.title,
-      stars: 4,
-      tags: book.tags.map((t) => t.text),
-      ts: Date.now(),
+    requireAuth(() => {
+      saveBlindRating({
+        bookId: book.id,
+        title: book.title,
+        stars: 4,
+        tags: book.tags.map((t) => t.text),
+        ts: Date.now(),
+      })
+      setCompletedCount((c) => c + 1)
     })
-    setCompletedCount((c) => c + 1)
   }
 
   function handleWish() {
     if (!book) return
-    addToWishlist({
-      bookId: `blind-${book.id}`,
-      title: book.title,
-      author: book.author,
-      publisher: book.publisher,
-      illustCode: book.illustCode,
-      ts: Date.now(),
+    requireAuth(() => {
+      addToWishlist({
+        bookId: `blind-${book.id}`,
+        title: book.title,
+        author: book.author,
+        publisher: book.publisher,
+        illustCode: book.illustCode,
+        ts: Date.now(),
+      })
     })
   }
 
@@ -288,6 +294,7 @@ export default function DiscoverView() {
           </div>
         </div>
       )}
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/rate" />
     </main>
   )
 }

@@ -9,6 +9,8 @@ import { resolveAuthor } from '@/features/resolve-author/model/author'
 import { isLiked, toggleLike } from '@/features/like/model/likes'
 import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNickname'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -30,6 +32,7 @@ export default function SocialDiscussDetailView() {
   const [text, setText] = useState('')
   const [liked, setLiked] = useState(false)
   const { showNicknameSheet, requireNickname, handleNicknameSubmit, closeNicknameSheet } = useRequireNickname()
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
     setQuestion(loadQuestion(params.id) ?? null)
@@ -38,15 +41,17 @@ export default function SocialDiscussDetailView() {
   }, [params.id])
 
   function handleToggleLike() {
-    setLiked(toggleLike(params.id))
+    requireAuth(() => setLiked(toggleLike(params.id)))
   }
 
   function handleSubmit() {
     if (!text.trim()) return
-    requireNickname(() => {
-      addAnswer(params.id, text.trim())
-      setAnswers(loadAnswers(params.id))
-      setText('')
+    requireAuth(() => {
+      requireNickname(() => {
+        addAnswer(params.id, text.trim())
+        setAnswers(loadAnswers(params.id))
+        setText('')
+      })
     })
   }
 
@@ -125,6 +130,7 @@ export default function SocialDiscussDetailView() {
       </div>
 
       {showNicknameSheet && <NicknameSheet onSubmit={handleNicknameSubmit} onClose={closeNicknameSheet} />}
+      <LoginGateSheet open={showGate} onClose={closeGate} next={`/social/discuss/${params.id}`} />
       </div>
     </main>
   )
