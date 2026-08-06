@@ -28,3 +28,15 @@ export function setAvatar(dataUrl: string): void {
   localStorage.setItem(AVATAR_KEY, dataUrl)
 }
 
+const MY_ID_KEY = 'book_my_id'
+
+export function getMyId(): string {
+  if (typeof window === 'undefined') return 'me'
+  return localStorage.getItem(MY_ID_KEY) ?? 'me'
+}
+
+export function setMyId(id: string): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(MY_ID_KEY, id)
+}
+

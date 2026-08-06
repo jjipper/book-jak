@@ -1,13 +1,9 @@
-// 소셜 전반(토론·모임)에서 authorId('me' 또는 MOCK_PEOPLE id)를 화면에 보여줄
-// 닉네임/유형 정보로 풀어내는 공용 헬퍼
-
 import { MOCK_PEOPLE } from '@/entities/person/model/people'
-import { getNickname } from '@/entities/user/model/profile'
+import { getNickname, getMyId } from '@/entities/user/model/profile'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import type { TypeCode } from '@/entities/reading-type/model/readingTypes'
-import { ME_ID } from '@/shared/config/currentUser'
 
-export { ME_ID }
+export const ME_ID = 'me'
 
 export interface ResolvedAuthor {
   nickname: string
@@ -15,7 +11,8 @@ export interface ResolvedAuthor {
 }
 
 export function resolveAuthor(authorId: string): ResolvedAuthor {
-  if (authorId === ME_ID) {
+  const myId = getMyId()
+  if (authorId === ME_ID || (myId !== ME_ID && authorId === myId)) {
     return {
       nickname: getNickname() ?? '나',
       typeCode: loadResult()?.typeCode ?? null,
