@@ -1,12 +1,6 @@
-// Phase 4 — 질문 기반 토론: 시드 데이터 + 로컬(내가 쓴 글) 병합
-// TODO: Supabase 연동 계획
-//   - addQuestion → sb.from('discussion_questions').insert
-//   - addAnswer → sb.from('discussion_answers').insert
-//   - loadQuestions/loadAnswers → sb.from('...').select
-//   - 좋아요(likes)도 sb.from('likes').insert/delete로 서버 저장 필요
-
+import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import { recordActivity } from '@/shared/lib/activity'
-import { ME_ID } from '@/shared/config/currentUser'
+import { getMyId } from '@/entities/user/model/profile'
 import {
   SEED_QUESTIONS, SEED_ANSWERS,
   type DiscussionQuestion, type DiscussionAnswer,
@@ -22,9 +16,7 @@ function loadLocalQuestions(): DiscussionQuestion[] {
   try {
     const raw = localStorage.getItem(QUESTIONS_KEY)
     return raw ? (JSON.parse(raw) as DiscussionQuestion[]) : []
-  } catch {
-    return []
-  }
+  } catch { return [] }
 }
 
 function loadLocalAnswers(): DiscussionAnswer[] {
@@ -32,34 +24,111 @@ function loadLocalAnswers(): DiscussionAnswer[] {
   try {
     const raw = localStorage.getItem(ANSWERS_KEY)
     return raw ? (JSON.parse(raw) as DiscussionAnswer[]) : []
-  } catch {
-    return []
+  } catch { return [] }
+}
+
+function mapQuestion(row: Record<string, unknown>): DiscussionQuestion {
+  return {
+    id: row.id as string,
+    bookId: (row.book_id as number | null) ?? null,
+    authorId: row.author_id as string,
+    text: row.text as string,
+    likeCount: (row.like_count as number) ?? 0,
+    ts: new Date(row.created_at as string).getTime(),
   }
 }
 
-export function loadQuestions(): DiscussionQuestion[] {
+function mapAnswer(row: Record<string, unknown>): DiscussionAnswer {
+  return {
+    id: row.id as string,
+    questionId: row.question_id as string,
+    authorId: row.author_id as string,
+    text: row.text as string,
+    ts: new Date(row.created_at as string).getTime(),
+  }
+}
+
+export async function loadQuestions(): Promise<DiscussionQuestion[]> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) {
+    return [...loadLocalQuestions(), ...SEED_QUESTIONS].sort((a, b) => b.ts - a.ts)
+  }
+  const { data } = await sb.from('discussion_questions').select('*').order('created_at', { ascending: false })
+  if (data) {
+    return [...data.map(mapQuestion), ...SEED_QUESTIONS].sort((a, b) => b.ts - a.ts)
+  }
   return [...loadLocalQuestions(), ...SEED_QUESTIONS].sort((a, b) => b.ts - a.ts)
 }
 
-export function loadQuestion(id: string): DiscussionQuestion | undefined {
-  return loadQuestions().find((q) => q.id === id)
+export async function loadQuestion(id: string): Promise<DiscussionQuestion | undefined> {
+  // Check seed first
+  const seed = SEED_QUESTIONS.find((q) => q.id === id)
+  if (seed) return seed
+  // Check local
+  const local = loadLocalQuestions().find((q) => q.id === id)
+  if (local) return local
+  // Try server
+  const sb = createSupabaseBrowser()
+  const { data } = await sb.from('discussion_questions').select('*').eq('id', id).maybeSingle()
+  return data ? mapQuestion(data) : undefined
 }
 
-export function loadAnswers(questionId: string): DiscussionAnswer[] {
+export async function loadAnswers(questionId: string): Promise<DiscussionAnswer[]> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) {
+    return [...SEED_ANSWERS, ...loadLocalAnswers()]
+      .filter((a) => a.questionId === questionId)
+      .sort((a, b) => a.ts - b.ts)
+  }
+  const { data } = await sb
+    .from('discussion_answers')
+    .select('*')
+    .eq('question_id', questionId)
+    .order('created_at', { ascending: true })
+  if (data) {
+    const serverAnswers = data.map(mapAnswer)
+    const seedAnswers = SEED_ANSWERS.filter((a) => a.questionId === questionId)
+    return [...seedAnswers, ...serverAnswers].sort((a, b) => a.ts - b.ts)
+  }
   return [...SEED_ANSWERS, ...loadLocalAnswers()]
     .filter((a) => a.questionId === questionId)
     .sort((a, b) => a.ts - b.ts)
 }
 
-export function loadAllAnswers(): DiscussionAnswer[] {
+export async function loadAllAnswers(): Promise<DiscussionAnswer[]> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) {
+    return [...SEED_ANSWERS, ...loadLocalAnswers()].sort((a, b) => b.ts - a.ts)
+  }
+  const { data } = await sb.from('discussion_answers').select('*').order('created_at', { ascending: false })
+  if (data) {
+    return [...SEED_ANSWERS, ...data.map(mapAnswer)].sort((a, b) => b.ts - a.ts)
+  }
   return [...SEED_ANSWERS, ...loadLocalAnswers()].sort((a, b) => b.ts - a.ts)
 }
 
-export function addQuestion(params: { bookId: number | null; text: string }): DiscussionQuestion {
+export async function addQuestion(params: { bookId: number | null; text: string }): Promise<DiscussionQuestion> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (user) {
+    const { data, error } = await sb
+      .from('discussion_questions')
+      .insert({ book_id: params.bookId, author_id: user.id, text: params.text })
+      .select()
+      .single()
+    if (!error && data) {
+      recordActivity('question')
+      return mapQuestion(data)
+    }
+  }
+  // Fallback: localStorage
   const question: DiscussionQuestion = {
     id: `local-q-${Date.now()}`,
     bookId: params.bookId,
-    authorId: ME_ID,
+    authorId: getMyId(),
     text: params.text,
     ts: Date.now(),
   }
@@ -70,11 +139,25 @@ export function addQuestion(params: { bookId: number | null; text: string }): Di
   return question
 }
 
-export function addAnswer(questionId: string, text: string): DiscussionAnswer {
+export async function addAnswer(questionId: string, text: string): Promise<DiscussionAnswer> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (user) {
+    const { data, error } = await sb
+      .from('discussion_answers')
+      .insert({ question_id: questionId, author_id: user.id, text })
+      .select()
+      .single()
+    if (!error && data) {
+      recordActivity('answer')
+      return mapAnswer(data)
+    }
+  }
+  // Fallback: localStorage
   const answer: DiscussionAnswer = {
     id: `local-a-${Date.now()}`,
     questionId,
-    authorId: ME_ID,
+    authorId: getMyId(),
     text,
     ts: Date.now(),
   }
