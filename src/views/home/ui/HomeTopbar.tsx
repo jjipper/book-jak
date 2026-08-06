@@ -1,7 +1,5 @@
-'use client'
-
 import Link from 'next/link'
-import { Logo, IconButton } from '@/shared/ui'
+import { Logo } from '@/shared/ui'
 import { SearchIcon, BellIcon } from './icons'
 
 export default function HomeTopbar() {
@@ -18,12 +16,12 @@ export default function HomeTopbar() {
         </div>
       </div>
       <div className="bj-topbar__actions">
-        <IconButton label="검색">
+        <Link href="/search" className="bj-icon-btn" aria-label="검색">
           <SearchIcon />
-        </IconButton>
-        <IconButton label="알림">
+        </Link>
+        <Link href="/notifications" className="bj-icon-btn" aria-label="알림">
           <BellIcon />
-        </IconButton>
+        </Link>
       </div>
     </header>
   )
