@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
-import { loadAllAnswers, loadQuestion, type DiscussionAnswer } from '@/entities/discussion/model/discussionActions'
-import { ME_ID } from '@/features/resolve-author/model/author'
+import { loadAllAnswers, loadQuestion, type DiscussionAnswer, type DiscussionQuestion } from '@/entities/discussion/model/discussionActions'
+import { getMyId } from '@/entities/user/model/profile'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -13,9 +13,24 @@ function bookTitle(bookId: number | null): string {
 
 export default function MyCommentsView() {
   const [answers, setAnswers] = useState<DiscussionAnswer[]>([])
+  const [questionsMap, setQuestionsMap] = useState<Record<string, DiscussionQuestion>>({})
 
   useEffect(() => {
-    setAnswers(loadAllAnswers().filter((a) => a.authorId === ME_ID))
+    async function load() {
+      const myId = getMyId()
+      const allAnswers = await loadAllAnswers()
+      const myAnswers = allAnswers.filter((a) => a.authorId === myId || a.authorId === 'me')
+      setAnswers(myAnswers)
+      const map: Record<string, DiscussionQuestion> = {}
+      for (const a of myAnswers) {
+        if (!map[a.questionId]) {
+          const q = await loadQuestion(a.questionId)
+          if (q) map[a.questionId] = q
+        }
+      }
+      setQuestionsMap(map)
+    }
+    void load()
   }, [])
 
   return (
@@ -36,7 +51,7 @@ export default function MyCommentsView() {
           </div>
         ) : (
           answers.map((a) => {
-            const question = loadQuestion(a.questionId)
+            const question = questionsMap[a.questionId]
             return (
               <Link key={a.id} href={`/social/discuss/${a.questionId}`} className="bj-row bj-row--top bj-unstyled-link">
                 <div className="bj-flex-1">

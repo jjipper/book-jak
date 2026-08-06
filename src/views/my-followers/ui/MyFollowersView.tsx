@@ -12,13 +12,16 @@ export default function MyFollowersView() {
   const [followingIds, setFollowingIds] = useState<string[]>([])
 
   useEffect(() => {
-    const ids = getFollowerIds()
-    setFollowerIds(ids)
-    setFollowingIds(ids.filter((id) => isFollowing(id)))
+    async function load() {
+      const ids = await getFollowerIds()
+      setFollowerIds(ids)
+      setFollowingIds(ids.filter((id) => isFollowing(id)))
+    }
+    void load()
   }, [])
 
-  function handleToggleFollow(id: string) {
-    const nowFollowing = toggleFollow(id)
+  async function handleToggleFollow(id: string) {
+    const nowFollowing = await toggleFollow(id)
     setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
   }
 

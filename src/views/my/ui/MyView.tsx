@@ -16,7 +16,7 @@ import { loadBlindRatings } from '@/entities/blind-rating/model/blindRatings'
 import { loadBookRatings } from '@/entities/book-rating/model/bookRatings'
 import { loadWishlist } from '@/features/wishlist/model/wishlist'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
-import { ME_ID } from '@/features/resolve-author/model/author'
+import { getMyId } from '@/entities/user/model/profile'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import ProfileAvatar from '@/entities/user/ui/ProfileAvatar'
 import ConfirmSheet from '@/shared/ui/ConfirmSheet'
@@ -70,44 +70,57 @@ export default function MyView() {
   const [favoriteAuthors, setFavoriteAuthors] = useState<string[]>([])
 
   useEffect(() => {
-    setSavedResult(loadResult())
-    fetchProfile().then((profile) => {
-      if (profile) {
-        setNicknameState(profile.nickname)
-        setNickname(profile.nickname)
-        if (profile.avatar_url) {
-          setAvatarState(profile.avatar_url)
-          setAvatar(profile.avatar_url)
+    async function load() {
+      setSavedResult(loadResult())
+      fetchProfile().then((profile) => {
+        if (profile) {
+          setNicknameState(profile.nickname)
+          setNickname(profile.nickname)
+          if (profile.avatar_url) {
+            setAvatarState(profile.avatar_url)
+            setAvatar(profile.avatar_url)
+          }
         }
-      }
-    }).catch(() => toast.error('프로필 로드에 실패했어요'))
-    setFollowingCount(getFollowingIds().length)
-    setFollowerCount(getFollowerIds().length)
-    setLikedCount(getLikedIds().length)
-    setMyPostCount(loadQuestions().filter((q) => q.authorId === ME_ID).length)
-    setMyCommentCount(loadAllAnswers().filter((a) => a.authorId === ME_ID).length)
-    const joined = getJoinedIds()
-    setMyClubCount(loadClubs().filter((c) => c.organizerId === ME_ID || joined.includes(c.id)).length)
-    setRatedCount(loadBookRatings().length)
-    setWishCount(loadWishlist().length)
+      }).catch(() => toast.error('프로필 로드에 실패했어요'))
 
-    const ratings = loadBlindRatings()
-    const tagFreq = new Map<string, number>()
-    ratings.forEach((r) => r.tags.forEach((tag) => tagFreq.set(tag, (tagFreq.get(tag) ?? 0) + 1)))
-    setStyleTags([...tagFreq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([tag]) => tag))
+      const myId = getMyId()
+      const [followingIds, followerIds, likedIds, allQuestions, allAnswers, joinedIds, allClubs] = await Promise.all([
+        getFollowingIds(),
+        getFollowerIds(),
+        getLikedIds(),
+        loadQuestions(),
+        loadAllAnswers(),
+        getJoinedIds(),
+        loadClubs(),
+      ])
+      setFollowingCount(followingIds.length)
+      setFollowerCount(followerIds.length)
+      setLikedCount(likedIds.length)
+      setMyPostCount(allQuestions.filter((q) => q.authorId === myId || q.authorId === 'me').length)
+      setMyCommentCount(allAnswers.filter((a) => a.authorId === myId || a.authorId === 'me').length)
+      setMyClubCount(allClubs.filter((c) => c.organizerId === myId || joinedIds.includes(c.id)).length)
+      setRatedCount(loadBookRatings().length)
+      setWishCount(loadWishlist().length)
 
-    const liked = ratings.filter((r) => r.stars >= 4)
-    const source = liked.length > 0 ? liked : ratings
-    const genreFreq = new Map<string, number>()
-    const authorFreq = new Map<string, number>()
-    source.forEach((r) => {
-      const book = BLIND_BOOKS.find((b) => b.id === r.bookId)
-      if (!book) return
-      authorFreq.set(book.author, (authorFreq.get(book.author) ?? 0) + 1)
-      book.tags.filter((t) => t.kind === 'genre').forEach((t) => genreFreq.set(t.text, (genreFreq.get(t.text) ?? 0) + 1))
-    })
-    setFavoriteGenres([...genreFreq.entries()].sort((a, b) => b[1] - a[1]).map(([g]) => g))
-    setFavoriteAuthors([...authorFreq.entries()].sort((a, b) => b[1] - a[1]).map(([a]) => a))
+      const ratings = loadBlindRatings()
+      const tagFreq = new Map<string, number>()
+      ratings.forEach((r) => r.tags.forEach((tag) => tagFreq.set(tag, (tagFreq.get(tag) ?? 0) + 1)))
+      setStyleTags([...tagFreq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([tag]) => tag))
+
+      const liked = ratings.filter((r) => r.stars >= 4)
+      const source = liked.length > 0 ? liked : ratings
+      const genreFreq = new Map<string, number>()
+      const authorFreq = new Map<string, number>()
+      source.forEach((r) => {
+        const book = BLIND_BOOKS.find((b) => b.id === r.bookId)
+        if (!book) return
+        authorFreq.set(book.author, (authorFreq.get(book.author) ?? 0) + 1)
+        book.tags.filter((t) => t.kind === 'genre').forEach((t) => genreFreq.set(t.text, (genreFreq.get(t.text) ?? 0) + 1))
+      })
+      setFavoriteGenres([...genreFreq.entries()].sort((a, b) => b[1] - a[1]).map(([g]) => g))
+      setFavoriteAuthors([...authorFreq.entries()].sort((a, b) => b[1] - a[1]).map(([a]) => a))
+    }
+    void load()
   }, [])
 
   const myType = savedResult ? READING_TYPES[savedResult.typeCode] : null

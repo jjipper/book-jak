@@ -29,19 +29,28 @@ export default function SocialDiscussView() {
   const router = useRouter()
   const [questions, setQuestions] = useState<DiscussionQuestion[]>([])
   const [likedIds, setLikedIds] = useState<string[]>([])
+  const [answerCounts, setAnswerCounts] = useState<Record<string, number>>({})
 
   useEffect(() => {
-    const qs = loadQuestions()
-    setQuestions(qs)
-    setLikedIds(qs.map((q) => q.id).filter((id) => isLiked(id)))
+    async function load() {
+      const qs = await loadQuestions()
+      setQuestions(qs)
+      setLikedIds(qs.map((q) => q.id).filter((id) => isLiked(id)))
+      const counts: Record<string, number> = {}
+      for (const q of qs) { counts[q.id] = (await loadAnswers(q.id)).length }
+      setAnswerCounts(counts)
+    }
+    void load()
   }, [])
 
   function handleToggleLike(e: React.MouseEvent, id: string) {
     e.preventDefault()
     e.stopPropagation()
     requireAuth(() => {
-      const nowLiked = toggleLike(id)
-      setLikedIds((prev) => (nowLiked ? [...prev, id] : prev.filter((i) => i !== id)))
+      void (async () => {
+        const nowLiked = await toggleLike(id)
+        setLikedIds((prev) => (nowLiked ? [...prev, id] : prev.filter((i) => i !== id)))
+      })()
     })
   }
 
@@ -59,8 +68,8 @@ export default function SocialDiscussView() {
   function handleSubmit() {
     if (!text.trim()) return
     requireAuth(() => {
-      requireNickname(() => {
-        const q = addQuestion({ bookId: selectedBookId, text: text.trim() })
+      requireNickname(async () => {
+        const q = await addQuestion({ bookId: selectedBookId, text: text.trim() })
         setShowComposer(false)
         setText('')
         setSelectedBookId(null)
@@ -89,14 +98,13 @@ export default function SocialDiscussView() {
         <div className="bj-col-10">
           {questions.map((q) => {
             const author = resolveAuthor(q.authorId)
-            const answerCount = loadAnswers(q.id).length
             const liked = likedIds.includes(q.id)
             return (
               <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row bj-row--top bj-unstyled-link">
                 <div className="bj-flex-1">
                   <p className="bj-caption bj-bold bj-mb-4">{bookTitle(q.bookId)}</p>
                   <p className="bj-body bj-discuss-text">{q.text}</p>
-                  <p className="bj-caption">{author.nickname} · 답변 {answerCount}개</p>
+                  <p className="bj-caption">{author.nickname} · 답변 {answerCounts[q.id] ?? 0}개</p>
                 </div>
                 <button
                   type="button"

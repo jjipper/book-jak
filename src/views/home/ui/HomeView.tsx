@@ -28,19 +28,25 @@ export default function HomeView() {
 
   // localStorage 기반 데이터라 마운트 후 로드 (SSR 불일치 방지 — 기존 홈과 동일 패턴)
   useEffect(() => {
-    const key = dateKeyOf(new Date())
-    setSavedResult(loadResult())
-    setDateKey(key)
-    setDailyBooks(pickDailyBooks(key))
+    async function load() {
+      const key = dateKeyOf(new Date())
+      setSavedResult(loadResult())
+      setDateKey(key)
+      setDailyBooks(pickDailyBooks(key))
 
-    const hot = [...loadQuestions()]
-      .sort((a, b) => (b.likeCount ?? 0) - (a.likeCount ?? 0))
-      .slice(0, 3)
-    setQuestions(hot)
-    setAnswerCounts(Object.fromEntries(hot.map((q) => [q.id, loadAnswers(q.id).length])))
+      const allQs = await loadQuestions()
+      const hot = [...allQs]
+        .sort((a, b) => (b.likeCount ?? 0) - (a.likeCount ?? 0))
+        .slice(0, 3)
+      setQuestions(hot)
+      const counts: Record<string, number> = {}
+      for (const q of hot) { counts[q.id] = (await loadAnswers(q.id)).length }
+      setAnswerCounts(counts)
 
-    setMatches(getMatchedPeople().slice(0, 4))
-    setClubs(loadClubs().slice(0, 4))
+      setMatches(getMatchedPeople().slice(0, 4))
+      setClubs((await loadClubs()).slice(0, 4))
+    }
+    void load()
   }, [])
 
   return (

@@ -47,7 +47,9 @@ export default function PersonDetailView() {
   const badges = BADGE_LIST.filter((b) => person.badgeKeys.includes(b.key))
 
   function handleToggleFollow() {
-    requireAuth(() => setFollowing(toggleFollow(person!.id)))
+    requireAuth(() => {
+      void toggleFollow(person!.id).then((nowFollowing) => setFollowing(nowFollowing))
+    })
   }
 
   return (
