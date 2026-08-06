@@ -9,7 +9,7 @@ import type { BookClub } from '@/entities/club/model/clubs'
 export default function SocialClubsView() {
   const [clubs, setClubs] = useState<BookClub[]>([])
 
-  useEffect(() => { setClubs(loadClubs()) }, [])
+  useEffect(() => { async function load() { setClubs(await loadClubs()) }; void load() }, [])
 
   return (
     <main className="bj-shell">

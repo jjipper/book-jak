@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { loadClub, displayMemberCount, isJoined, joinClub, leaveClub } from '@/entities/club/model/clubActions'
-import { resolveAuthor, ME_ID } from '@/features/resolve-author/model/author'
+import { resolveAuthor } from '@/features/resolve-author/model/author'
+import { getMyId } from '@/entities/user/model/profile'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import type { BookClub } from '@/entities/club/model/clubs'
@@ -16,9 +17,12 @@ export default function SocialClubDetailView() {
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
-    const c = loadClub(params.id) ?? null
-    setClub(c)
-    setJoined(isJoined(params.id))
+    async function load() {
+      const c = (await loadClub(params.id)) ?? null
+      setClub(c)
+      setJoined(isJoined(params.id))
+    }
+    void load()
   }, [params.id])
 
   if (!club) {
@@ -36,17 +40,19 @@ export default function SocialClubDetailView() {
   const organizer = resolveAuthor(club.organizerId)
   const memberCount = displayMemberCount(club)
   const isFull = memberCount >= club.capacity
-  const isMine = club.organizerId === ME_ID
+  const isMine = club.organizerId === getMyId()
 
   function handleToggleJoin() {
     requireAuth(() => {
-      if (joined) {
-        leaveClub(club!.id)
-        setJoined(false)
-      } else {
-        joinClub(club!.id)
-        setJoined(true)
-      }
+      void (async () => {
+        if (joined) {
+          await leaveClub(club!.id)
+          setJoined(false)
+        } else {
+          await joinClub(club!.id)
+          setJoined(true)
+        }
+      })()
     })
   }
 

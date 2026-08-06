@@ -3,15 +3,19 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { loadClubs, displayMemberCount, getJoinedIds } from '@/entities/club/model/clubActions'
-import { ME_ID } from '@/features/resolve-author/model/author'
+import { getMyId } from '@/entities/user/model/profile'
 import type { BookClub } from '@/entities/club/model/clubs'
 
 export default function MyClubsView() {
   const [clubs, setClubs] = useState<BookClub[]>([])
 
   useEffect(() => {
-    const joined = getJoinedIds()
-    setClubs(loadClubs().filter((c) => c.organizerId === ME_ID || joined.includes(c.id)))
+    async function load() {
+      const [joined, allClubs] = await Promise.all([getJoinedIds(), loadClubs()])
+      const myId = getMyId()
+      setClubs(allClubs.filter((c) => c.organizerId === myId || joined.includes(c.id)))
+    }
+    void load()
   }, [])
 
   return (
@@ -33,7 +37,7 @@ export default function MyClubsView() {
         ) : (
           clubs.map((club) => {
             const memberCount = displayMemberCount(club)
-            const isMine = club.organizerId === ME_ID
+            const isMine = club.organizerId === getMyId()
             return (
               <Link key={club.id} href={`/social/clubs/${club.id}`} className="bj-row bj-row--top bj-unstyled-link">
                 <div className="bj-flex-1">

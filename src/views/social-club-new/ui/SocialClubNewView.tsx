@@ -33,8 +33,8 @@ export default function SocialClubNewView() {
   function handleSubmit() {
     if (!canSubmit) return
     requireAuth(() => {
-      requireNickname(() => {
-        const club = createClub({ name: name.trim(), description: description.trim(), tags, capacity, format, illust })
+      requireNickname(async () => {
+        const club = await createClub({ name: name.trim(), description: description.trim(), tags, capacity, format, illust })
         router.push(`/social/clubs/${club.id}`)
       })
     })

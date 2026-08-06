@@ -10,12 +10,12 @@ import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 export default function MyFollowingView() {
   const [followingIds, setFollowingIds] = useState<string[]>([])
 
-  useEffect(() => { setFollowingIds(getFollowingIds()) }, [])
+  useEffect(() => { async function load() { setFollowingIds(await getFollowingIds()) }; void load() }, [])
 
   const people = MOCK_PEOPLE.filter((p) => followingIds.includes(p.id))
 
-  function handleUnfollow(id: string) {
-    unfollowPerson(id)
+  async function handleUnfollow(id: string) {
+    await unfollowPerson(id)
     setFollowingIds((prev) => prev.filter((i) => i !== id))
   }
 

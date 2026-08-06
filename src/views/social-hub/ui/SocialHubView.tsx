@@ -29,11 +29,19 @@ export default function SocialHubView() {
   const [matched, setMatched] = useState<MatchedPerson[]>([])
   const [questions, setQuestions] = useState<DiscussionQuestion[]>([])
   const [clubs, setClubs] = useState<BookClub[]>([])
+  const [answerCounts, setAnswerCounts] = useState<Record<string, number>>({})
 
   useEffect(() => {
-    setMatched(getMatchedPeople())
-    setQuestions(loadQuestions().slice(0, 3))
-    setClubs(loadClubs().slice(0, 3))
+    async function load() {
+      setMatched(getMatchedPeople())
+      const qs = (await loadQuestions()).slice(0, 3)
+      setQuestions(qs)
+      const counts: Record<string, number> = {}
+      for (const q of qs) { counts[q.id] = (await loadAnswers(q.id)).length }
+      setAnswerCounts(counts)
+      setClubs((await loadClubs()).slice(0, 3))
+    }
+    void load()
   }, [])
 
   return (
@@ -82,13 +90,12 @@ export default function SocialHubView() {
           <div className="bj-list bj-list--lg-grid-2 bj-col-10">
             {questions.map((q) => {
               const author = resolveAuthor(q.authorId)
-              const answerCount = loadAnswers(q.id).length
               return (
                 <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row bj-row--top bj-unstyled-link">
                   <div className="bj-flex-1">
                     <p className="bj-caption bj-bold bj-mb-4">{bookTitle(q.bookId)}</p>
                     <p className="bj-body bj-discuss-text bj-truncate">{q.text}</p>
-                    <p className="bj-caption">{author.nickname} · 답변 {answerCount}개</p>
+                    <p className="bj-caption">{author.nickname} · 답변 {answerCounts[q.id] ?? 0}개</p>
                   </div>
                 </Link>
               )

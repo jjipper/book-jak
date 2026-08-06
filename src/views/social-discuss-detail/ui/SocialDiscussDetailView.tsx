@@ -35,21 +35,26 @@ export default function SocialDiscussDetailView() {
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
-    setQuestion(loadQuestion(params.id) ?? null)
-    setAnswers(loadAnswers(params.id))
-    setLiked(isLiked(params.id))
+    async function load() {
+      setQuestion((await loadQuestion(params.id)) ?? null)
+      setAnswers(await loadAnswers(params.id))
+      setLiked(isLiked(params.id))
+    }
+    void load()
   }, [params.id])
 
   function handleToggleLike() {
-    requireAuth(() => setLiked(toggleLike(params.id)))
+    requireAuth(() => {
+      void toggleLike(params.id).then((nowLiked) => setLiked(nowLiked))
+    })
   }
 
   function handleSubmit() {
     if (!text.trim()) return
     requireAuth(() => {
-      requireNickname(() => {
-        addAnswer(params.id, text.trim())
-        setAnswers(loadAnswers(params.id))
+      requireNickname(async () => {
+        await addAnswer(params.id, text.trim())
+        setAnswers(await loadAnswers(params.id))
         setText('')
       })
     })

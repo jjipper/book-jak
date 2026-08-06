@@ -25,8 +25,10 @@ export default function SocialPeopleView() {
 
   function handleToggleFollow(id: string) {
     requireAuth(() => {
-      const nowFollowing = toggleFollow(id)
-      setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+      void (async () => {
+        const nowFollowing = await toggleFollow(id)
+        setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+      })()
     })
   }
 
