@@ -5,7 +5,7 @@ const FOOTER_LINKS = [
   { label: '서비스 소개', href: '/about' },
   { label: '이용약관', href: '/terms' },
   { label: '개인정보처리방침', href: '/privacy' },
-  { label: '문의하기', href: 'mailto:jj.choi@sqisoft.com' },
+  { label: '문의하기', href: '/contact' },
   { label: '공지사항', href: '/notice' },
 ]
 
