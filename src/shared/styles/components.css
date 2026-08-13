@@ -324,6 +324,11 @@ body.bj-body {
   background: var(--color-fill);
   border-radius: var(--radius-pill);
 }
+/* TypeCard 등장 애니메이션용 — 초기 0%에서 목표값까지 채워지는 스탯 바 */
+.bj-stat__fill--animated {
+  width: 0%;
+  transition: width 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
 .bj-stat__value {
   width: 32px;
   text-align: right;
@@ -528,6 +533,11 @@ body.bj-body {
 .bj-segmented__seg {
   height: 100%;
   background: var(--color-fill);
+}
+
+/* TypeCard — 뇌구조 세그먼트 바 하단 여백 */
+.bj-typecard__brain-segmented {
+  margin-bottom: 12px;
 }
 
 /* ========== SECTION LABEL (대문자 구획 라벨 + 구분선) ========== */
@@ -1683,6 +1693,12 @@ body.bj-body {
   height: 100%;
   object-position: center;
 }
+.bj-illust-wrap__img--cover {
+  object-fit: cover;
+}
+.bj-illust-wrap__img--contain {
+  object-fit: contain;
+}
 /* IllustPlaceholder — slot 폴백 */
 .bj-illust-wrap__slot {
   width: 100%;
@@ -1715,11 +1731,14 @@ body.bj-body {
   box-sizing: border-box;
   overflow: hidden;
   container-type: inline-size;
+  background: var(--cover-bg);
 }
 .bj-illust-wrap__cover-bar {
   display: block;
   height: 3px;
   border-radius: 2px;
+  width: 28%;
+  background: var(--cover-deco);
 }
 .bj-illust-wrap__cover-title {
   font-weight: 700;
@@ -1730,10 +1749,22 @@ body.bj-body {
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  color: var(--cover-text);
 }
 .bj-illust-wrap__cover-bar--end {
   align-self: flex-end;
+  width: 46%;
 }
+
+/* IllustPlaceholder — cover 폴백 팔레트 (해시 기반 로테이션) */
+.bj-illust-wrap__cover--0 { --cover-bg: #2F4838; --cover-deco: #4C6B54; --cover-text: #F3EFE6; }
+.bj-illust-wrap__cover--1 { --cover-bg: #5B3A2E; --cover-deco: #7C5546; --cover-text: #F5EDE2; }
+.bj-illust-wrap__cover--2 { --cover-bg: #31405F; --cover-deco: #4C5F87; --cover-text: #EEF1F7; }
+.bj-illust-wrap__cover--3 { --cover-bg: #6B4A63; --cover-deco: #8A6683; --cover-text: #F6EEF4; }
+.bj-illust-wrap__cover--4 { --cover-bg: #7A5A28; --cover-deco: #9C7B45; --cover-text: #F7F1E3; }
+.bj-illust-wrap__cover--5 { --cover-bg: #3F5A5E; --cover-deco: #5D7D82; --cover-text: #EDF4F4; }
+.bj-illust-wrap__cover--6 { --cover-bg: #84424B; --cover-deco: #A3616A; --cover-text: #F8EEEF; }
+.bj-illust-wrap__cover--7 { --cover-bg: #4A4458; --cover-deco: #675F7A; --cover-text: #F1EFF6; }
 
 /* ========== MY / PERSON-DETAIL 레이아웃 유틸 ========== */
 
@@ -1898,10 +1929,52 @@ body.bj-body {
   padding: 14px 18px;
 }
 
+/* TypeCard — 상단 코드 텍스트 */
+.bj-typecard__topbar-code {
+  letter-spacing: 0.14em;
+}
+
+/* TypeCard — 캐릭터 일러스트 영역 (유형별 상단 틴트가 표면색으로 녹아드는 그라데이션) */
+.bj-typecard__illust-bg {
+  position: relative;
+  padding: 12px 18px 0;
+  background: linear-gradient(to bottom, var(--illust-top), var(--color-surface));
+}
+.bj-typecard__illust-bg--FCER { --illust-top: #FFF0C9; }
+.bj-typecard__illust-bg--FCEW { --illust-top: #DCEDFB; }
+.bj-typecard__illust-bg--FCGR { --illust-top: #DCE4F6; }
+.bj-typecard__illust-bg--FCGW { --illust-top: #FFE3CD; }
+.bj-typecard__illust-bg--FIER { --illust-top: #E0ECFA; }
+.bj-typecard__illust-bg--FIEW { --illust-top: #CFE3F8; }
+.bj-typecard__illust-bg--FIGR { --illust-top: #FBF0C8; }
+.bj-typecard__illust-bg--FIGW { --illust-top: #E3F0FB; }
+.bj-typecard__illust-bg--TCER { --illust-top: #FCEDC3; }
+.bj-typecard__illust-bg--TCEW { --illust-top: #D3DEF5; }
+.bj-typecard__illust-bg--TCGR { --illust-top: #DBE9F9; }
+.bj-typecard__illust-bg--TCGW { --illust-top: #FFE5CE; }
+.bj-typecard__illust-bg--TIER { --illust-top: #FFE2C6; }
+.bj-typecard__illust-bg--TIEW { --illust-top: #FFDFC9; }
+.bj-typecard__illust-bg--TIGR { --illust-top: #FFE8C9; }
+.bj-typecard__illust-bg--TIGW { --illust-top: #FFF1C6; }
+
+/* TypeCard — 희소도 스티커 위치 */
+.bj-typecard__rarity-slot {
+  position: absolute;
+  top: 4px;
+  left: 20px;
+}
+
 /* TypeCard — 이름/태그라인 블록 */
 .bj-typecard__name-block {
   padding: 18px 20px 6px;
   text-align: center;
+}
+
+/* TypeCard — 태그라인 */
+.bj-typecard__tagline {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--color-text-muted);
 }
 
 /* TypeCard — 스탯 섹션 */
@@ -1952,6 +2025,13 @@ body.bj-body {
   align-items: center;
   padding: 12px 20px;
   border-top: 1px dashed var(--color-border);
+}
+.bj-typecard__footer-brand {
+  font-size: 14px;
+  letter-spacing: 0.18em;
+}
+.bj-typecard__footer-caption {
+  letter-spacing: 0.1em;
 }
 
 /* 팔로워/팔로잉 리스트 — 사람 링크 */

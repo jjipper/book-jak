@@ -15,17 +15,8 @@ interface IllustPlaceholderProps {
   background?: string
 }
 
-// 실제 일러스트 파일이 없을 때 그려주는 표지풍 플레이스홀더 색상 조합
-const COVER_PALETTES: Array<{ bg: string; deco: string; text: string }> = [
-  { bg: '#2F4838', deco: '#4C6B54', text: '#F3EFE6' },
-  { bg: '#5B3A2E', deco: '#7C5546', text: '#F5EDE2' },
-  { bg: '#31405F', deco: '#4C5F87', text: '#EEF1F7' },
-  { bg: '#6B4A63', deco: '#8A6683', text: '#F6EEF4' },
-  { bg: '#7A5A28', deco: '#9C7B45', text: '#F7F1E3' },
-  { bg: '#3F5A5E', deco: '#5D7D82', text: '#EDF4F4' },
-  { bg: '#84424B', deco: '#A3616A', text: '#F8EEEF' },
-  { bg: '#4A4458', deco: '#675F7A', text: '#F1EFF6' },
-]
+// 실제 일러스트 파일이 없을 때 그려주는 표지풍 플레이스홀더 색상 조합 수 (팔레트는 components.css .bj-illust-wrap__cover--0..7)
+const COVER_PALETTE_COUNT = 8
 
 function hashCode(str: string): number {
   let h = 0
@@ -65,7 +56,7 @@ export default function IllustPlaceholder({
     }
   }, [])
 
-  const palette = COVER_PALETTES[hashCode(code) % COVER_PALETTES.length]
+  const paletteIndex = hashCode(code) % COVER_PALETTE_COUNT
 
   return (
     <div
@@ -78,8 +69,7 @@ export default function IllustPlaceholder({
           ref={imgRef}
           src={`/assets/illust/${resolveIllustPath(code)}.png`}
           alt={alt}
-          className="bj-illust-wrap__img"
-          style={{ objectFit: fit === 'contain' ? 'contain' : 'cover' }}
+          className={`bj-illust-wrap__img bj-illust-wrap__img--${fit === 'contain' ? 'contain' : 'cover'}`}
           onError={() => setFailed(true)}
         />
       ) : fallback === 'slot' ? (
@@ -96,17 +86,11 @@ export default function IllustPlaceholder({
         <div
           role="img"
           aria-label={alt}
-          className="bj-illust-wrap__cover"
-          style={{ background: palette.bg }}
+          className={`bj-illust-wrap__cover bj-illust-wrap__cover--${paletteIndex}`}
         >
-          <span className="bj-illust-wrap__cover-bar" style={{ width: '28%', background: palette.deco }} />
-          <span
-            className="bj-illust-wrap__cover-title"
-            style={{ color: palette.text }}
-          >
-            {alt}
-          </span>
-          <span className="bj-illust-wrap__cover-bar bj-illust-wrap__cover-bar--end" style={{ width: '46%', background: palette.deco }} />
+          <span className="bj-illust-wrap__cover-bar" />
+          <span className="bj-illust-wrap__cover-title">{alt}</span>
+          <span className="bj-illust-wrap__cover-bar bj-illust-wrap__cover-bar--end" />
         </div>
       )}
     </div>
