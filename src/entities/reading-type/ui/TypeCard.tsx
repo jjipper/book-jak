@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react'
 import { READING_TYPES, rarityBadgeVariant, RARITY_BADGE_LABELS, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import type { TestResult } from '@/entities/reading-type/model/scoring'
-import { illustGradient } from '@/entities/reading-type/model/illustGradients'
 import { RarityBadge } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 
@@ -40,13 +39,13 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
     <div ref={shareRef} className="bj-typecard">
       {/* 상단 바 */}
       <div className="bj-typecard__topbar">
-        <span className="bj-caption bj-bold" style={{ letterSpacing: '0.14em' }}>
+        <span className="bj-caption bj-bold bj-typecard__topbar-code">
           {type.code}
         </span>
       </div>
 
       {/* 캐릭터 일러스트 + 희소도 스티커 — 유형별 틴트가 위에서 표면색으로 녹아든다 */}
-      <div style={{ position: 'relative', padding: '12px 18px 0', background: illustGradient(typeCode) }}>
+      <div className={`bj-typecard__illust-bg bj-typecard__illust-bg--${typeCode}`}>
         <IllustPlaceholder
           code={type.code}
           alt={type.name}
@@ -54,7 +53,7 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
           fit="contain"
           background="transparent"
         />
-        <span style={{ position: 'absolute', top: 4, left: 20 }}>
+        <span className="bj-typecard__rarity-slot">
           <RarityBadge
             variant={rarityVariant}
             label={RARITY_BADGE_LABELS[rarityKey]}
@@ -69,7 +68,7 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
         <h2 className="bj-display bj-display--xl">
           {type.name}
         </h2>
-        <p className="bj-body" style={{ marginTop: 8, fontSize: 13, color: 'var(--color-text-muted)' }}>
+        <p className="bj-body bj-typecard__tagline">
           &ldquo;{type.tagline}&rdquo;
         </p>
       </div>
@@ -90,8 +89,7 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
               <div className="bj-stat__track">
                 <div
                   ref={(el) => { fillRefs.current[i] = el }}
-                  className="bj-stat__fill"
-                  style={{ width: '0%', transition: 'width 0.7s cubic-bezier(0.2,0.7,0.3,1)' }}
+                  className="bj-stat__fill bj-stat__fill--animated"
                 />
               </div>
             </div>
@@ -105,7 +103,7 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
           독서 뇌구조
           <span className="bj-section-label__line" />
         </div>
-        <div className="bj-segmented" style={{ marginBottom: 12 }}>
+        <div className="bj-segmented bj-typecard__brain-segmented">
           {type.brain.map((seg, i) => (
             <div key={seg.label} className="bj-segmented__seg" style={{ width: seg.pct + '%', opacity: brainShades[i] }} />
           ))}
@@ -125,10 +123,10 @@ export default function TypeCard({ typeCode, result, shareRef }: TypeCardProps) 
 
       {/* 푸터 */}
       <div className="bj-typecard__footer">
-        <span className="bj-display" style={{ fontSize: 14, letterSpacing: '0.18em' }}>
+        <span className="bj-display bj-typecard__footer-brand">
           북작
         </span>
-        <span className="bj-caption" style={{ letterSpacing: '0.1em' }}>
+        <span className="bj-caption bj-typecard__footer-caption">
           나의 독서유형
         </span>
       </div>
