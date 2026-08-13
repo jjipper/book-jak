@@ -19,7 +19,7 @@ export default function Stars({ value, size = 14 }: StarsProps) {
               <polygon points={STAR_POINTS} />
             </svg>
             {frac > 0 && (
-              <span className="bj-star__fill" style={{ width: `${frac * 100}%` }}>
+              <span className="bj-star__fill" style={{ clipPath: `inset(0 ${(1 - frac) * 100}% 0 0)` }}>
                 <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-accent)" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinejoin="round">
                   <polygon points={STAR_POINTS} />
                 </svg>
