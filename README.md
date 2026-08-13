@@ -89,4 +89,4 @@ npm run lint    # ESLint 검사
 
 ## 디자인 시스템
 
-`/design-system` 라우트에서 컴포넌트·토큰을 확인할 수 있습니다. 디자인 원칙은 [`docs/design/DESIGN_PRINCIPLES.md`](./docs/design/DESIGN_PRINCIPLES.md)에 정리되어 있습니다.
+`/design-system` 라우트에서 컴포넌트·토큰을 확인할 수 있습니다. 디자인 원칙은 [`docs/DESIGN.md`](./docs/DESIGN.md)에 정리되어 있습니다.
