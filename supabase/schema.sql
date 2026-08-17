@@ -181,6 +181,39 @@ returns void language sql security definer as $$
   update public.posts set like_count = greatest(0, like_count - 1) where id = post_id;
 $$;
 
+-- 이벤트 (공식 이벤트 + 사용자 모임)
+create table if not exists public.events (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text not null default '',
+  event_date timestamptz,
+  location text,
+  location_type text not null default 'online',  -- 'online' | 'offline'
+  max_participants int,
+  participant_count int not null default 0,
+  is_official boolean not null default false,
+  tags text[] not null default '{}',
+  created_by uuid references auth.users (id) on delete set null,
+  created_at timestamptz not null default now()
+);
+alter table public.events enable row level security;
+create policy "events: 누구나 조회" on public.events for select using (true);
+create policy "events: 로그인 사용자 등록" on public.events for insert to authenticated with check (true);
+create policy "events: 주최자만 수정" on public.events for update to authenticated using (auth.uid() = created_by);
+create policy "events: 주최자만 삭제" on public.events for delete to authenticated using (auth.uid() = created_by);
+
+-- 이벤트 참가자
+create table if not exists public.event_participants (
+  event_id uuid not null references public.events (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  joined_at timestamptz not null default now(),
+  primary key (event_id, user_id)
+);
+alter table public.event_participants enable row level security;
+create policy "event_participants: 누구나 조회" on public.event_participants for select using (true);
+create policy "event_participants: 본인만 등록" on public.event_participants for insert to authenticated with check (auth.uid() = user_id);
+create policy "event_participants: 본인만 삭제" on public.event_participants for delete to authenticated using (auth.uid() = user_id);
+
 -- 블라인드 책 반응 (발견 탭 성향 수집)
 create table if not exists public.blind_reactions (
   id uuid primary key default gen_random_uuid(),
