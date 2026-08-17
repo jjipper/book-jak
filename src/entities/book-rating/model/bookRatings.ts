@@ -6,6 +6,7 @@ import { recordActivity } from '@/shared/lib/activity'
 export interface BookRatingRecord {
   bookId: string // 카탈로그 책은 'b01', 카카오 검색 책은 'isbn-{ISBN13}'
   title?: string // 마이페이지 등에서 카탈로그 조회 없이 표시하기 위한 스냅샷
+  categoryName?: string // 알라딘 장르 분석용
   stars: number
   review?: string
   ts: number
