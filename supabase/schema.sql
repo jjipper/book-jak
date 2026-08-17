@@ -155,6 +155,32 @@ create policy "club_members: 누구나 조회" on public.club_members for select
 create policy "club_members: 본인만 등록" on public.club_members for insert to authenticated with check (auth.uid() = user_id);
 create policy "club_members: 본인만 삭제" on public.club_members for delete to authenticated using (auth.uid() = user_id);
 
+-- 피드 포스트 (홈 소셜 피드)
+create table if not exists public.posts (
+  id uuid primary key default gen_random_uuid(),
+  author_id uuid not null references auth.users (id) on delete cascade,
+  content text not null,
+  book_title text,
+  like_count int not null default 0,
+  comment_count int not null default 0,
+  created_at timestamptz not null default now()
+);
+alter table public.posts enable row level security;
+create policy "posts: 누구나 조회" on public.posts for select using (true);
+create policy "posts: 본인만 등록" on public.posts for insert to authenticated with check (auth.uid() = author_id);
+create policy "posts: 본인만 삭제" on public.posts for delete to authenticated using (auth.uid() = author_id);
+
+-- 포스트 좋아요 카운트 증감 RPC (likes 테이블과 연동)
+create or replace function public.increment_post_like(post_id uuid)
+returns void language sql security definer as $$
+  update public.posts set like_count = like_count + 1 where id = post_id;
+$$;
+
+create or replace function public.decrement_post_like(post_id uuid)
+returns void language sql security definer as $$
+  update public.posts set like_count = greatest(0, like_count - 1) where id = post_id;
+$$;
+
 -- 블라인드 책 반응 (발견 탭 성향 수집)
 create table if not exists public.blind_reactions (
   id uuid primary key default gen_random_uuid(),
