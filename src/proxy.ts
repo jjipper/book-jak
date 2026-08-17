@@ -1,9 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// 로그인 필수 페이지: /my만 남김
-// /rate·/social·/people은 비로그인도 열람 가능하고, 각 액션 단에서 게이트 처리
-const PROTECTED = ['/my']
+// 로그인 필수로 강제 리다이렉트하는 페이지 없음 — /my 포함 모든 페이지는 비로그인도 열람 가능하고,
+// 개인 기록이 필요한 부분은 각 화면에서 인라인으로 로그인을 유도한다 (각 액션 단에서 게이트 처리)
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -28,13 +27,6 @@ export async function proxy(request: NextRequest) {
   // getUser()는 서버에서 토큰을 검증 (getSession()보다 안전)
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
-
-  if (!user && PROTECTED.some((p) => pathname === p || pathname.startsWith(`${p}/`))) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('next', pathname)
-    return NextResponse.redirect(url)
-  }
 
   if (user && pathname === '/login') {
     const url = request.nextUrl.clone()

@@ -12,10 +12,9 @@ import { getFollowingIds, getFollowerIds } from '@/features/follow/model/follows
 import { getLikedIds } from '@/features/like/model/likes'
 import { loadQuestions, loadAllAnswers } from '@/entities/discussion/model/discussionActions'
 import { loadClubs, getJoinedIds } from '@/entities/club/model/clubActions'
-import { loadBlindRatings } from '@/entities/blind-rating/model/blindRatings'
 import { loadBookRatings } from '@/entities/book-rating/model/bookRatings'
+import { getReactionCounts } from '@/entities/blind-book/model/blindReactions'
 import { loadWishlist } from '@/features/wishlist/model/wishlist'
-import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { getMyId } from '@/entities/user/model/profile'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import ProfileAvatar from '@/entities/user/ui/ProfileAvatar'
@@ -49,8 +48,20 @@ function ActivityRow({ href, label, count }: { href: string; label: string; coun
   )
 }
 
+function LoginRequiredNote() {
+  return (
+    <div className="bj-card--empty-lg">
+      <p className="bj-caption bj-text-center bj-mb-12">로그인하면 내 기록을 볼 수 있어요</p>
+      <Link href="/login?next=/my" className="bj-btn bj-btn--block bj-btn--block-sm">
+        로그인하기
+      </Link>
+    </div>
+  )
+}
+
 export default function MyView() {
   const router = useRouter()
+  const [loggedIn, setLoggedIn] = useState(false)
   const [savedResult, setSavedResult] = useState<ReturnType<typeof loadResult>>(null)
   const [nickname, setNicknameState] = useState('')
   const [avatar, setAvatarState] = useState<string | null>(null)
@@ -65,23 +76,28 @@ export default function MyView() {
   const [myClubCount, setMyClubCount] = useState(0)
   const [ratedCount, setRatedCount] = useState(0)
   const [wishCount, setWishCount] = useState(0)
-  const [styleTags, setStyleTags] = useState<string[]>([])
-  const [favoriteGenres, setFavoriteGenres] = useState<string[]>([])
-  const [favoriteAuthors, setFavoriteAuthors] = useState<string[]>([])
+  const [discoverSaved, setDiscoverSaved] = useState(0)
+  const [discoverPassed, setDiscoverPassed] = useState(0)
+  const [topGenres, setTopGenres] = useState<{ name: string; count: number; avgStars: number }[]>([])
 
   useEffect(() => {
     async function load() {
       setSavedResult(loadResult())
-      fetchProfile().then((profile) => {
-        if (profile) {
-          setNicknameState(profile.nickname)
-          setNickname(profile.nickname)
-          if (profile.avatar_url) {
-            setAvatarState(profile.avatar_url)
-            setAvatar(profile.avatar_url)
-          }
-        }
-      }).catch(() => toast.error('프로필 로드에 실패했어요'))
+
+      let profile: Awaited<ReturnType<typeof fetchProfile>> = null
+      try {
+        profile = await fetchProfile()
+      } catch {
+        toast.error('프로필 로드에 실패했어요')
+      }
+      if (!profile) return
+      setLoggedIn(true)
+      setNicknameState(profile.nickname)
+      setNickname(profile.nickname)
+      if (profile.avatar_url) {
+        setAvatarState(profile.avatar_url)
+        setAvatar(profile.avatar_url)
+      }
 
       const myId = getMyId()
       const [followingIds, followerIds, likedIds, allQuestions, allAnswers, joinedIds, allClubs] = await Promise.all([
@@ -96,29 +112,32 @@ export default function MyView() {
       setFollowingCount(followingIds.length)
       setFollowerCount(followerIds.length)
       setLikedCount(likedIds.length)
-      setMyPostCount(allQuestions.filter((q) => q.authorId === myId || q.authorId === 'me').length)
-      setMyCommentCount(allAnswers.filter((a) => a.authorId === myId || a.authorId === 'me').length)
+      setMyPostCount(allQuestions.filter((q) => q.authorId === myId).length)
+      setMyCommentCount(allAnswers.filter((a) => a.authorId === myId).length)
       setMyClubCount(allClubs.filter((c) => c.organizerId === myId || joinedIds.includes(c.id)).length)
-      setRatedCount(loadBookRatings().length)
+
+      const ratings = loadBookRatings()
+      setRatedCount(ratings.length)
       setWishCount(loadWishlist().length)
 
-      const ratings = loadBlindRatings()
-      const tagFreq = new Map<string, number>()
-      ratings.forEach((r) => r.tags.forEach((tag) => tagFreq.set(tag, (tagFreq.get(tag) ?? 0) + 1)))
-      setStyleTags([...tagFreq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([tag]) => tag))
-
-      const liked = ratings.filter((r) => r.stars >= 4)
-      const source = liked.length > 0 ? liked : ratings
-      const genreFreq = new Map<string, number>()
-      const authorFreq = new Map<string, number>()
-      source.forEach((r) => {
-        const book = BLIND_BOOKS.find((b) => b.id === r.bookId)
-        if (!book) return
-        authorFreq.set(book.author, (authorFreq.get(book.author) ?? 0) + 1)
-        book.tags.filter((t) => t.kind === 'genre').forEach((t) => genreFreq.set(t.text, (genreFreq.get(t.text) ?? 0) + 1))
+      const genreStats = new Map<string, { count: number; totalStars: number }>()
+      ratings.forEach((r) => {
+        if (!r.categoryName) return
+        const cur = genreStats.get(r.categoryName) ?? { count: 0, totalStars: 0 }
+        cur.count += 1
+        cur.totalStars += r.stars
+        genreStats.set(r.categoryName, cur)
       })
-      setFavoriteGenres([...genreFreq.entries()].sort((a, b) => b[1] - a[1]).map(([g]) => g))
-      setFavoriteAuthors([...authorFreq.entries()].sort((a, b) => b[1] - a[1]).map(([a]) => a))
+      setTopGenres(
+        [...genreStats.entries()]
+          .map(([name, { count, totalStars }]) => ({ name, count, avgStars: totalStars / count }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 5),
+      )
+
+      const { saved, passed } = getReactionCounts()
+      setDiscoverSaved(saved)
+      setDiscoverPassed(passed)
     }
     void load()
   }, [])
@@ -155,30 +174,42 @@ export default function MyView() {
 
         {/* 프로필 */}
         <div className="bj-my-profile">
-          <ProfileAvatar src={avatar} onChange={handleAvatarChange} />
-          <div className="bj-flex-1">
-            <div className="bj-my-nickname-row">
-              <span className="bj-h2 bj-truncate">{nickname}</span>
-              <button
-                type="button"
-                onClick={() => setShowNicknameSheet(true)}
-                aria-label="닉네임 수정"
-                className="bj-icon-btn bj-icon-btn--sm"
-              >
-                <PencilIcon />
-              </button>
-            </div>
-            <div className="bj-my-stats">
-              <Link href="/my/following" className="bj-my-stat-link">
-                <span className="bj-stat-num">{followingCount}</span>
-                <span className="bj-caption">팔로잉</span>
+          {loggedIn ? (
+            <>
+              <ProfileAvatar src={avatar} onChange={handleAvatarChange} />
+              <div className="bj-flex-1">
+                <div className="bj-my-nickname-row">
+                  <span className="bj-h2 bj-truncate">{nickname}</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowNicknameSheet(true)}
+                    aria-label="닉네임 수정"
+                    className="bj-icon-btn bj-icon-btn--sm"
+                  >
+                    <PencilIcon />
+                  </button>
+                </div>
+                <div className="bj-my-stats">
+                  <Link href="/my/following" className="bj-my-stat-link">
+                    <span className="bj-stat-num">{followingCount}</span>
+                    <span className="bj-caption">팔로잉</span>
+                  </Link>
+                  <Link href="/my/followers" className="bj-my-stat-link">
+                    <span className="bj-stat-num">{followerCount}</span>
+                    <span className="bj-caption">팔로워</span>
+                  </Link>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="bj-flex-1">
+              <p className="bj-h2 bj-mb-8">로그인이 필요해요</p>
+              <p className="bj-caption bj-mb-12">로그인하고 더 많은 기능을 써보세요</p>
+              <Link href="/login?next=/my" className="bj-btn bj-btn--primary bj-btn--sm">
+                로그인하기
               </Link>
-              <Link href="/my/followers" className="bj-my-stat-link">
-                <span className="bj-stat-num">{followerCount}</span>
-                <span className="bj-caption">팔로워</span>
-              </Link>
             </div>
-          </div>
+          )}
         </div>
 
         {/* 테스트 결과 */}
@@ -212,44 +243,29 @@ export default function MyView() {
             <span className="bj-section-tag">좋아하는 책 스타일 분석</span>
             <span className="bj-section-label__line" />
           </div>
-          {styleTags.length > 0 ? (
+          {!loggedIn ? (
+            <LoginRequiredNote />
+          ) : topGenres.length > 0 ? (
             <div className="bj-col-14">
               <div>
-                <p className="bj-caption bj-bold bj-mb-6">선호 태그</p>
+                <p className="bj-caption bj-bold bj-mb-6">평점 준 장르</p>
                 <div className="bj-tag-group">
-                  {styleTags.map((tag) => (
-                    <span key={tag} className="bj-chip bj-chip--active">#{tag}</span>
+                  {topGenres.map((genre) => (
+                    <span key={genre.name} className="bj-chip bj-chip--active">
+                      {genre.name} ★{genre.avgStars.toFixed(1)}
+                    </span>
                   ))}
                 </div>
               </div>
-              {favoriteGenres.length > 0 && (
-                <div>
-                  <p className="bj-caption bj-bold bj-mb-6">좋아하는 장르</p>
-                  <div className="bj-tag-group">
-                    {favoriteGenres.map((genre) => (
-                      <span key={genre} className="bj-chip">{genre}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {favoriteAuthors.length > 0 && (
-                <div>
-                  <p className="bj-caption bj-bold bj-mb-6">좋아하는 작가</p>
-                  <div className="bj-tag-group">
-                    {favoriteAuthors.map((author) => (
-                      <span key={author} className="bj-chip">{author}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <p className="bj-caption">발견 탭에서 저장 {discoverSaved}권 · 패스 {discoverPassed}권</p>
             </div>
           ) : (
             <>
               <p className="bj-caption bj-text-center bj-mb-12 bj-pt-8">
-                블라인드 북카드를 평가하면<br />내가 좋아하는 책 스타일을 분석해드려요
+                책에 별점을 남기면<br />내가 좋아하는 장르를 분석해드려요
               </p>
-              <Link href="/discover" className="bj-btn bj-btn--block bj-btn--block-sm">
-                블라인드 북카드 평가하기
+              <Link href="/rate" className="bj-btn bj-btn--block bj-btn--block-sm">
+                책 평가하러 가기
               </Link>
             </>
           )}
@@ -287,10 +303,14 @@ export default function MyView() {
             <span className="bj-section-tag">보관함</span>
             <span className="bj-section-label__line" />
           </div>
-          <div className="bj-col-8">
-            <ActivityRow href="/my/rated" label="내가 읽고 별점 준 책" count={ratedCount} />
-            <ActivityRow href="/my/wishlist" label="읽고 싶어요 한 책" count={wishCount} />
-          </div>
+          {loggedIn ? (
+            <div className="bj-col-8">
+              <ActivityRow href="/my/rated" label="내가 읽고 별점 준 책" count={ratedCount} />
+              <ActivityRow href="/my/wishlist" label="읽고 싶어요 한 책" count={wishCount} />
+            </div>
+          ) : (
+            <LoginRequiredNote />
+          )}
         </div>
 
         {/* 활동 */}
@@ -299,12 +319,16 @@ export default function MyView() {
             <span className="bj-section-tag">나의 활동</span>
             <span className="bj-section-label__line" />
           </div>
-          <div className="bj-col-8">
-            <ActivityRow href="/my/likes" label="좋아요 한 글" count={likedCount} />
-            <ActivityRow href="/my/posts" label="남긴 글" count={myPostCount} />
-            <ActivityRow href="/my/comments" label="남긴 댓글" count={myCommentCount} />
-            <ActivityRow href="/my/clubs" label="신청한 모임" count={myClubCount} />
-          </div>
+          {loggedIn ? (
+            <div className="bj-col-8">
+              <ActivityRow href="/my/likes" label="좋아요 한 글" count={likedCount} />
+              <ActivityRow href="/my/posts" label="남긴 글" count={myPostCount} />
+              <ActivityRow href="/my/comments" label="남긴 댓글" count={myCommentCount} />
+              <ActivityRow href="/my/clubs" label="신청한 모임" count={myClubCount} />
+            </div>
+          ) : (
+            <LoginRequiredNote />
+          )}
         </div>
 
         </div>
@@ -348,22 +372,28 @@ export default function MyView() {
 
               <div>
                 <p className="bj-caption bj-settings-section-label">계정</p>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    try {
-                      await signOut()
-                    } catch {
-                      toast.error('로그아웃에 실패했어요')
-                      return
-                    }
-                    localStorage.clear()
-                    router.push('/login')
-                  }}
-                  className="bj-btn bj-btn--block bj-btn--tall"
-                >
-                  로그아웃
-                </button>
+                {loggedIn ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      try {
+                        await signOut()
+                      } catch {
+                        toast.error('로그아웃에 실패했어요')
+                        return
+                      }
+                      localStorage.clear()
+                      router.push('/login')
+                    }}
+                    className="bj-btn bj-btn--block bj-btn--tall"
+                  >
+                    로그아웃
+                  </button>
+                ) : (
+                  <Link href="/login?next=/my" className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall">
+                    로그인하기
+                  </Link>
+                )}
               </div>
 
               <div>
