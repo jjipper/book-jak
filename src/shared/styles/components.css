@@ -3933,3 +3933,69 @@ body.bj-body {
 .bj-fab:hover {
   background: var(--color-accent-hover);
 }
+
+/* ── 소셜 — 이벤트 카드 ──────────────────────────────── */
+.bj-event-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-soft);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.bj-event-card--official {
+  border-color: var(--color-border);
+}
+
+.bj-event-card__head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bj-event-card__badge {
+  font-size: var(--fs-xs);
+}
+
+.bj-event-card__loc {
+  font-size: var(--fs-xs);
+}
+
+.bj-chip--online {
+  color: var(--color-accent);
+  border-color: var(--color-accent-weak);
+  background: var(--color-accent-weak);
+}
+
+.bj-event-card__full {
+  color: var(--color-text-muted);
+}
+
+.bj-event-card__title {
+  font-size: var(--fs-sm);
+  line-height: 1.3;
+}
+
+.bj-event-card__desc {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bj-event-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bj-event-card__join-btn {
+  margin-top: 4px;
+}
