@@ -78,6 +78,7 @@ export default function MyView() {
   const [wishCount, setWishCount] = useState(0)
   const [discoverSaved, setDiscoverSaved] = useState(0)
   const [discoverPassed, setDiscoverPassed] = useState(0)
+  const [avgStars, setAvgStars] = useState(0)
   const [topGenres, setTopGenres] = useState<{ name: string; count: number; avgStars: number }[]>([])
 
   useEffect(() => {
@@ -119,6 +120,7 @@ export default function MyView() {
       const ratings = loadBookRatings()
       setRatedCount(ratings.length)
       setWishCount(loadWishlist().length)
+      setAvgStars(ratings.length ? ratings.reduce((sum, r) => sum + r.stars, 0) / ratings.length : 0)
 
       const genreStats = new Map<string, { count: number; totalStars: number }>()
       ratings.forEach((r) => {
@@ -247,17 +249,35 @@ export default function MyView() {
             <LoginRequiredNote />
           ) : topGenres.length > 0 ? (
             <div className="bj-col-14">
-              <div>
-                <p className="bj-caption bj-bold bj-mb-6">평점 준 장르</p>
-                <div className="bj-tag-group">
-                  {topGenres.map((genre) => (
-                    <span key={genre.name} className="bj-chip bj-chip--active">
-                      {genre.name} ★{genre.avgStars.toFixed(1)}
-                    </span>
-                  ))}
+              <div className="bj-report-stats">
+                <div className="bj-report-stat">
+                  <span className="bj-report-stat__num bj-report-stat__num--accent">{ratedCount}</span>
+                  <span className="bj-report-stat__label">평가한 책</span>
+                </div>
+                <div className="bj-report-stat">
+                  <span className="bj-report-stat__num">★{avgStars.toFixed(1)}</span>
+                  <span className="bj-report-stat__label">평균 별점</span>
+                </div>
+                <div className="bj-report-stat">
+                  <span className="bj-report-stat__num">{discoverSaved}</span>
+                  <span className="bj-report-stat__label">발견 저장</span>
                 </div>
               </div>
-              <p className="bj-caption">발견 탭에서 저장 {discoverSaved}권 · 패스 {discoverPassed}권</p>
+              <div className="bj-genre-bars">
+                {topGenres.map((genre) => (
+                  <div key={genre.name} className="bj-genre-bar-row">
+                    <span className="bj-genre-bar__label">{genre.name}</span>
+                    <div className="bj-genre-bar__track">
+                      <div
+                        className="bj-genre-bar__fill"
+                        style={{ width: `${Math.round((genre.count / topGenres[0].count) * 100)}%` }}
+                      />
+                    </div>
+                    <span className="bj-genre-bar__meta">★{genre.avgStars.toFixed(1)}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="bj-caption">발견 탭에서 패스 {discoverPassed}권</p>
             </div>
           ) : (
             <>
