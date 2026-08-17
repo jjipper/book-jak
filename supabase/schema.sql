@@ -154,3 +154,17 @@ alter table public.club_members enable row level security;
 create policy "club_members: 누구나 조회" on public.club_members for select using (true);
 create policy "club_members: 본인만 등록" on public.club_members for insert to authenticated with check (auth.uid() = user_id);
 create policy "club_members: 본인만 삭제" on public.club_members for delete to authenticated using (auth.uid() = user_id);
+
+-- 블라인드 책 반응 (발견 탭 성향 수집)
+create table if not exists public.blind_reactions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  blind_book_id int not null,
+  action text not null check (action in ('save', 'pass')),
+  created_at timestamptz not null default now(),
+  unique (user_id, blind_book_id)
+);
+alter table public.blind_reactions enable row level security;
+create policy "blind_reactions: 본인만 조회" on public.blind_reactions for select using (auth.uid() = user_id);
+create policy "blind_reactions: 본인만 등록" on public.blind_reactions for insert to authenticated with check (auth.uid() = user_id);
+create policy "blind_reactions: 본인만 수정" on public.blind_reactions for update to authenticated using (auth.uid() = user_id);
