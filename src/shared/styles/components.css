@@ -987,55 +987,6 @@ body.bj-body {
   width: 100%;
   margin-top: 14px;
 }
-.bj-hero__count {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  margin-top: 8px;
-}
-.bj-hero__count b {
-  color: var(--color-text);
-  font-weight: 700;
-}
-
-/* 참여 수 starburst — 시안의 주황 폭발 뱃지 (좁은 화면에서는 count 텍스트로 대체) */
-.bj-hero__burst {
-  position: relative;
-  flex: none;
-  width: 128px;
-  aspect-ratio: 1;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-right: 24px;
-  color: var(--color-text-on-accent);
-}
-.bj-hero__burst-shape {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  fill: var(--color-accent);
-}
-.bj-hero__burst-label {
-  position: relative;
-  font-size: 11px;
-  line-height: 1.45;
-}
-.bj-hero__burst-label b {
-  display: block;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-@media (min-width: 720px) {
-  .bj-hero__burst {
-    display: flex;
-  }
-  .bj-hero--with-burst .bj-hero__count {
-    display: none;
-  }
-}
 
 /* pill 버튼 변형 — 히어로 CTA·궁금해요 등 */
 .bj-btn--pill {
@@ -3864,4 +3815,121 @@ body.bj-body {
   border: 1.5px solid var(--color-accent);
   background: var(--color-accent-weak);
   color: var(--color-accent-hover);
+}
+
+/* ── 홈 피드 — PostCard ──────────────────────────────── */
+.bj-post-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border-soft);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bj-post-card__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 독서 유형 배지 */
+.bj-post-card__badge {
+  flex-shrink: 0;
+  width: 36px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+}
+
+.bj-post-card__badge--empty {
+  background: transparent;
+  border: 1.5px dashed var(--color-border);
+}
+
+.bj-post-card__author {
+  font-size: var(--fs-sm);
+  flex: 1;
+}
+
+.bj-post-card__time {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.bj-post-card__content {
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.bj-post-card__book-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border-soft);
+  background: var(--color-bg);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  width: fit-content;
+}
+
+.bj-post-card__footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 2px;
+}
+
+.bj-post-card__like-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: var(--fs-xs);
+}
+
+.bj-post-card__like-btn--active {
+  color: var(--color-accent);
+}
+
+.bj-post-card__comment-count {
+  color: var(--color-text-muted);
+}
+
+/* ── 홈 피드 — FAB (글쓰기 버튼) ──────────────────────── */
+.bj-fab {
+  position: fixed;
+  bottom: calc(60px + var(--space-lg));
+  right: var(--space-lg);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  border: 2px solid var(--color-accent-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+}
+
+.bj-fab:hover {
+  background: var(--color-accent-hover);
 }
