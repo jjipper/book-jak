@@ -7,21 +7,10 @@ interface IllustPlaceholderProps {
   alt: string
   aspectRatio?: string
   className?: string
-  /** 이미지 없을 때 폴백: cover = 표지풍(어두운 색면), slot = 밝은 빈 슬롯(파일명 표기) */
-  fallback?: 'cover' | 'slot'
   /** contain = 투명 배경 일러스트를 자르지 않고 전부 표시 */
   fit?: 'cover' | 'contain'
   /** 투명 PNG 뒤 배경. 카드 위에 얹을 땐 카드 표면색을 넘긴다 */
   background?: string
-}
-
-// 실제 일러스트 파일이 없을 때 그려주는 표지풍 플레이스홀더 색상 조합 수 (팔레트는 components.css .bj-illust-wrap__cover--0..7)
-const COVER_PALETTE_COUNT = 8
-
-function hashCode(str: string): number {
-  let h = 0
-  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0
-  return Math.abs(h)
 }
 
 // 코드에서 서브폴더를 자동 해석: type/ covers/ club/ intro/
@@ -40,7 +29,6 @@ export default function IllustPlaceholder({
   alt,
   aspectRatio = '4 / 3',
   className,
-  fallback = 'cover',
   fit = 'cover',
   background = 'var(--color-bg-sunken)',
 }: IllustPlaceholderProps) {
@@ -56,8 +44,6 @@ export default function IllustPlaceholder({
     }
   }, [])
 
-  const paletteIndex = hashCode(code) % COVER_PALETTE_COUNT
-
   return (
     <div
       className={`bj-illust bj-illust-wrap${className ? ` ${className}` : ''}`}
@@ -72,25 +58,22 @@ export default function IllustPlaceholder({
           className={`bj-illust-wrap__img bj-illust-wrap__img--${fit === 'contain' ? 'contain' : 'cover'}`}
           onError={() => setFailed(true)}
         />
-      ) : fallback === 'slot' ? (
-        <div
-          role="img"
-          aria-label={alt}
-          className="bj-illust-wrap__slot"
-        >
-          <span className="bj-illust-wrap__slot-label">
-            illust/{code}.png
-          </span>
-        </div>
       ) : (
-        <div
-          role="img"
-          aria-label={alt}
-          className={`bj-illust-wrap__cover bj-illust-wrap__cover--${paletteIndex}`}
-        >
-          <span className="bj-illust-wrap__cover-bar" />
-          <span className="bj-illust-wrap__cover-title">{alt}</span>
-          <span className="bj-illust-wrap__cover-bar bj-illust-wrap__cover-bar--end" />
+        // 일러스트가 없을 때 — 흰 면 + 연한 회색 책 아이콘만. 자리만 지키고 눈에 띄지 않게.
+        <div role="img" aria-label={alt} className="bj-illust-wrap__empty">
+          <svg
+            className="bj-illust-wrap__empty-icon"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+          </svg>
         </div>
       )}
     </div>
