@@ -48,8 +48,9 @@ body.bj-body {
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 700;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   padding: 10px 14px;
+  min-height: 48px;
   cursor: pointer;
   transition:
     background-color 0.12s,
@@ -66,22 +67,20 @@ body.bj-body {
   background: var(--color-accent-hover);
 }
 
-/* 보조 액션 (+ 책 추가하기) — 아웃라인 */
+/* 보조 액션 — 주황100 채움 / 주황600 (무테) */
 .bj-btn--secondary {
-  background: transparent;
-  color: var(--color-accent);
-  border-color: var(--color-border-accent);
+  background: var(--color-accent-weak);
+  color: var(--color-accent-hover);
+  font-weight: var(--fw-medium);
 }
 .bj-btn--secondary:hover {
   background: var(--color-accent-faint);
 }
 
-/* 텍스트 버튼 (나중에 할게요) */
+/* 텍스트 버튼 (나중에 할게요) — 컨테이너에 따라 화이트/크림 면 */
 .bj-btn--text {
-  background: transparent;
+  background: var(--color-control-surface);
   color: var(--color-accent);
-  border-color: transparent;
-  padding: 8px 4px;
   font-weight: 500;
 }
 .bj-btn--text:hover {
@@ -92,7 +91,8 @@ body.bj-body {
   width: 100%;
 }
 .bj-btn:disabled {
-  opacity: 0.4;
+  background: var(--color-track);
+  color: var(--color-text-caption);
   cursor: not-allowed;
 }
 
@@ -110,7 +110,7 @@ body.bj-body {
   cursor: pointer;
 }
 .bj-icon-btn:hover {
-  background: var(--color-accent-faint);
+  background: var(--color-control-surface);
 }
 .bj-icon-btn--active {
   color: var(--color-accent);
@@ -119,7 +119,7 @@ body.bj-body {
 /* ========== 02. QUESTION CARD (진단 문항) ========== */
 .bj-question {
   background: var(--color-surface);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-lg);
   padding: 24px;
 }
@@ -136,10 +136,11 @@ body.bj-body {
   gap: 12px;
   width: 100%;
   text-align: left;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-soft);
+  background: var(--color-control-surface);
+  border: none;
   border-radius: var(--radius-md);
   padding: 10px 12px;
+  min-height: 48px;
   margin-bottom: 8px;
   font-family: var(--font-body); /* button은 폰트 비상속 — 명시 필수 */
   font-size: 14px;
@@ -150,19 +151,20 @@ body.bj-body {
     background-color 0.12s;
 }
 .bj-option:hover {
-  border-color: var(--color-border-accent);
+  background: var(--color-accent-faint);
 }
 .bj-option--selected {
   background: var(--color-accent-weak);
-  border-color: var(--color-border-accent);
+  font-weight: 700;
 }
 .bj-option__key {
-  /* A/B/C/D 라벨 */
+  /* A/B/C/D 라벨 — Wildgak 허용 대상 */
+  font-family: var(--font-display);
   font-weight: 700;
   color: var(--color-text-muted);
 }
 .bj-option--selected .bj-option__key {
-  color: var(--color-accent);
+  color: var(--color-accent-hover);
 }
 .bj-option__check {
   margin-left: auto;
@@ -177,7 +179,7 @@ body.bj-body {
 }
 .bj-progress__track {
   flex: 1;
-  height: 6px;
+  height: 8px;
   background: var(--color-track);
   border-radius: var(--radius-pill);
   overflow: hidden;
@@ -190,7 +192,6 @@ body.bj-body {
 .bj-progress__label {
   font-size: 12px;
   color: var(--color-text-muted);
-  font-weight: 500;
 }
 
 /* ========== 04b. RARITY TAG (인라인 희소도 pill — 목록/프로필용 소형) ========== */
@@ -253,11 +254,9 @@ body.bj-body {
 
 .bj-rarity--common {
   color: var(--color-text);
-} /* 흔함: 원 + soft 테두리 */
+} /* 흔함: 트랙색 채운 원 (무테) */
 .bj-rarity--common .bj-rarity__shape {
-  fill: var(--color-surface);
-  stroke: var(--color-border-soft);
-  stroke-width: 1px;
+  fill: var(--color-track);
 }
 .bj-rarity--rare {
   color: var(--color-text);
@@ -314,7 +313,7 @@ body.bj-body {
 }
 .bj-stat__track {
   flex: 1;
-  height: 12px;
+  height: 8px;
   background: var(--color-track);
   border-radius: var(--radius-pill);
   overflow: hidden;
@@ -333,8 +332,28 @@ body.bj-body {
   width: 32px;
   text-align: right;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--color-accent);
   flex: none;
+}
+
+/* ========== 컨트롤 면 위계 ==========
+   크림 페이지 위 컨트롤 = 화이트(:root 기본).
+   화이트 면 안 컨트롤 = 크림. 컨테이너가 상속으로 정해주므로 호출부는 손대지 않는다. */
+.bj-card,
+.bj-question,
+.bj-row,
+.bj-sheet,
+.bj-typecard,
+.bj-type-card,
+.bj-post-card,
+.bj-event-card,
+.bj-club-card,
+.bj-discover-card,
+.bj-discuss-card,
+.bj-friend-card,
+.bj-blind-card,
+.bj-empty-card {
+  --color-control-surface: var(--color-bg);
 }
 
 /* ========== 08. CHIP / TAG ========== */
@@ -349,7 +368,7 @@ body.bj-body {
   padding: 8px 16px;
   border-radius: var(--radius-pill);
   border: none;
-  background: var(--color-surface);
+  background: var(--color-control-surface);
   color: var(--color-text);
   cursor: pointer;
   transition:
@@ -409,9 +428,9 @@ body.bj-body {
 .bj-check {
   width: 20px;
   height: 20px;
-  border: 2px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-track);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -419,7 +438,6 @@ body.bj-body {
 }
 .bj-check--checked {
   background: var(--color-accent);
-  border-color: var(--color-accent);
   color: var(--color-text-on-accent);
 }
 
@@ -429,16 +447,16 @@ body.bj-body {
   align-items: center;
   gap: 8px;
   width: 100%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-soft);
+  background: var(--color-control-surface);
+  border: none;
   border-radius: var(--radius-md);
   padding: 10px 12px;
 }
 .bj-input:focus-within {
-  border-color: var(--color-border-accent);
+  outline: 2px solid var(--color-focus-ring);
 }
 .bj-input--error {
-  border-color: var(--color-error);
+  outline: 2px solid var(--color-error);
 }
 .bj-input__icon {
   color: var(--color-text-caption);
@@ -467,20 +485,18 @@ body.bj-body {
   font-size: 14px;
   line-height: 1.5;
   color: var(--color-text);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-soft);
+  background: var(--color-control-surface);
+  border: none;
   border-radius: var(--radius-md);
   padding: 10px 12px;
   min-height: 96px;
   resize: vertical;
-  transition: border-color 0.12s;
 }
 .bj-textarea::placeholder {
   color: var(--color-text-caption);
 }
 .bj-textarea:focus {
-  outline: none;
-  border-color: var(--color-border-accent);
+  outline: 2px solid var(--color-focus-ring);
 }
 
 /* ========== CARD (공통 컨테이너) ========== */
@@ -493,8 +509,9 @@ body.bj-body {
   padding: 16px;
 }
 .bj-card--spotlight {
-  background: var(--color-surface-spotlight);
-  border: 1px solid var(--color-border-soft);
+  /* 강조 카드 = 주황050 틴트. 테두리 없이 면 색만으로 구분 */
+  background: var(--color-accent-faint);
+  border: none;
 }
 
 /* ========== CALLOUT (인용구/처방/안내 박스) ========== */
@@ -507,8 +524,8 @@ body.bj-body {
   line-height: 1.6;
 }
 .bj-callout--muted {
-  background: var(--color-surface);
-  color: var(--color-text-muted);
+  background: var(--color-control-surface);
+  color: var(--color-text-caption);
 }
 
 /* ========== ROW (리스트 행 — 칭호/배지/궁합 등) ========== */
@@ -546,16 +563,13 @@ body.bj-body {
   align-items: center;
   gap: 8px;
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-weight: 500;
   color: var(--color-text-caption);
   margin-bottom: 12px;
 }
+/* 라인 폐기 — 라벨 텍스트만으로 구획한다. 마크업은 뷰에 남아 있어 여기서 죽인다. */
 .bj-section-label__line {
-  flex: 1;
-  height: 1px;
-  background: var(--color-border-soft);
+  display: none;
 }
 
 /* ========== SHEET (바텀시트 모달) ========== */
@@ -578,6 +592,16 @@ body.bj-body {
   max-height: 72vh;
   overflow-y: auto;
 }
+/* 그래버 48×4 */
+.bj-sheet::before {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 4px;
+  margin: 0 auto 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+}
 
 /* ========== 13. BOTTOM NAVIGATION ========== */
 .bj-bottomnav {
@@ -585,7 +609,7 @@ body.bj-body {
   justify-content: space-around;
   align-items: center;
   background: var(--color-surface);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-pill);
   padding: 8px 12px;
 }
@@ -596,14 +620,17 @@ body.bj-body {
   gap: 4px;
   border: none;
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-caption);
   font-family: var(--font-body); /* button/링크 폰트 비상속 — 명시 필수 */
-  font-size: 12px;
+  font-size: 11px;
+  font-weight: 500;
   text-decoration: none;
   cursor: pointer;
 }
 .bj-navitem--active {
   color: var(--color-accent);
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 /* ========== TYPOGRAPHY HELPERS (11) ========== */
@@ -850,8 +877,8 @@ body.bj-body {
   font-size: 11px;
   font-weight: 500;
   color: var(--color-text);
-  background: var(--color-surface-raised);
-  border: 1px solid var(--color-border-soft);
+  background: var(--color-control-surface);
+  border: none;
   padding: 4px 8px;
   border-radius: var(--radius-pill);
 }
@@ -999,7 +1026,7 @@ body.bj-body {
   display: flex;
   flex-direction: column;
   background: var(--color-surface-spotlight);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
@@ -1087,7 +1114,7 @@ body.bj-body {
   align-items: center;
   gap: 12px;
   background: var(--color-surface-spotlight);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-lg);
   padding: 16px;
   text-decoration: none;
@@ -1134,7 +1161,7 @@ body.bj-body {
   width: 88px;
   height: 88px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   background: var(--color-accent-faint);
   overflow: hidden;
   margin: 0 auto 8px;
@@ -1167,7 +1194,7 @@ body.bj-body {
   align-items: center;
   gap: 16px;
   background: var(--color-surface-spotlight);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-lg);
   padding: 16px;
   text-decoration: none;
@@ -1178,7 +1205,8 @@ body.bj-body {
   width: 88px;
   height: 88px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-soft);
+  border: none;
+  background: var(--color-control-surface);
   overflow: hidden;
 }
 .bj-club-card__thumb .bj-illust {
@@ -1200,21 +1228,22 @@ body.bj-body {
   margin: 8px 0;
 }
 .bj-club-card__chip {
-  font-size: 11px;
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border-soft);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text);
+  background: var(--color-control-surface);
+  border: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
 }
 .bj-club-card__chip--format {
-  color: var(--color-accent);
-  border-color: var(--color-border-accent);
-  font-weight: 700;
+  color: var(--color-accent-hover);
+  background: var(--color-accent-weak);
 }
 .bj-club-card__desc {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  line-height: 1.45;
+  font-size: 14px;
+  color: var(--color-text);
+  line-height: 1.5;
 }
 .bj-club-card__tags {
   font-size: 12px;
@@ -1226,7 +1255,7 @@ body.bj-body {
 .bj-type-card {
   flex: 0 0 148px;
   background: var(--color-surface-spotlight);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-lg);
   overflow: hidden;
   text-decoration: none;
@@ -1291,8 +1320,8 @@ body.bj-body {
   font-size: 14px;
   padding: 10px 12px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-surface);
+  border: none;
+  background: var(--color-control-surface);
   color: var(--color-text);
   cursor: pointer;
   transition:
@@ -1334,9 +1363,8 @@ body.bj-body {
 
 /* Chip done state */
 .bj-chip--done {
-  background: transparent;
+  background: var(--color-track);
   color: var(--color-text-caption);
-  border: 1px solid var(--color-border-soft);
 }
 
 /* Ghost button alias (v1 name → v2 text button style) */
@@ -1650,72 +1678,20 @@ body.bj-body {
 .bj-illust-wrap__img--contain {
   object-fit: contain;
 }
-/* IllustPlaceholder — slot 폴백 */
-.bj-illust-wrap__slot {
+/* IllustPlaceholder — 일러스트 없을 때 빈 면 */
+.bj-illust-wrap__empty {
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    135deg,
-    var(--color-bg-sunken) 0 12px,
-    var(--color-bg) 12px 24px
-  );
+  background: var(--color-control-surface);
   display: grid;
   place-items: center;
-  box-sizing: border-box;
-  padding: 8%;
 }
-.bj-illust-wrap__slot-label {
-  font-size: 10px;
-  color: var(--color-text-caption);
-  text-align: center;
-  word-break: break-all;
-  line-height: 1.3;
-}
-/* IllustPlaceholder — cover 폴백 */
-.bj-illust-wrap__cover {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 12% 10%;
-  box-sizing: border-box;
-  overflow: hidden;
-  container-type: inline-size;
-  background: var(--cover-bg);
-}
-.bj-illust-wrap__cover-bar {
-  display: block;
-  height: 3px;
-  border-radius: 2px;
+.bj-illust-wrap__empty-icon {
   width: 28%;
-  background: var(--cover-deco);
+  max-width: 48px;
+  height: auto;
+  color: var(--color-text-caption);
 }
-.bj-illust-wrap__cover-title {
-  font-weight: 700;
-  font-size: clamp(9px, 14cqw, 15px);
-  line-height: 1.35;
-  word-break: keep-all;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  color: var(--cover-text);
-}
-.bj-illust-wrap__cover-bar--end {
-  align-self: flex-end;
-  width: 46%;
-}
-
-/* IllustPlaceholder — cover 폴백 팔레트 (해시 기반 로테이션) */
-.bj-illust-wrap__cover--0 { --cover-bg: #2F4838; --cover-deco: #4C6B54; --cover-text: #F3EFE6; }
-.bj-illust-wrap__cover--1 { --cover-bg: #5B3A2E; --cover-deco: #7C5546; --cover-text: #F5EDE2; }
-.bj-illust-wrap__cover--2 { --cover-bg: #31405F; --cover-deco: #4C5F87; --cover-text: #EEF1F7; }
-.bj-illust-wrap__cover--3 { --cover-bg: #6B4A63; --cover-deco: #8A6683; --cover-text: #F6EEF4; }
-.bj-illust-wrap__cover--4 { --cover-bg: #7A5A28; --cover-deco: #9C7B45; --cover-text: #F7F1E3; }
-.bj-illust-wrap__cover--5 { --cover-bg: #3F5A5E; --cover-deco: #5D7D82; --cover-text: #EDF4F4; }
-.bj-illust-wrap__cover--6 { --cover-bg: #84424B; --cover-deco: #A3616A; --cover-text: #F8EEEF; }
-.bj-illust-wrap__cover--7 { --cover-bg: #4A4458; --cover-deco: #675F7A; --cover-text: #F1EFF6; }
 
 /* ========== MY / PERSON-DETAIL 레이아웃 유틸 ========== */
 
@@ -2325,17 +2301,18 @@ body.bj-body {
 
 /* 일러스트 선택 버튼 */
 .bj-illust-pick {
-  border: 2px solid var(--color-border-soft);
+  border: none;
   border-radius: var(--radius-lg);
-  background: var(--color-surface);
+  background: var(--color-control-surface);
   padding: 0;
   cursor: pointer;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
+/* 이미지 타일이라 면 색만으로는 선택이 안 읽힌다 — 선택 시에만 outline(레이아웃 무영향) */
 .bj-illust-pick--active {
-  border-color: var(--color-accent);
+  outline: 2px solid var(--color-accent);
   background: var(--color-accent-faint);
 }
 .bj-illust-pick__img {
@@ -2363,15 +2340,15 @@ body.bj-body {
   flex: 1;
 }
 
-/* chip outline 변형 (태그 선택 기본) */
+/* 태그 선택 기본 — 이름은 outline이지만 이제 면으로만 구분(기본 chip 면 상속), 패딩만 다르다 */
 .bj-chip--outline {
-  border: 1px solid var(--color-border-soft);
   padding: 6px 12px;
 }
 
-/* chip outline-strong 변형 (팔로우 버튼) */
+/* 팔로우 버튼 — 주황100 채움으로 액션임을 표시 */
 .bj-chip--outline-strong {
-  border: 1px solid var(--color-border);
+  background: var(--color-accent-weak);
+  color: var(--color-accent-hover);
 }
 
 /* 사람 링크 — gap 12 flex (SocialPeopleView: align flex-start) */
@@ -3732,7 +3709,7 @@ body.bj-body {
   position: relative;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   overflow: hidden;
 }
 
@@ -3821,7 +3798,7 @@ body.bj-body {
 .bj-post-card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   padding: var(--space-md);
   display: flex;
   flex-direction: column;
@@ -3878,8 +3855,8 @@ body.bj-body {
   gap: 4px;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-soft);
-  background: var(--color-bg);
+  border: none;
+  background: var(--color-control-surface);
   font-size: var(--fs-xs);
   color: var(--color-text-muted);
   width: fit-content;
@@ -3938,7 +3915,7 @@ body.bj-body {
 .bj-event-card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border-soft);
+  border: none;
   padding: var(--space-md);
   display: flex;
   flex-direction: column;
@@ -4057,7 +4034,7 @@ body.bj-body {
 .bj-genre-bar__track {
   flex: 1;
   height: 8px;
-  background: var(--color-border-soft);
+  background: var(--color-track);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }

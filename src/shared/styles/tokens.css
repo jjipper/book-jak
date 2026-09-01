@@ -32,8 +32,7 @@
   --p-ink-100: #E7E3D9;      /* 트랙/비활성 채움 */
 
   /* 배경 */
-  --p-paper-050: #F4EFE4;    /* 기본 배경 */
-  --p-paper-000: #FBF8F0;    /* surface (카드 등 배경보다 밝게) */
+  --p-paper-050: #FFF8F2;    /* 크림 — 페이지 배경 & 화이트 면 안의 컨트롤 */
   --p-white:     #FFFFFF;
 
   /* 리소 형광 — 로고 마크·일러스트 전용. UI 컨트롤(버튼/텍스트/보더) 사용 금지 */
@@ -95,9 +94,13 @@
   /* surface / bg */
   --color-bg:            var(--p-paper-050);
   --color-bg-sunken:     var(--p-ink-100);     /* 눌린 패널 (블라인드 커버 등) */
-  --color-surface:       var(--p-paper-000);
+  --color-surface:       var(--p-white);
   --color-surface-raised: var(--p-white);
   --color-surface-spotlight: var(--p-white);   /* 강조 카드 배경 (흰색) */
+
+  /* 컨트롤(칩·선택지) 기본 면. 화이트 면 컨테이너가 크림으로 덮어쓴다.
+     규칙: 컨트롤은 담긴 면과 항상 한 단 달라야 구분된다. */
+  --color-control-surface: var(--p-white);
 
   /* text */
   --color-text:          var(--p-ink-900);
@@ -111,10 +114,9 @@
   --color-accent-weak:   var(--p-orange-100);  /* 선택 상태 배경 */
   --color-accent-faint:  var(--p-orange-050);
 
-  /* border / line */
+  /* border / line — 면 위계 전환 후 "진짜 구분선"에만 쓴다. 컨트롤 테두리 금지 */
   --color-border:        var(--p-ink-900);     /* 강한 구획선 (리소 룩) */
   --color-border-soft:   var(--p-ink-200);     /* 약한 구획선 */
-  --color-border-accent: var(--p-orange-500);
 
   /* track / fill (스탯바 등) */
   --color-track:         var(--p-ink-100);
