@@ -79,7 +79,7 @@
   --color-bg-sunken:     var(--p-ink-100);     /* 눌린 패널 (블라인드 커버 등) */
   --color-surface:       var(--p-white);
   --color-surface-raised: var(--p-white);
-  --color-surface-spotlight: var(--p-white);   /* 강조 카드 배경 (흰색) */
+  --color-surface-spotlight: var(--p-orange-050); /* 강조 카드 배경 (주황050) */
 
   /* 컨트롤(칩·선택지) 기본 면. 화이트 면 컨테이너가 크림으로 덮어쓴다.
      규칙: 컨트롤은 담긴 면과 항상 한 단 달라야 구분된다. */
