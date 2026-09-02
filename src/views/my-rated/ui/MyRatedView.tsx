@@ -2,20 +2,21 @@
 
 // 마이 > 보관함 — 내가 읽고 별점 준 책
 
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { getBook } from '@/entities/book/model/books'
 import { getAuthor } from '@/entities/author/model/authors'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Stars from '@/shared/ui/Stars'
+import { useMounted } from '@/shared/lib/useMounted'
 
 export default function MyRatedView() {
-  const [ratings, setRatings] = useState<BookRatingRecord[]>([])
-
-  useEffect(() => {
-    setRatings(loadBookRatings().slice().sort((a, b) => b.ts - a.ts))
-  }, [])
+  const mounted = useMounted()
+  const ratings: BookRatingRecord[] = useMemo(
+    () => (mounted ? loadBookRatings().slice().sort((a, b) => b.ts - a.ts) : []),
+    [mounted],
+  )
 
   return (
     <main className="bj-shell">

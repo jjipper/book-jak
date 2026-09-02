@@ -3,10 +3,11 @@
 // TODO (Phase 2-2): onSave 시 Supabase blind_reactions 테이블에 'save' 기록
 //   테이블: blind_reactions(user_id, blind_book_id, action: 'save'|'pass', created_at)
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { BlindBook } from '@/entities/blind-book/model/blindBooks'
 import { predictBlindMatch, type BlindMatch } from '@/features/predicted-score/model/predict'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import { useMounted } from '@/shared/lib/useMounted'
 
 interface BlindBookCardProps {
   book: BlindBook
@@ -27,12 +28,10 @@ function MetaRow({ book }: { book: BlindBook }) {
 }
 
 export default function BlindBookCard({ book, onPass, onSave }: BlindBookCardProps) {
-  const [match, setMatch] = useState<BlindMatch | null>(null)
+  // 예측은 localStorage의 평가 이력을 읽으므로 마운트 후에만 계산한다
+  const mounted = useMounted()
+  const match: BlindMatch | null = useMemo(() => (mounted ? predictBlindMatch(book) : null), [mounted, book])
   const [exitDir, setExitDir] = useState<'left' | 'right' | null>(null)
-
-  useEffect(() => {
-    setMatch(predictBlindMatch(book))
-  }, [book])
 
   const cardRef = useRef<HTMLDivElement>(null)
   const leftHintRef = useRef<HTMLSpanElement>(null)

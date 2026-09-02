@@ -3,7 +3,7 @@
 // 평가 탭 — 추천 서가·작가 저서 목록에서 쓰는 책 한 줄 카드
 // 평균 별점 대신 빈 별을 두고, 누르면 그 자리에서 바로 내 평점이 저장된다.
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import type { Book } from '@/entities/book/model/books'
 import { getAuthor } from '@/entities/author/model/authors'
@@ -18,15 +18,13 @@ interface BookRowProps {
 
 export default function BookRow({ book, myStars }: BookRowProps) {
   const authorName = getAuthor(book.authorId)?.name ?? '작자 미상'
-  const [stars, setStars] = useState(myStars ?? 0)
-
-  // 내 평가 이력은 마운트 후 localStorage에서 늦게 도착한다 — prop 갱신 시 동기화
-  useEffect(() => {
-    if (myStars !== undefined) setStars(myStars)
-  }, [myStars])
+  // 내 평가 이력은 마운트 후 localStorage에서 늦게 도착한다 — prop을 원본으로 두고
+  // 이 행에서 직접 누른 값만 덮어쓴다 (effect로 동기화하면 렌더가 한 번 더 돈다)
+  const [rated, setRated] = useState<number | null>(null)
+  const stars = rated ?? myStars ?? 0
 
   function handleRate(n: number) {
-    setStars(n)
+    setRated(n)
     if (n === 0) removeBookRating(book.id)
     else saveBookRating({ bookId: book.id, title: book.title, stars: n, ts: Date.now() })
   }

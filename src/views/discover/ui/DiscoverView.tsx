@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { addToWishlist } from '@/features/wishlist/model/wishlist'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { pickDailyBooks, dateKeyOf, BOOKS_PER_DAY } from '@/entities/blind-book/model/dailyDiscover'
@@ -8,16 +8,13 @@ import { recordBlindReaction } from '@/entities/blind-book/model/blindReactions'
 import BlindBookCard from '@/widgets/blind-book-card/BlindBookCard'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
+import { useMounted } from '@/shared/lib/useMounted'
 
 export default function DiscoverView() {
-  const [mounted, setMounted] = useState(false)
+  const mounted = useMounted()
   const [currentIdx, setCurrentIdx] = useState(0)
   const [completedCount, setCompletedCount] = useState(0)
   const { showGate, closeGate, requireAuth } = useAuthGate()
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
 
   const dateKey = dateKeyOf(new Date())
   const books = mounted ? pickDailyBooks(dateKey) : []

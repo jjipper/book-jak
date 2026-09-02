@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { createSupabaseBrowser } from "@/shared/api/supabase-browser";
 
 // ── 랜덤 닉네임 풀
@@ -158,35 +158,33 @@ export default function NicknameSheet({
   initialValue = "",
 }: NicknameSheetProps) {
   const [value, setValue] = useState(initialValue);
-  const [error, setError] = useState("");
-  const [isValid, setIsValid] = useState(false);
-  const [isChecking, setIsChecking] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [submitError, setSubmitError] = useState("");
+
+  // 검사 결과는 그 결과를 낳은 입력과 함께 담아둔다. 입력이 앞서가면 그 자체가 "검사 중"이다.
+  const [checked, setChecked] = useState<{ value: string; error: string } | null>(null);
+  const trimmed = value.trim();
+  const fresh = checked !== null && checked.value === value;
+  const isChecking = trimmed !== "" && !fresh;
+  const isValid = trimmed !== "" && fresh && !checked.error;
+  const error = submitError || (fresh ? checked.error : "");
 
   useEffect(() => {
-    if (!value.trim()) {
-      setError("");
-      setIsValid(false);
-      setIsChecking(false);
-      return;
-    }
-    setIsChecking(true);
-    if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(async () => {
-      const msg = await runValidation(value);
-      setError(msg);
-      setIsValid(!msg);
-      setIsChecking(false);
+    if (!trimmed) return;
+    const timer = setTimeout(async () => {
+      setChecked({ value, error: await runValidation(value) });
     }, 400);
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, [value]);
+    return () => clearTimeout(timer);
+  }, [value, trimmed]);
+
+  function changeValue(next: string) {
+    setValue(next);
+    setSubmitError("");
+  }
 
   function handleGenerate() {
-    setValue(pickRandom());
+    changeValue(pickRandom());
     setHasGenerated(true);
   }
 
@@ -196,7 +194,7 @@ export default function NicknameSheet({
     try {
       await onSubmit(value.trim());
     } catch {
-      setError("저장 중 오류가 발생했어요. 다시 시도해주세요");
+      setSubmitError("저장 중 오류가 발생했어요. 다시 시도해주세요");
       setIsSubmitting(false);
     }
   }
@@ -215,7 +213,7 @@ export default function NicknameSheet({
             maxLength={16}
             value={value}
             autoFocus
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => changeValue(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSubmit();
             }}

@@ -2,21 +2,23 @@
 
 // 마이 > 보관함 — 읽고 싶어요 한 책
 
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { loadWishlist, removeFromWishlist, type WishlistRecord } from '@/features/wishlist/model/wishlist'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import { useMounted } from '@/shared/lib/useMounted'
 
 export default function MyWishlistView() {
-  const [items, setItems] = useState<WishlistRecord[]>([])
-
-  useEffect(() => {
-    setItems(loadWishlist())
-  }, [])
+  const mounted = useMounted()
+  const [removed, setRemoved] = useState<string[]>([])
+  const items: WishlistRecord[] = useMemo(
+    () => (mounted ? loadWishlist().filter((r) => !removed.includes(r.bookId)) : []),
+    [mounted, removed],
+  )
 
   function handleRemove(bookId: string) {
     removeFromWishlist(bookId)
-    setItems((prev) => prev.filter((r) => r.bookId !== bookId))
+    setRemoved((prev) => [...prev, bookId])
   }
 
   return (

@@ -1,44 +1,37 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { searchExternalBooks, type ExternalBook } from '@/entities/external-book/model/externalBooks'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import ExternalBookRow from '@/widgets/book/ExternalBookRow'
+import { useMounted } from '@/shared/lib/useMounted'
 
 export default function SearchView() {
   const [query, setQuery] = useState('')
-  const [results, setResults] = useState<ExternalBook[]>([])
-  const [searching, setSearching] = useState(false)
-  const [searchError, setSearchError] = useState(false)
-  const [myRatings, setMyRatings] = useState<BookRatingRecord[]>([])
+  const mounted = useMounted()
+  const myRatings: BookRatingRecord[] = useMemo(() => (mounted ? loadBookRatings() : []), [mounted])
+
+  // 검색 결과는 그 결과를 낳은 질의와 함께 담아둔다. 화면 상태는 전부 여기서 파생된다 —
+  // 질의가 바뀌면 결과가 낡은 것이 되므로 그 자체가 "검색 중"이다.
+  const q = query.trim()
+  const [outcome, setOutcome] = useState<{ q: string; books: ExternalBook[]; error: boolean } | null>(null)
+  const fresh = outcome !== null && outcome.q === q
+  const results: ExternalBook[] = fresh ? outcome.books : []
+  const searchError = fresh ? outcome.error : false
+  const searching = q !== '' && !fresh
 
   useEffect(() => {
-    setMyRatings(loadBookRatings())
-  }, [])
-
-  useEffect(() => {
-    const q = query.trim()
-    if (!q) {
-      setResults([])
-      setSearching(false)
-      setSearchError(false)
-      return
-    }
-    setSearching(true)
-    setSearchError(false)
+    if (!q) return
     const timer = setTimeout(async () => {
       try {
-        setResults(await searchExternalBooks(q))
+        setOutcome({ q, books: await searchExternalBooks(q), error: false })
       } catch {
-        setResults([])
-        setSearchError(true)
-      } finally {
-        setSearching(false)
+        setOutcome({ q, books: [], error: true })
       }
     }, 300)
     return () => clearTimeout(timer)
-  }, [query])
+  }, [q])
 
   const myStarsOf = (bookId: string) => myRatings.find((r) => r.bookId === bookId)?.stars
 

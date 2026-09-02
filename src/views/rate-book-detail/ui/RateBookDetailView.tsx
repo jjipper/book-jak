@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useParams, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { getBook, getBookReviews, BOOKS } from '@/entities/book/model/books'
@@ -17,6 +17,7 @@ import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
 import ExternalBookDetail from '@/widgets/book/ExternalBookDetail'
+import { useMounted } from '@/shared/lib/useMounted'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -30,7 +31,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 export default function RateBookDetailView() {
   const params = useParams<{ id: string }>()
   // 카카오 검색으로 찾은 책(isbn-...)과 카탈로그 책(b01...)을 분기
-  if (params.id.startsWith('isbn-')) return <ExternalBookDetail bookId={params.id} />
+  if (params.id.startsWith('isbn-')) return <ExternalBookDetail key={params.id} bookId={params.id} />
   return <CatalogBookDetail id={params.id} />
 }
 
@@ -39,25 +40,17 @@ function CatalogBookDetail({ id }: { id: string }) {
   const pathname = usePathname()
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
-  const [myRating, setMyRating] = useState<BookRatingRecord | undefined>(undefined)
-  const [predicted, setPredicted] = useState<PredictedScore | null>(null)
-  const [allMyRatings, setAllMyRatings] = useState<BookRatingRecord[]>([])
-  const [relatedPredictions, setRelatedPredictions] = useState<Record<string, number>>({})
-  const [stars, setStars] = useState(0)
-  const [review, setReview] = useState('')
-  const [justSaved, setJustSaved] = useState(false)
-  const [stats, setStats] = useState<RemoteBookStats | null>(null)
-
-  useEffect(() => {
-    if (!book) return
-    const mine = getBookRating(book.id)
-    setMyRating(mine)
-    setStars(mine?.stars ?? 0)
-    setReview(mine?.review ?? '')
-    setPredicted(predictScore(book))
-    setAllMyRatings(loadBookRatings())
-
-    // 비슷한 책들의 예상 별점 (내 평가가 없는 책에만 표시)
+  // 평가 이력·예상 별점은 전부 localStorage를 읽으므로 마운트 후에만 계산한다
+  const mounted = useMounted()
+  const stored = useMemo(() => (mounted && book ? getBookRating(book.id) : undefined), [mounted, book])
+  const predicted: PredictedScore | null = useMemo(
+    () => (mounted && book ? predictScore(book) : null),
+    [mounted, book],
+  )
+  const allMyRatings: BookRatingRecord[] = useMemo(() => (mounted ? loadBookRatings() : []), [mounted])
+  // 비슷한 책들의 예상 별점 (내 평가가 없는 책에만 표시)
+  const relatedPredictions: Record<string, number> = useMemo(() => {
+    if (!mounted || !book) return {}
     const preds: Record<string, number> = {}
     for (const rid of book.relatedBookIds) {
       const rb = getBook(rid)
@@ -65,8 +58,21 @@ function CatalogBookDetail({ id }: { id: string }) {
       const p = predictScore(rb)
       if (p) preds[rid] = p.score
     }
-    setRelatedPredictions(preds)
+    return preds
+  }, [mounted, book])
 
+  // 저장소 값이 원본이고, 이 화면에서 고친 것만 덮어쓴다 (null = 아직 안 고침)
+  const [ratingEdit, setRatingEdit] = useState<BookRatingRecord | undefined | null>(null)
+  const [starsEdit, setStarsEdit] = useState<number | null>(null)
+  const [reviewEdit, setReviewEdit] = useState<string | null>(null)
+  const myRating = ratingEdit === null ? stored : ratingEdit
+  const stars = starsEdit ?? stored?.stars ?? 0
+  const review = reviewEdit ?? stored?.review ?? ''
+  const [justSaved, setJustSaved] = useState(false)
+  const [stats, setStats] = useState<RemoteBookStats | null>(null)
+
+  useEffect(() => {
+    if (!book) return
     let cancelled = false
     fetchBookStats(book.id).then((s) => { if (!cancelled) setStats(s) })
     return () => { cancelled = true }
@@ -95,10 +101,10 @@ function CatalogBookDetail({ id }: { id: string }) {
   function handleRate(n: number) {
     if (!book) return
     requireAuth(() => {
-      setStars(n)
+      setStarsEdit(n)
       if (n === 0) {
         removeBookRating(book.id)
-        setMyRating(undefined)
+        setRatingEdit(undefined)
         return
       }
       persist(n, review)
@@ -120,7 +126,7 @@ function CatalogBookDetail({ id }: { id: string }) {
       ts: Date.now(),
     }
     saveBookRating(record)
-    setMyRating(record)
+    setRatingEdit(record)
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 2000)
 
@@ -181,7 +187,7 @@ function CatalogBookDetail({ id }: { id: string }) {
                 className="bj-textarea bj-textarea--review"
                 placeholder="한 줄 리뷰 남기기 (선택)"
                 value={review}
-                onChange={(e) => setReview(e.target.value)}
+                onChange={(e) => setReviewEdit(e.target.value)}
               />
               <button
                 type="button"

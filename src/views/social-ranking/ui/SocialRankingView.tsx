@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { MOCK_PEOPLE } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
@@ -9,23 +9,21 @@ import { getActivityScore, getActivitySummary, ACTIVITY_LABELS, type ActivityTyp
 import { getNickname } from '@/entities/user/model/profile'
 import { ME_ID } from '@/features/resolve-author/model/author'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import { useMounted } from '@/shared/lib/useMounted'
 
 // TODO: 랭킹 서버 연동
 //   - MOCK_PEOPLE 점수 → sb.from('profiles').select('id, nickname, activity_score, type_code') 로 교체
 //   - 내 점수는 activity_score 컬럼에 upsert (현재는 localStorage getActivityScore()만 사용)
 //   - 기간별 랭킹(주간/월간/전체) 필터 추가 고려
 export default function SocialRankingView() {
-  const [myScore, setMyScore] = useState(0)
-  const [mySummary, setMySummary] = useState<Record<ActivityType, number> | null>(null)
-  const [myTypeCode, setMyTypeCode] = useState<ReturnType<typeof loadResult>>(null)
-  const [myNickname, setMyNickname] = useState('나')
-
-  useEffect(() => {
-    setMyScore(getActivityScore())
-    setMySummary(getActivitySummary())
-    setMyTypeCode(loadResult())
-    setMyNickname(getNickname() ?? '나')
-  }, [])
+  const mounted = useMounted()
+  const myScore = useMemo(() => (mounted ? getActivityScore() : 0), [mounted])
+  const mySummary: Record<ActivityType, number> | null = useMemo(
+    () => (mounted ? getActivitySummary() : null),
+    [mounted],
+  )
+  const myTypeCode: ReturnType<typeof loadResult> = useMemo(() => (mounted ? loadResult() : null), [mounted])
+  const myNickname = useMemo(() => (mounted ? getNickname() ?? '나' : '나'), [mounted])
 
   const ranked = useMemo(() => {
     const others = MOCK_PEOPLE.map((p) => ({ id: p.id, nickname: p.nickname, typeCode: p.typeCode, score: p.score, isMe: false }))
