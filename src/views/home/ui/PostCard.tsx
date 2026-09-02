@@ -3,17 +3,7 @@
 import { useState } from 'react'
 import type { Post } from '@/entities/post/model/posts'
 import { togglePostLike, isPostLiked } from '@/entities/post/api/postsRemote'
-
-function TypeBadge({ typeCode }: { typeCode: string | null }) {
-  if (!typeCode) {
-    return <span className="bj-post-card__badge bj-post-card__badge--empty" title="독서 유형 없음" />
-  }
-  return (
-    <span className="bj-post-card__badge" title={typeCode}>
-      {typeCode}
-    </span>
-  )
-}
+import TypeBadge from '@/shared/ui/TypeBadge'
 
 function formatRelTime(ts: number): string {
   const diff = Date.now() - ts
@@ -44,7 +34,7 @@ export default function PostCard({ post }: PostCardProps) {
   return (
     <article className="bj-post-card">
       <div className="bj-post-card__header">
-        <TypeBadge typeCode={post.authorTypeCode} />
+        <TypeBadge code={post.authorTypeCode} />
         <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
         <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
       </div>

@@ -1,6 +1,8 @@
 /* BOOKJAK v2 아토믹 컴포넌트 (STEP 1)
    components.css의 .bj-* 클래스 래핑. 자체 스타일 없음. */
 
+export { default as Icon, ICON_NAMES } from './Icon'
+export { default as TypeBadge } from './TypeBadge'
 export { default as Logo } from './Logo'
 export { default as Button } from './Button'
 export { default as IconButton } from './IconButton'
