@@ -3213,25 +3213,26 @@ body.bj-body {
 }
 
 /* 독서 유형 배지 */
-.bj-post-card__badge {
+/* 유형 배지 TypeBadge — pill · 주황100 채움 / 코드 Wildgak 10 주황600 (무테) */
+.bj-type-badge {
   flex-shrink: 0;
-  width: 36px;
+  min-width: 44px;
   height: 20px;
+  padding: 0 8px;
   border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  color: var(--color-text-on-accent);
+  background: var(--color-accent-weak);
+  color: var(--color-accent-hover);
+  font-family: var(--font-display);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
 }
 
-.bj-post-card__badge--empty {
-  background: transparent;
-  border: 1.5px dashed var(--color-border);
+.bj-type-badge--empty {
+  background: var(--color-track);
 }
 
 .bj-post-card__author {
