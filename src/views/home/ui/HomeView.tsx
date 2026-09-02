@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import type { TypeCode } from '@/entities/reading-type/model/readingTypes'
 import { loadPosts, loadPopularPosts } from '@/entities/post/api/postsRemote'
@@ -9,6 +9,7 @@ import HomeTopbar from './HomeTopbar'
 import HomeHero from './HomeHero'
 import PostCard from './PostCard'
 import PostCreateSheet from './PostCreateSheet'
+import { useMounted } from '@/shared/lib/useMounted'
 
 function PencilIcon() {
   return (
@@ -20,7 +21,6 @@ function PencilIcon() {
 }
 
 export default function HomeView() {
-  const [typeCode, setTypeCode] = useState<TypeCode | null>(null)
   const [popularPosts, setPopularPosts] = useState<Post[]>([])
   const [feedPosts, setFeedPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
@@ -30,11 +30,12 @@ export default function HomeView() {
   const loadingRef = useRef(false)
   const offsetRef = useRef(0)
 
+  // 검사 결과는 localStorage라 마운트 후에만 읽는다
+  const mounted = useMounted()
+  const typeCode: TypeCode | null = useMemo(() => (mounted ? loadResult()?.typeCode ?? null : null), [mounted])
+
   // 초기 로드
   useEffect(() => {
-    const result = loadResult()
-    setTypeCode(result?.typeCode ?? null)
-
     async function init() {
       const [popular, feed] = await Promise.all([
         loadPopularPosts(3),

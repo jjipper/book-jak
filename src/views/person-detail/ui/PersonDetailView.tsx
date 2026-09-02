@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { MOCK_PEOPLE } from '@/entities/person/model/people'
@@ -12,6 +12,7 @@ import { isFollowing, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import { useMounted } from '@/shared/lib/useMounted'
 
 // TODO: 실 사용자 프로필 Supabase 연동
 //   - MOCK_PEOPLE.find → sb.from('profiles').select().eq('id', id).single()
@@ -20,15 +21,15 @@ export default function PersonDetailView() {
   const params = useParams<{ id: string }>()
   const person = MOCK_PEOPLE.find((p) => p.id === params.id) ?? null
 
-  const [following, setFollowing] = useState(false)
-  const [insight, setInsight] = useState<PersonInsight | null>(null)
+  // 팔로우 여부·궁합 모두 localStorage를 읽으므로 마운트 후에만 계산한다
+  const mounted = useMounted()
+  const [toggled, setToggled] = useState<boolean | null>(null)
+  const following = toggled ?? (mounted && person ? isFollowing(person.id) : false)
+  const insight: PersonInsight | null = useMemo(
+    () => (mounted && person ? getPersonInsight(person) : null),
+    [mounted, person],
+  )
   const { showGate, closeGate, requireAuth } = useAuthGate()
-
-  useEffect(() => {
-    if (!person) return
-    setFollowing(isFollowing(person.id))
-    setInsight(getPersonInsight(person))
-  }, [person])
 
   if (!person) {
     return (
@@ -48,7 +49,7 @@ export default function PersonDetailView() {
 
   function handleToggleFollow() {
     requireAuth(() => {
-      void toggleFollow(person!.id).then((nowFollowing) => setFollowing(nowFollowing))
+      void toggleFollow(person!.id).then((nowFollowing) => setToggled(nowFollowing))
     })
   }
 

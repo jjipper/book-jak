@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getMatchedPeople, type MatchedPerson } from '@/features/people-match/model/peopleMatch'
@@ -9,25 +9,25 @@ import { isFollowing, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import { useMounted } from '@/shared/lib/useMounted'
 
 export default function SocialPeopleView() {
-  const [ranked, setRanked] = useState<MatchedPerson[]>([])
-  const [hasResult, setHasResult] = useState(true)
-  const [followingIds, setFollowingIds] = useState<string[]>([])
+  const mounted = useMounted()
+  const ranked: MatchedPerson[] = useMemo(() => (mounted ? getMatchedPeople() : []), [mounted])
+  const hasResult = !mounted || ranked.length > 0
+  // 팔로우 여부는 저장소가 원본이고, 이번 화면에서 누른 것만 덮어쓴다
+  const [toggled, setToggled] = useState<Record<string, boolean>>({})
+  const followingIds = useMemo(
+    () => ranked.map((m) => m.person.id).filter((id) => toggled[id] ?? isFollowing(id)),
+    [ranked, toggled],
+  )
   const { showGate, closeGate, requireAuth } = useAuthGate()
-
-  useEffect(() => {
-    const matched = getMatchedPeople()
-    setRanked(matched)
-    setHasResult(matched.length > 0)
-    setFollowingIds(matched.map((m) => m.person.id).filter((id) => isFollowing(id)))
-  }, [])
 
   function handleToggleFollow(id: string) {
     requireAuth(() => {
       void (async () => {
         const nowFollowing = await toggleFollow(id)
-        setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+        setToggled((prev) => ({ ...prev, [id]: nowFollowing }))
       })()
     })
   }

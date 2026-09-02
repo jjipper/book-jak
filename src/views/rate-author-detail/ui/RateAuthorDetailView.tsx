@@ -1,21 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { BOOKS } from '@/entities/book/model/books'
 import { getAuthor } from '@/entities/author/model/authors'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import BookRow from '@/widgets/book/BookRow'
+import { useMounted } from '@/shared/lib/useMounted'
 
 export default function RateAuthorDetailView() {
   const params = useParams<{ id: string }>()
   const author = getAuthor(params.id)
-  const [myRatings, setMyRatings] = useState<BookRatingRecord[]>([])
-
-  useEffect(() => {
-    setMyRatings(loadBookRatings())
-  }, [])
+  const mounted = useMounted()
+  const myRatings: BookRatingRecord[] = useMemo(() => (mounted ? loadBookRatings() : []), [mounted])
 
   if (!author) {
     return (

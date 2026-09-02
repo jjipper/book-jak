@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { toPng } from 'html-to-image'
@@ -9,6 +9,7 @@ import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { READING_TYPES, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import TypeCard from '@/entities/reading-type/ui/TypeCard'
+import { useMounted } from '@/shared/lib/useMounted'
 
 interface ResultDetailViewProps {
   params: Promise<{ typeCode: string }>
@@ -27,10 +28,14 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
   const searchParams = useSearchParams()
   const { result: storeResult } = useTestStore()
   const [typeCode, setTypeCode] = useState<TypeCode | null>(null)
-  const [result, setResult] = useState(storeResult)
+  // 스토어에 없으면 localStorage 폴백 — 마운트 후에만 읽는다
+  const mounted = useMounted()
+  const result = useMemo(() => storeResult ?? (mounted ? loadResult() : null), [storeResult, mounted])
   const [saving, setSaving] = useState(false)
   const [showShareMenu, setShowShareMenu] = useState(false)
-  const [showFullReport, setShowFullReport] = useState(false)
+  // ?full=1이 기본값이고, 버튼으로 접었다 펴면 그 값이 이긴다
+  const [fullReportToggled, setFullReportToggled] = useState<boolean | null>(null)
+  const showFullReport = fullReportToggled ?? searchParams.get('full') === '1'
   const cardRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -39,14 +44,6 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
       setTypeCode(code as TypeCode)
     })
   }, [params, router])
-
-  useEffect(() => {
-    if (!result) { const s = loadResult(); if (s) setResult(s) }
-  }, [result])
-
-  useEffect(() => {
-    if (searchParams.get('full') === '1') setShowFullReport(true)
-  }, [searchParams])
 
   if (!typeCode) return null
   const type = READING_TYPES[typeCode]
@@ -141,7 +138,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
           )}
 
           <button
-            onClick={() => setShowFullReport(!showFullReport)}
+            onClick={() => setFullReportToggled(!showFullReport)}
             className="bj-btn bj-btn--ghost bj-btn--block bj-btn--action-lg"
           >
             {showFullReport ? '접기 ↑' : '풀 리포트 보기 ↓'}
@@ -241,7 +238,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
             </div>
 
             <button
-              onClick={() => setShowFullReport(false)}
+              onClick={() => setFullReportToggled(false)}
               className="bj-btn bj-btn--block bj-btn--action-md"
             >
               접기 ↑

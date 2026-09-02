@@ -2,7 +2,7 @@
 
 // TODO: 평가 데이터 Supabase pushRating으로 전환 (현재 localStorage 병행)
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ALADDIN_CATEGORIES,
   type AladdinBook,
@@ -12,6 +12,7 @@ import {
 import { loadBookRatings, saveBookRating } from '@/entities/book-rating/model/bookRatings'
 import { pushRating } from '@/entities/book-rating/api/ratingsRemote'
 import StarRating from '@/shared/ui/StarRating'
+import { useMounted } from '@/shared/lib/useMounted'
 
 const QUERY_TYPES = ['Bestseller', 'ItemNewAll', 'BlogBest'] as const
 const BATCH_SIZE = 20
@@ -58,10 +59,10 @@ function RateCard({ book, myStars, onRate }: RateCardProps) {
 
 export default function RateView() {
   const [selectedCat, setSelectedCat] = useState('0')
-  const [books, setBooks] = useState<AladdinBook[]>([])
+  // 목록은 어느 카테고리의 것인지와 함께 담는다 — 카테고리가 바뀌면 그 자체로 빈 목록이 된다
+  const [loaded, setLoaded] = useState<{ cat: string; items: AladdinBook[] }>({ cat: '0', items: [] })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [myRatings, setMyRatings] = useState<Record<string, number>>({})
   const sentinelRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
   const noGrowthRef = useRef(0)
@@ -69,13 +70,15 @@ export default function RateView() {
   const cursorsRef = useRef<Map<string, number>>(new Map())
   const [sentinelVisible, setSentinelVisible] = useState(false)
 
-  // 로컬 별점 초기화
-  useEffect(() => {
-    const records = loadBookRatings()
+  // 로컬 별점 — localStorage가 원본이고(마운트 후에만 읽는다), 이번 화면에서 준 별점만 덮어쓴다
+  const mounted = useMounted()
+  const [rated, setRated] = useState<Record<string, number>>({})
+  const myRatings: Record<string, number> = useMemo(() => {
+    if (!mounted) return rated
     const map: Record<string, number> = {}
-    for (const r of records) map[r.bookId] = r.stars
-    setMyRatings(map)
-  }, [])
+    for (const r of loadBookRatings()) map[r.bookId] = r.stars
+    return { ...map, ...rated }
+  }, [mounted, rated])
 
   const loadMore = useCallback(async () => {
     if (loadingRef.current) return
@@ -95,11 +98,12 @@ export default function RateView() {
       })
       cursorsRef.current.set(cursorKey, start + BATCH_SIZE)
       const shuffled = shuffle(fetched)
-      setBooks((prev) => {
-        const existingIds = new Set(prev.map((b) => b.id))
+      setLoaded((prev) => {
+        const base = prev.cat === selectedCat ? prev.items : []
+        const existingIds = new Set(base.map((b) => b.id))
         const fresh = shuffled.filter((b) => !existingIds.has(b.id))
         noGrowthRef.current = fresh.length > 0 ? 0 : noGrowthRef.current + 1
-        return fresh.length > 0 ? [...prev, ...fresh] : prev
+        return { cat: selectedCat, items: fresh.length > 0 ? [...base, ...fresh] : base }
       })
     } catch (e) {
       setError(e instanceof Error ? e.message : '책을 불러오지 못했어요')
@@ -110,14 +114,17 @@ export default function RateView() {
     }
   }, [selectedCat])
 
-  // 카테고리 변경 시 목록 초기화
+  const books: AladdinBook[] = useMemo(
+    () => (loaded.cat === selectedCat ? loaded.items : []),
+    [loaded, selectedCat],
+  )
+
+  // 카테고리 변경 시 페이징 커서를 비우고 처음부터 다시 불러온다
   useEffect(() => {
     noGrowthRef.current = 0
     cursorsRef.current.clear()
-    setBooks([])
     void loadMore()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCat])
+  }, [selectedCat, loadMore])
 
   // IntersectionObserver — sentinel의 화면 진입/이탈 상태만 추적
   useEffect(() => {
@@ -141,7 +148,7 @@ export default function RateView() {
   }, [sentinelVisible, books, loading, loadMore])
 
   function handleRate(book: AladdinBook, stars: number) {
-    setMyRatings((prev) => ({ ...prev, [book.id]: stars }))
+    setRated((prev) => ({ ...prev, [book.id]: stars }))
     saveBookRating({ bookId: book.id, title: book.title, categoryName: book.categoryName, stars, ts: Date.now() })
     void pushRating(
       { id: book.id, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover },

@@ -4,7 +4,7 @@
 // 메타데이터는 카카오에서 실시간 조회, 평가·리뷰는 localStorage(내 것)만 존재.
 // 별점 분포·예상 점수·연관 책은 서비스 평가 데이터가 쌓여야 가능해서 안내만 표시.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { lookupExternalBook, type ExternalBook } from '@/entities/external-book/model/externalBooks'
 import { getBookRating, saveBookRating, removeBookRating, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
@@ -15,6 +15,7 @@ import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
+import { useMounted } from '@/shared/lib/useMounted'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -34,26 +35,27 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   const { showGate, closeGate, requireAuth } = useAuthGate()
   const [book, setBook] = useState<ExternalBook | null>(null)
   const [loading, setLoading] = useState(true)
-  const [myRating, setMyRating] = useState<BookRatingRecord | undefined>(undefined)
-  const [stars, setStars] = useState(0)
-  const [review, setReview] = useState('')
+  // 내 평가는 localStorage라 마운트 후에만 읽고, 이 화면에서 고친 것만 덮어쓴다 (null = 아직 안 고침)
+  const mounted = useMounted()
+  const stored = useMemo(() => (mounted ? getBookRating(bookId) : undefined), [mounted, bookId])
+  const [ratingEdit, setRatingEdit] = useState<BookRatingRecord | undefined | null>(null)
+  const [starsEdit, setStarsEdit] = useState<number | null>(null)
+  const [reviewEdit, setReviewEdit] = useState<string | null>(null)
+  const myRating = ratingEdit === null ? stored : ratingEdit
+  const stars = starsEdit ?? stored?.stars ?? 0
+  const review = reviewEdit ?? stored?.review ?? ''
   const [justSaved, setJustSaved] = useState(false)
   const [stats, setStats] = useState<RemoteBookStats | null>(null)
 
+  // bookId가 바뀌면 호출부에서 key로 새로 마운트하므로 여기서 loading을 되돌릴 필요가 없다
   useEffect(() => {
     let cancelled = false
-    setLoading(true)
     lookupExternalBook(isbn)
       .then((b) => { if (!cancelled) setBook(b) })
       .catch(() => { if (!cancelled) setBook(null) })
       .finally(() => { if (!cancelled) setLoading(false) })
 
     fetchBookStats(bookId).then((s) => { if (!cancelled) setStats(s) })
-
-    const mine = getBookRating(bookId)
-    setMyRating(mine)
-    setStars(mine?.stars ?? 0)
-    setReview(mine?.review ?? '')
     return () => { cancelled = true }
   }, [isbn, bookId])
 
@@ -78,10 +80,10 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   // 별을 누르는 즉시 저장 — 같은 지점을 다시 누르면 취소, 리뷰는 아래 입력창에서 따로 저장
   function handleRate(n: number) {
     requireAuth(() => {
-      setStars(n)
+      setStarsEdit(n)
       if (n === 0) {
         removeBookRating(bookId)
-        setMyRating(undefined)
+        setRatingEdit(undefined)
         return
       }
       persist(n, review)
@@ -103,7 +105,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       ts: Date.now(),
     }
     saveBookRating(record)
-    setMyRating(record)
+    setRatingEdit(record)
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 2000)
 
@@ -160,7 +162,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
                 className="bj-textarea bj-textarea--flex"
                 placeholder="한 줄 리뷰 남기기 (선택)"
                 value={review}
-                onChange={(e) => setReview(e.target.value)}
+                onChange={(e) => setReviewEdit(e.target.value)}
               />
               <button
                 type="button"
