@@ -239,12 +239,12 @@ body.bj-body {
 }
 .bj-rarity__label {
   position: relative;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 .bj-rarity__sub {
   position: relative;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .bj-rarity--common {
@@ -255,10 +255,10 @@ body.bj-body {
 }
 .bj-rarity--rare {
   color: var(--color-text);
-} /* 희귀: 별 + 강조 테두리 */
+} /* 희귀: 별 + 주황100 채움 (무테) */
 .bj-rarity--rare .bj-rarity__shape {
-  fill: var(--color-surface);
-  stroke: var(--color-border);
+  fill: var(--color-accent-weak);
+  stroke: none;
 }
 .bj-rarity--legendary {
   color: var(--color-text-on-accent);
@@ -437,6 +437,7 @@ body.bj-body {
   align-items: center;
   gap: 8px;
   width: 100%;
+  min-height: 44px;
   background: var(--color-control-surface);
   border: none;
   border-radius: var(--radius-md);
@@ -514,7 +515,8 @@ body.bj-body {
   line-height: 1.6;
 }
 .bj-callout--muted {
-  background: var(--color-control-surface);
+  /* 크림 고정 — 화이트 카드 안에서 "눌린 면"으로 읽힌다 */
+  background: var(--color-bg);
   color: var(--color-text-caption);
 }
 
@@ -884,14 +886,6 @@ body.bj-body {
 .bj-hero__cta {
   width: 100%;
   margin-top: 14px;
-}
-
-.bj-friend-card__face .bj-illust {
-  height: 100%;
-}
-
-.bj-club-card__thumb .bj-illust {
-  height: 100%;
 }
 
 /* ========== v1 BACKWARD-COMPAT — 뷰 참조용, 신규 작성 금지 ========== */
@@ -3296,12 +3290,12 @@ body.bj-body {
   position: fixed;
   bottom: calc(60px + var(--space-lg));
   right: var(--space-lg);
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--color-accent);
   color: var(--color-text-on-accent);
-  border: 2px solid var(--color-accent-hover);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
