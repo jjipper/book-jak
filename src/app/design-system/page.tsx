@@ -24,6 +24,8 @@ import {
   Textarea,
   Toggle,
 } from '@/shared/ui'
+import Icon, { ICON_NAMES } from '@/shared/ui/Icon'
+import TypeBadge from '@/shared/ui/TypeBadge'
 
 /* STEP 1 아토믹 컴포넌트 갤러리 (승인용 미리보기)
    화면 조합 아님 — 각 단위를 독립 전시. 인라인 스타일은 갤러리 배치 전용. */
@@ -54,72 +56,25 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   )
 }
 
-const HeartIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-  </svg>
-)
+const HeartIcon = <Icon name="heart" size={22} />
+const BookIcon = <Icon name="book" size={16} />
+const MoonIcon = <Icon name="moon" size={16} />
+const BookmarkIcon = <Icon name="bookmark" size={16} />
+const UsersIcon = <Icon name="users" size={22} />
+const CommentIcon = <Icon name="comment" size={22} />
+const SearchIcon = <Icon name="search" size={18} />
+const HomeIcon = <Icon name="home" size={22} />
+const StarIcon = <Icon name="star" size={22} />
+const UserIcon = <Icon name="user" size={22} />
 
-const BookIcon = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-  </svg>
-)
-
-const MoonIcon = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-  </svg>
-)
-
-const BookmarkIcon = (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-  </svg>
-)
-
-const UsersIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-)
-
-const CommentIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
-  </svg>
-)
-
-const SearchIcon = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8" />
-    <line x1="21" y1="21" x2="16.65" y2="16.65" />
-  </svg>
-)
-
-const HomeIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-    <polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-)
-
-const StarIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polygon points="12 2 15.09 8.63 22 9.27 16.5 13.97 18.18 21 12 17.27 5.82 21 7.5 13.97 2 9.27 8.91 8.63 12 2" />
-  </svg>
-)
-
-const UserIcon = (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <circle cx="12" cy="7" r="4" />
-  </svg>
-)
+/* 하단탭 5종 — Figma TabIcon(이름 × 색) 대응 */
+const TAB_ICONS = [
+  ['홈', 'home'],
+  ['발견', 'compass'],
+  ['평가', 'star'],
+  ['모임', 'users'],
+  ['마이', 'user'],
+] as const
 
 export default function DesignSystemPreviewPage() {
   const [selected, setSelected] = useState('D')
@@ -247,15 +202,17 @@ export default function DesignSystemPreviewPage() {
         <Section title="Card (공통 컨테이너)">
           <div style={stack}>
             <Card>기본 카드 — 보더 없음 + 연한 베이지</Card>
-            <Card spotlight>강조 카드 — 흰 배경 + 연한 그레이 보더</Card>
+            <Card spotlight>강조 카드 — 주황050 면 (무테)</Card>
           </div>
         </Section>
 
         <Section title="Callout (안내 박스)">
-          <div style={stack}>
-            <Callout>몰입수집가 유형은 밤 독서와 궁합이 좋아요.</Callout>
-            <Callout muted>진단을 완료하면 맞춤 추천이 열려요.</Callout>
-          </div>
+          <Card>
+            <div style={stack}>
+              <Callout>몰입수집가 유형은 밤 독서와 궁합이 좋아요.</Callout>
+              <Callout muted>진단을 완료하면 맞춤 추천이 열려요. (muted는 크림 고정 — 화이트 면 위에서 눌린 면으로 읽힌다)</Callout>
+            </div>
+          </Card>
         </Section>
 
         <Section title="Row (리스트 행)">
@@ -302,6 +259,160 @@ export default function DesignSystemPreviewPage() {
           </Card>
         </Section>
       </div>
+
+      <Section title="14. Icon — 24×24 · stroke 2 · currentColor 상속 (34종)">
+        <Card>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(84px, 1fr))',
+              gap: 16,
+            }}
+          >
+            {ICON_NAMES.map((name) => (
+              <div key={name} style={{ ...stack, alignItems: 'center', gap: 6 }}>
+                <Icon name={name} />
+                <span className="bj-caption" style={{ fontSize: 10, textAlign: 'center' }}>
+                  {name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </Section>
+
+      <Section title="15. TabIcon — 하단탭 전용 5종 × 기본/활성">
+        <Card>
+          <div style={row}>
+            {TAB_ICONS.map(([label, name]) => (
+              <div key={label} style={{ ...stack, alignItems: 'center', gap: 6 }}>
+                <div style={row}>
+                  <span style={{ color: 'var(--color-text-caption)' }}><Icon name={name} size={22} /></span>
+                  <span style={{ color: 'var(--color-accent)' }}><Icon name={name} size={22} /></span>
+                </div>
+                <span className="bj-caption" style={{ fontSize: 10 }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </Section>
+
+      <Section title="16. TypeBadge — 유형 배지">
+        <Card>
+          <div style={row}>
+            <TypeBadge code="ENFP" />
+            <TypeBadge code="ISTJ" />
+            <TypeBadge code={null} />
+          </div>
+        </Card>
+      </Section>
+
+      <Section title="17. 화면 공통 요소 — Topbar / ProgressHeader / SubpageHead / SectionHead">
+        <div style={stack}>
+          <div className="bj-topbar">
+            <Logo />
+            <div style={{ ...row, gap: 4 }}>
+              <IconButton label="검색"><Icon name="search" size={22} /></IconButton>
+              <IconButton label="알림"><Icon name="bell" size={22} /></IconButton>
+            </div>
+          </div>
+
+          <div className="bj-progress-head">
+            <div className="bj-row-between bj-mb-8">
+              <span className="bj-caption">질문 6 / 12</span>
+              <span className="bj-caption bj-progress-pct bj-bold">50%</span>
+            </div>
+            <Progress value={6} max={12} />
+          </div>
+
+          <div className="bj-subpage-head">
+            <IconButton label="뒤로"><Icon name="chevron-left" size={22} /></IconButton>
+            <span className="bj-heading">서브페이지 제목</span>
+          </div>
+
+          <Card>
+            <div className="bj-card-section-head">
+              <span className="bj-section-label" style={{ marginBottom: 0 }}>카드 섹션 라벨</span>
+            </div>
+            <div className="bj-row-between">
+              <span className="bj-title">섹션 헤드 SectionHead</span>
+              <span className="bj-caption bj-caption--action">더보기</span>
+            </div>
+          </Card>
+        </div>
+      </Section>
+
+      <Section title="18. FAB 글쓰기 — 56px 원형 · 주황500 채움 (무테)">
+        <Card>
+          <button type="button" className="bj-fab" style={{ position: 'static' }} aria-label="글쓰기">
+            <Icon name="edit" size={22} />
+          </button>
+        </Card>
+      </Section>
+
+      <Section title="19. Domain — PostCard / EventCard / ClubCard / ActivityRow / ReportStat">
+        <div style={grid}>
+          <article className="bj-post-card">
+            <div className="bj-post-card__header">
+              <TypeBadge code="ENFP" />
+              <span className="bj-post-card__author bj-bold">밤샘독서가</span>
+              <span className="bj-post-card__time bj-caption">2시간 전</span>
+            </div>
+            <p className="bj-post-card__content bj-body">
+              오늘 읽은 문장이 계속 맴돈다. 이런 밤이 좋다.
+            </p>
+            <span className="bj-post-card__book-tag bj-caption">아무튼, 계속</span>
+            <div className="bj-post-card__footer">
+              <button type="button" className="bj-post-card__like-btn bj-post-card__like-btn--active">
+                <Icon name="heart-fill" size={16} />
+                <span>12</span>
+              </button>
+              <span className="bj-post-card__comment-count bj-caption">3</span>
+            </div>
+          </article>
+
+          <div className="bj-event-card bj-event-card--official">
+            <div className="bj-event-card__head">
+              <span className="bj-chip bj-chip--active bj-event-card__badge">공식</span>
+              <span className="bj-chip bj-chip--online bj-event-card__loc">온라인</span>
+            </div>
+            <p className="bj-h2 bj-event-card__title">함께 읽는 밤</p>
+            <p className="bj-body bj-event-card__desc">각자 읽고 30분 나눕니다.</p>
+            <div className="bj-event-card__meta">
+              <span className="bj-caption">3월 14일 20:00</span>
+              <span className="bj-caption">12/20명 참여</span>
+            </div>
+            <button type="button" className="bj-btn bj-btn--primary bj-event-card__join-btn">참가하기</button>
+          </div>
+
+          <div className="bj-event-card">
+            <div className="bj-event-card__head">
+              <span className="bj-chip">격주 오프라인</span>
+            </div>
+            <p className="bj-body bj-bold bj-event-card__title">에세이 모임 · 잔잔</p>
+            <p className="bj-caption bj-event-card__desc">한 달에 두 권, 천천히 읽습니다.</p>
+            <p className="bj-caption">밤샘독서가 주최 · 8/12명</p>
+          </div>
+
+          <Card>
+            <div className="bj-row bj-row--compact">
+              <p className="bj-activity-label">내가 쓴 글</p>
+              <span className="bj-caption bj-bold">24</span>
+              <span className="bj-icon-hint"><Icon name="chevron-right" size={16} /></span>
+            </div>
+            <div className="bj-report-stats">
+              <div className="bj-report-stat">
+                <span className="bj-display bj-display--lg">128</span>
+                <span className="bj-caption">읽은 책</span>
+              </div>
+              <div className="bj-report-stat">
+                <span className="bj-display bj-display--lg">4.2</span>
+                <span className="bj-caption">평균 별점</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </Section>
 
       <Section title="13. Bottom Navigation">
         <BottomNav>
