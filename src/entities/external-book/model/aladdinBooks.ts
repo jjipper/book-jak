@@ -49,8 +49,7 @@ export async function fetchAladdinBooks(params: {
     maxResults: String(params.maxResults ?? 10),
   })
   const res = await fetch(`/api/aladdin/list?${sp}`)
-  if (!res.ok) throw new Error('알라딘 API 요청 실패')
-  const data = (await res.json()) as { books: AladdinBook[]; error?: string }
-  if (data.error) throw new Error(data.error)
-  return data.books
+  const data = (await res.json()) as { books?: AladdinBook[]; error?: string }
+  if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
+  return data.books ?? []
 }

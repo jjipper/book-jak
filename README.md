@@ -69,6 +69,7 @@ npm install
 NEXT_PUBLIC_SUPABASE_URL=       # Supabase 프로젝트 URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Supabase anon key
 KAKAO_REST_KEY=                 # 카카오 개발자센터 REST API 키 (도서 검색 · 로그인)
+ALADDIN_TTB_KEY=                # 알라딘 TTBKey (베스트셀러·신간 목록) — https://www.aladin.co.kr/ttb/wapui/wapi_guide.aspx
 ```
 
 ### 개발 서버 실행

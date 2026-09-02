@@ -1,9 +1,5 @@
 // 알라딘 ItemList API 프록시 — TTBKey를 서버에 숨기고 정규화된 책 목록 반환
 // ?categoryId=1&queryType=Bestseller&start=1&maxResults=10
-//
-// TODO: ALADDIN_TTB_KEY 발급 후 .env.local에 추가
-//   발급처: https://www.aladin.co.kr/ttb/wapui/wapi_guide.aspx
-//   키 이름: ALADDIN_TTB_KEY
 
 export interface AladdinBook {
   id: string // 'isbn-{isbn13}'
