@@ -57,7 +57,8 @@
 
   /* ---------------------------------------------------------------------
      SPACE / RADIUS PRIMITIVE
-     그림자도 보더도 없음 — 위계는 면(색)으로만. (SHADOW 토큰 자체를 두지 않는다)
+     면 위계가 기본 — 보더는 쓰지 않는다.
+     그림자는 콘텐츠 위에 "떠 있는" 요소에만 (아래 --elevation-floating).
      --------------------------------------------------------------------- */
   --p-space-4:  4px;
   --p-space-8:  8px;
@@ -113,6 +114,13 @@
 
   /* overlay (바텀시트 등 딤 배경) */
   --color-overlay: color-mix(in srgb, var(--p-ink-900) 45%, transparent);
+
+  /* elevation — Figma 효과 스타일 "Elevation/떠 있는 요소".
+     스크롤되는 콘텐츠 위에 떠 있어서 면 색만으로는 구분이 불가능한 요소 전용
+     (하단탭, FAB). 카드·컨트롤에는 쓰지 않는다. */
+  --elevation-floating:
+    0 1px 3px color-mix(in srgb, var(--p-ink-900) 6%, transparent),
+    0 6px 20px color-mix(in srgb, var(--p-ink-900) 12%, transparent);
 
   /* typography roles */
   --font-body:    var(--p-font-body);
