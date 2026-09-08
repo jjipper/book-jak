@@ -44,7 +44,7 @@ function RateCard({ book, myStars, onRate }: RateCardProps) {
         )}
       </div>
       <div className="bj-book-row__body">
-        <p className="bj-body bj-truncate bj-book-title-sm">{book.title}</p>
+        <p className="bj-body bj-book-title-sm">{book.title}</p>
         <p className="bj-caption bj-truncate bj-caption--hint">{book.author}</p>
         <div className="bj-book-row__meta-row">
           <StarRating value={myStars} onChange={(stars) => onRate(book, stars)} size={20} />
