@@ -684,7 +684,10 @@ body.bj-body {
   justify-content: space-between;
   gap: 16px;
   background: var(--color-bg);
-  padding: 12px 16px 8px;
+  /* sticky라 배경이 거터까지 덮어야 한다 — 프레임 패딩을 상쇄하고 같은 값을 자기 패딩으로 되돌린다.
+     프레임 밖(디자인 시스템 갤러리)에서는 폴백으로 16px 패딩만 적용된다. */
+  margin-inline: calc(var(--frame-gutter, 0px) * -1);
+  padding: 12px var(--frame-gutter, 16px) 8px;
 }
 .bj-topbar__brand {
   display: flex;
@@ -754,7 +757,6 @@ body.bj-body {
 /* ========== SECTION (섹션 공통 헤더) ========== */
 .bj-section {
   padding: 24px 0 0;
-  margin: 0 16px;
 }
 .bj-section__head {
   display: flex;
@@ -830,18 +832,23 @@ body.bj-body {
    HOME 패턴 — 홈 화면에서 파생된 카드 조합. 다른 화면 재사용 가능.
    ========================================================================= */
 
-/* 페이지 프레임 — 베이스 */
+/* 페이지 프레임 — 베이스.
+   좌우 여백(거터)은 여기 한 곳에서만 준다. 화면·컴포넌트가 각자 margin으로
+   만들지 않는다 — 그렇게 하면 안 붙인 화면만 가장자리에 붙는다. */
 .bj-frame {
+  --frame-gutter: 16px;
   max-width: 1120px;
   margin-inline: auto;
+  padding-inline: var(--frame-gutter);
 }
 
 /* 페이지 프레임 — 데스크톱에서 시안의 "종이 한 장" 느낌 (모바일은 프레임 없음) */
 @media (min-width: 900px) {
   .bj-frame {
+    --frame-gutter: 40px;
     border: 1px solid var(--color-border-soft);
     border-radius: calc(var(--radius-lg) + 8px);
-    padding: 0 24px 24px;
+    padding: 0 var(--frame-gutter) 24px;
     margin-block: 16px;
     background: var(--color-bg);
     overflow: hidden;
@@ -857,7 +864,7 @@ body.bj-body {
   background: var(--color-surface-spotlight);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  margin: 12px 16px 0;
+  margin-top: 12px;
   padding: 16px;
 }
 .bj-hero__illust {
