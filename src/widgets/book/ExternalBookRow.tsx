@@ -35,7 +35,7 @@ export default function ExternalBookRow({ book, myStars }: ExternalBookRowProps)
         )}
       </div>
       <div className="bj-book-row__body">
-        <p className="bj-body bj-truncate bj-book-title-sm">
+        <p className="bj-body bj-book-title-sm">
           {book.title}
         </p>
         <p className="bj-caption bj-truncate bj-caption--hint">

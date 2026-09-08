@@ -35,7 +35,7 @@ export default function BookRow({ book, myStars }: BookRowProps) {
         <IllustPlaceholder code={book.illustCode} alt={book.title} aspectRatio="3 / 4" />
       </div>
       <div className="bj-book-row__body">
-        <p className="bj-body bj-truncate bj-book-title-sm">
+        <p className="bj-body bj-book-title-sm">
           {book.title}
         </p>
         <p className="bj-caption bj-caption--hint">{authorName} · {book.genre} · {book.year}</p>

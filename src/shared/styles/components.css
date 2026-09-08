@@ -2313,9 +2313,13 @@ body.bj-body {
 }
 
 /* BookRow / ExternalBookRow — 제목 굵기·크기 */
+/* 책 제목은 줄바꿈한다 — 알라딘 제목은 부제까지 붙어 길어서 한 줄로 자르면 안 읽힌다.
+   keep-all로 한국어 단어를 쪼개지 않고, 끊을 수 없는 긴 토큰만 break-word로 넘긴다. */
 .bj-book-title-sm {
   font-weight: 800;
   font-size: 15px;
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* BookRow / ExternalBookRow — 저자/출판사 caption (hint 색) */
