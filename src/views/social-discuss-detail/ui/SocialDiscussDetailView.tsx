@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import Link from 'next/link'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { loadQuestion, loadAnswers, addAnswer, type DiscussionQuestion, type DiscussionAnswer } from '@/entities/discussion/model/discussionActions'
 import { resolveAuthor } from '@/features/resolve-author/model/author'
@@ -11,6 +10,7 @@ import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNic
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import BackLink from '@/shared/ui/BackLink'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -65,7 +65,7 @@ export default function SocialDiscussDetailView() {
       <main className="bj-shell">
         <div className="bj-frame">
           <div className="bj-subpage-loading">
-            <Link href="/social/discuss" className="bj-icon-btn">←</Link>
+            <BackLink href="/social/discuss" />
           </div>
         </div>
       </main>
@@ -78,8 +78,8 @@ export default function SocialDiscussDetailView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social/discuss" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">{bookTitle(question.bookId)}</span>
+        <BackLink href="/social/discuss" />
+        <span className="bj-h2">{bookTitle(question.bookId)}</span>
       </header>
 
       <div className="bj-content--lg">

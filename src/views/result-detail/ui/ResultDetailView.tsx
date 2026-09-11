@@ -9,7 +9,14 @@ import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { READING_TYPES, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import TypeCard from '@/entities/reading-type/ui/TypeCard'
+import TypeBadge from '@/shared/ui/TypeBadge'
 import { useMounted } from '@/shared/lib/useMounted'
+
+/** 받침 유무로 주격 조사 선택 ("사람" → 이, "친구" → 가) */
+function subjectParticle(word: string): string {
+  const code = word.charCodeAt(word.length - 1) - 0xac00
+  return code >= 0 && code <= 11171 && code % 28 !== 0 ? '이' : '가'
+}
 
 interface ResultDetailViewProps {
   params: Promise<{ typeCode: string }>
@@ -120,7 +127,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
           <button
             onClick={() => setShowShareMenu(!showShareMenu)}
-            className="bj-btn bj-btn--block bj-btn--action-lg"
+            className="bj-btn bj-btn--secondary bj-btn--block bj-btn--action-lg"
           >
             테스트 링크 공유하기
           </button>
@@ -146,9 +153,12 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
         </div>
 
         {/* 궁합 카드 (요약) */}
-        <div className="bj-card--flat bj-w-full">
+        <div className="bj-card bj-w-full">
+          <div className="bj-mb-12">
+            <TypeBadge code={type.compatibility.match} />
+          </div>
           <p className="bj-body bj-semibold bj-mb-4">
-            {type.compatibility.matchName}이(가) 최고의 독서 파트너래요
+            {type.compatibility.matchName}{subjectParticle(type.compatibility.matchName)} 최고의 독서 파트너래요
           </p>
           <p className="bj-caption bj-mb-12">
             &ldquo;{type.compatibility.matchLine}&rdquo;
@@ -164,7 +174,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 어록 */}
             <div className="bj-card">
-              <SectionLabelInline>입에 달고 사는 말<span className="bj-section-label__line" /></SectionLabelInline>
+              <SectionLabelInline>입에 달고 사는 말</SectionLabelInline>
               <div className="bj-col-10">
                 {type.quote.map((q, i) => (
                   <div key={i} className="bj-callout">{q}</div>
@@ -174,7 +184,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 궁합 상세 */}
             <div className="bj-card">
-              <SectionLabelInline>독서 궁합<span className="bj-section-label__line" /></SectionLabelInline>
+              <SectionLabelInline>독서 궁합</SectionLabelInline>
               <div className="bj-col-10">
                 <div className="bj-row bj-row--col">
                   <p className="bj-caption bj-bold bj-text-action">환상의 짝</p>
@@ -194,7 +204,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 칭호 */}
             <div className="bj-card">
-              <SectionLabelInline>획득 가능 칭호<span className="bj-section-label__line" /></SectionLabelInline>
+              <SectionLabelInline>획득 가능 칭호</SectionLabelInline>
               <div className="bj-col-8">
                 {type.titles.map((title, i) => (
                   <div key={i} className="bj-row">
@@ -208,7 +218,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 취급주의 */}
             <div className="bj-card">
-              <SectionLabelInline>취급주의<span className="bj-section-label__line" /></SectionLabelInline>
+              <SectionLabelInline>취급주의</SectionLabelInline>
               <div className="bj-callout bj-callout--muted bj-col-14">
                 <div className="bj-warning-row">
                   <span className="bj-warning-label">경고</span>
@@ -224,14 +234,14 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
 
             {/* 독서 운세 */}
             <div className="bj-card">
-              <SectionLabelInline>독서 운세<span className="bj-section-label__line" /></SectionLabelInline>
+              <SectionLabelInline>독서 운세</SectionLabelInline>
               <p className="bj-body bj-mb-14">{type.fortune.text}</p>
               <div className="bj-callout">처방: {type.fortune.prescription}</div>
             </div>
 
             {/* 1년 후 예언 */}
             <div className="bj-card">
-              <SectionLabelInline>1년 후 예언<span className="bj-section-label__line" /></SectionLabelInline>
+              <SectionLabelInline>1년 후 예언</SectionLabelInline>
               <div className="bj-card--flat bj-text-center">
                 <p className="bj-body">{type.prophecy}</p>
               </div>

@@ -10,15 +10,7 @@ import HomeHero from './HomeHero'
 import PostCard from './PostCard'
 import PostCreateSheet from './PostCreateSheet'
 import { useMounted } from '@/shared/lib/useMounted'
-
-function PencilIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  )
-}
+import Icon from '@/shared/ui/Icon'
 
 export default function HomeView() {
   const [popularPosts, setPopularPosts] = useState<Post[]>([])
@@ -117,6 +109,13 @@ export default function HomeView() {
         <section className="bj-section">
           <div className="bj-section__head">
             <p className="bj-h2">모든 글</p>
+            <button
+              type="button"
+              className="bj-section__action"
+              onClick={() => setShowCreate(true)}
+            >
+              + 만들기
+            </button>
           </div>
           <div className="bj-col-10">
             {mainFeed.map((p) => (
@@ -137,7 +136,7 @@ export default function HomeView() {
         onClick={() => setShowCreate(true)}
         aria-label="글 쓰기"
       >
-        <PencilIcon />
+        <Icon name="edit" size={22} />
       </button>
 
       <PostCreateSheet

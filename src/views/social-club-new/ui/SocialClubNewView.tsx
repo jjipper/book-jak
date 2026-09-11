@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClub } from '@/entities/club/model/clubActions'
 import { CLUB_TAGS, CLUB_ILLUSTS, type ClubFormat, type ClubIllustCode } from '@/entities/club/model/clubs'
@@ -9,6 +8,7 @@ import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNic
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import BackLink from '@/shared/ui/BackLink'
 
 const CAPACITY_OPTIONS = [4, 6, 8, 10]
 const FORMAT_OPTIONS: ClubFormat[] = ['온라인', '오프라인']
@@ -44,8 +44,8 @@ export default function SocialClubNewView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social/clubs" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">모임 만들기</span>
+        <BackLink href="/social/clubs" />
+        <span className="bj-h2">모임 만들기</span>
       </header>
 
       <div className="bj-content--new">

@@ -13,6 +13,9 @@ import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
+import RarityBadge from '@/shared/ui/RarityBadge'
+import TypeBadge from '@/shared/ui/TypeBadge'
 
 // TODO: 실 사용자 프로필 Supabase 연동
 //   - MOCK_PEOPLE.find → sb.from('profiles').select().eq('id', id).single()
@@ -36,7 +39,7 @@ export default function PersonDetailView() {
       <main className="bj-shell">
         <div className="bj-frame">
           <div className="bj-pad-v-lg">
-            <Link href="/social/people" className="bj-icon-btn">←</Link>
+            <BackLink href="/social/people" />
             <p className="bj-body bj-mt-20">사람을 찾을 수 없어요</p>
           </div>
         </div>
@@ -57,8 +60,8 @@ export default function PersonDetailView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social/people" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">{person.nickname}</span>
+        <BackLink href="/social/people" />
+        <span className="bj-h2 bj-truncate">{person.nickname}</span>
       </header>
 
       <div className="bj-content--lg">
@@ -82,20 +85,20 @@ export default function PersonDetailView() {
               </span>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={handleToggleFollow}
-            className={`bj-chip${following ? ' bj-chip--active bj-follow-chip--active' : ' bj-follow-chip'}`}
-          >
-            {following ? '팔로잉' : '팔로우'}
-          </button>
         </div>
+
+        <button
+          type="button"
+          onClick={handleToggleFollow}
+          className={`bj-btn bj-btn--block ${following ? 'bj-btn--secondary' : 'bj-btn--primary'}`}
+        >
+          {following ? '팔로잉' : '팔로우'}
+        </button>
 
         {/* 나와의 궁합 */}
         <div className="bj-card">
           <div className="bj-card-section-head">
             <span className="bj-section-tag">나와의 궁합</span>
-            <span className="bj-section-label__line" />
           </div>
 
           {insight?.affinity !== null && insight?.affinity !== undefined ? (
@@ -111,7 +114,7 @@ export default function PersonDetailView() {
                   {insight.sharedTags.length > 0 ? (
                     <div className="bj-tag-group">
                       {insight.sharedTags.map((tag) => (
-                        <span key={tag} className="bj-chip bj-chip--active">#{tag}</span>
+                        <span key={tag} className="bj-chip">#{tag}</span>
                       ))}
                     </div>
                   ) : (
@@ -151,7 +154,7 @@ export default function PersonDetailView() {
             <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
           </div>
           <div>
-            <p className="bj-caption bj-bold bj-mb-4">{type.code}</p>
+            <div className="bj-mb-8"><TypeBadge code={type.code} /></div>
             <p className="bj-display bj-display--lg">{type.name}</p>
             <p className="bj-caption bj-mt-4">유형 자세히 보기 →</p>
           </div>
@@ -161,11 +164,10 @@ export default function PersonDetailView() {
         <div className="bj-card">
           <div className="bj-card-section-head">
             <span className="bj-section-tag">좋아하는 책 스타일</span>
-            <span className="bj-section-label__line" />
           </div>
           <div className="bj-tag-group">
             {person.favoriteTags.map((tag) => (
-              <span key={tag} className="bj-chip bj-chip--active">#{tag}</span>
+              <span key={tag} className="bj-chip">#{tag}</span>
             ))}
           </div>
         </div>
@@ -174,16 +176,13 @@ export default function PersonDetailView() {
         <div className="bj-card">
           <div className="bj-card-section-head--mb16">
             <span className="bj-section-tag">보유 배지</span>
-            <span className="bj-section-label__line" />
             <span className="bj-caption">{badges.length}/{BADGE_LIST.length}</span>
           </div>
 
           {badges.length > 0 ? (
             <div className="bj-badge-grid">
               {badges.map((badge) => (
-                <span key={badge.key} className="bj-badge bj-badge--rare bj-badge--centered">
-                  {badge.name}
-                </span>
+                <RarityBadge key={badge.key} variant="common" label={badge.name} size="sm" />
               ))}
             </div>
           ) : (

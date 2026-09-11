@@ -1,7 +1,6 @@
 'use client'
 
 import { useMemo } from 'react'
-import Link from 'next/link'
 import { MOCK_PEOPLE } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { loadResult } from '@/entities/reading-type/model/scoring'
@@ -10,6 +9,7 @@ import { getNickname } from '@/entities/user/model/profile'
 import { ME_ID } from '@/features/resolve-author/model/author'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 // TODO: 랭킹 서버 연동
 //   - MOCK_PEOPLE 점수 → sb.from('profiles').select('id, nickname, activity_score, type_code') 로 교체
@@ -39,8 +39,8 @@ export default function SocialRankingView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">독서 랭킹</span>
+        <BackLink href="/social" />
+        <span className="bj-h2">독서 랭킹</span>
       </header>
 
       <div className="bj-content--lg">

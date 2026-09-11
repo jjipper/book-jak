@@ -18,12 +18,12 @@ import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
 import ExternalBookDetail from '@/widgets/book/ExternalBookDetail'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="bj-section-label">
       {children}
-      <span className="bj-section-label__line" />
     </p>
   )
 }
@@ -83,7 +83,7 @@ function CatalogBookDetail({ id }: { id: string }) {
       <main className="bj-shell">
         <div className="bj-frame">
           <div className="bj-page-head">
-            <Link href="/rate" className="bj-icon-btn">←</Link>
+            <BackLink href="/rate" />
             <p className="bj-body bj-mt-24 bj-text-muted">책을 찾을 수 없어요.</p>
           </div>
         </div>
@@ -146,8 +146,8 @@ function CatalogBookDetail({ id }: { id: string }) {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/rate" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg bj-truncate">책 정보</span>
+        <BackLink href="/rate" />
+        <span className="bj-h2 bj-truncate">책 정보</span>
       </header>
 
       <div className="bj-content--24">
@@ -166,37 +166,42 @@ function CatalogBookDetail({ id }: { id: string }) {
         </div>
 
         {/* ② 내 점수 + 내 평가 — 별 아이콘은 내 점수 전용, 예상·평균은 텍스트로 */}
-        <div className="bj-card bj-card--flat bj-col-10">
-          <div className="bj-row-baseline-16">
-            <span className="bj-caption bj-bold">
-              예상 별점 <span className="bj-stat-star--action">★ {predicted ? predicted.score.toFixed(1) : '—'}</span>
+        <div className="bj-card bj-col-10">
+          <div className="bj-row-between">
+            <span className="bj-caption bj-bold bj-text-action">
+              예상 별점 ★ {predicted ? predicted.score.toFixed(1) : '—'}
             </span>
-            <span className="bj-caption bj-bold">
-              평균 별점 <span className="bj-stat-star">★ {book.avgRating.toFixed(1)}</span> ({book.ratingCount.toLocaleString()}명)
+            <span className="bj-caption bj-text-muted">
+              평균 ★ {book.avgRating.toFixed(1)} ({book.ratingCount.toLocaleString()}명)
             </span>
           </div>
-          <StarRating value={stars} onChange={handleRate} size={32} />
-          <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-accent)' : undefined }}>
+          <div className="bj-row-between">
+            <StarRating value={stars} onChange={handleRate} size={24} />
+            {stars > 0 && (
+              <span className="bj-caption bj-bold bj-text-action">{stars}점 평가함</span>
+            )}
+          </div>
+          <p className="bj-caption">
             {stars > 0
-              ? `내 별점 ${stars}점 · 같은 별을 다시 누르면 취소돼요${justSaved ? ' · 저장됐어요!' : ''}`
+              ? `같은 별을 다시 누르면 취소돼요${justSaved ? ' · 저장됐어요!' : ''}`
               : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
           </p>
           {stars > 0 && (
-            <div className="bj-row-8">
+            <>
               <textarea
                 className="bj-textarea bj-textarea--review"
-                placeholder="한 줄 리뷰 남기기 (선택)"
+                placeholder="이 책 어땠어요? 한 줄만 남겨도 좋아요"
                 value={review}
                 onChange={(e) => setReviewEdit(e.target.value)}
               />
               <button
                 type="button"
                 onClick={handleSaveReview}
-                className="bj-btn bj-btn--save"
+                className="bj-btn bj-btn--primary bj-btn--block"
               >
-                저장
+                리뷰 저장
               </button>
-            </div>
+            </>
           )}
         </div>
 
@@ -212,7 +217,7 @@ function CatalogBookDetail({ id }: { id: string }) {
         {author && (
           <section>
             <SectionLabel>작가</SectionLabel>
-            <Link href={`/rate/authors/${author.id}`} className="bj-card bj-card--flat bj-unstyled-link bj-mt-12 bj-block">
+            <Link href={`/rate/authors/${author.id}`} className="bj-card bj-unstyled-link bj-mt-12 bj-block">
               <div className="bj-row-between bj-mb-6">
                 <p className="bj-body bj-bold">{author.name}</p>
                 <span className="bj-caption bj-text-action-bold">책 {authorBooks.length}권 →</span>
@@ -226,21 +231,12 @@ function CatalogBookDetail({ id }: { id: string }) {
         {/* ⑤ 장르 · 분위기 · 난이도 + 관련 키워드 */}
         <section>
           <SectionLabel>이런 책이에요</SectionLabel>
-          <div className="bj-meta-grid">
-            {[
-              { key: '장르', value: book.genre },
-              { key: '분위기', value: book.mood },
-              { key: '난이도', value: book.difficulty },
-            ].map((m) => (
-              <div key={m.key} className="bj-col-3">
-                <span className="bj-caption bj-bold bj-caption--spaced">{m.key}</span>
-                <span className="bj-body bj-text-13-bold">{m.value}</span>
-              </div>
-            ))}
-          </div>
           <div className="bj-tag-group bj-mt-12">
+            {[book.genre, book.mood, book.difficulty].map((v) => (
+              <span key={v} className="bj-chip">{v}</span>
+            ))}
             {book.tags.map((t) => (
-              <span key={t} className="bj-chip bj-text-11">#{t}</span>
+              <span key={t} className="bj-chip">#{t}</span>
             ))}
           </div>
         </section>

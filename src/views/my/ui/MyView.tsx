@@ -19,31 +19,18 @@ import { getMyId } from '@/entities/user/model/profile'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import ProfileAvatar from '@/entities/user/ui/ProfileAvatar'
 import ConfirmSheet from '@/shared/ui/ConfirmSheet'
+import Icon from '@/shared/ui/Icon'
+import TypeBadge from '@/shared/ui/TypeBadge'
+import RarityBadge from '@/shared/ui/RarityBadge'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { toast } from '@/shared/lib/toast'
-
-function PencilIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-    </svg>
-  )
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 18l6-6-6-6" />
-    </svg>
-  )
-}
 
 function ActivityRow({ href, label, count }: { href: string; label: string; count: number }) {
   return (
     <Link href={href} className="bj-row bj-row--compact bj-unstyled-link">
       <p className="bj-activity-label">{label}</p>
       <span className="bj-caption bj-bold">{count}</span>
-      <span className="bj-icon-hint"><ChevronRightIcon /></span>
+      <span className="bj-icon-hint"><Icon name="chevron-right" size={16} /></span>
     </Link>
   )
 }
@@ -162,14 +149,16 @@ export default function MyView() {
     <main className="bj-shell">
       <div className="bj-frame">
       {/* 헤더 */}
-      <header className="bj-my-header">
-        <span className="bj-display bj-display--lg">마이</span>
-        <button className="bj-icon-btn" onClick={() => setShowSettings(true)} aria-label="설정">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
-        </button>
+      <header className="bj-page-head">
+        <div className="bj-my-header">
+          <span className="bj-display bj-display--lg">마이</span>
+          <button className="bj-icon-btn" onClick={() => setShowSettings(true)} aria-label="설정">
+            <Icon name="settings" size={24} />
+          </button>
+        </div>
+        <p className="bj-caption">
+          {nickname ? `${nickname} · ` : ''}취향 리포트와 보관함
+        </p>
       </header>
 
       <div className="bj-content--lg">
@@ -188,7 +177,7 @@ export default function MyView() {
                     aria-label="닉네임 수정"
                     className="bj-icon-btn bj-icon-btn--sm"
                   >
-                    <PencilIcon />
+                    <Icon name="edit" size={16} />
                   </button>
                 </div>
                 <div className="bj-my-stats">
@@ -221,7 +210,7 @@ export default function MyView() {
               <IllustPlaceholder code={myType.code} alt={myType.name} aspectRatio="1 / 1" />
             </div>
             <div>
-              <p className="bj-caption bj-bold bj-mb-4">{myType.code}</p>
+              <div className="bj-mb-8"><TypeBadge code={myType.code} /></div>
               <p className="bj-display bj-display--lg">{myType.name}</p>
               <p className="bj-caption bj-mt-4">내 결과 보기 →</p>
             </div>
@@ -243,7 +232,6 @@ export default function MyView() {
         <div className="bj-card">
           <div className="bj-card-section-head">
             <span className="bj-section-tag">좋아하는 책 스타일 분석</span>
-            <span className="bj-section-label__line" />
           </div>
           {!loggedIn ? (
             <LoginRequiredNote />
@@ -295,16 +283,13 @@ export default function MyView() {
         <div className="bj-card">
           <div className="bj-card-section-head--mb16">
             <span className="bj-section-tag">나의 배지</span>
-            <span className="bj-section-label__line" />
             <span className="bj-caption">{unlockedBadges.length}/{BADGE_LIST.length}</span>
           </div>
 
           {unlockedBadges.length > 0 ? (
             <div className="bj-badge-grid">
               {unlockedBadges.map((badge) => (
-                <span key={badge.key} className="bj-badge bj-badge--rare bj-badge--centered">
-                  {badge.name}
-                </span>
+                <RarityBadge key={badge.key} variant="common" label={badge.name} size="sm" />
               ))}
             </div>
           ) : (
@@ -321,7 +306,6 @@ export default function MyView() {
         <div>
           <div className="bj-card-section-head--mb10">
             <span className="bj-section-tag">보관함</span>
-            <span className="bj-section-label__line" />
           </div>
           {loggedIn ? (
             <div className="bj-col-8">
@@ -337,7 +321,6 @@ export default function MyView() {
         <div>
           <div className="bj-card-section-head--mb10">
             <span className="bj-section-tag">나의 활동</span>
-            <span className="bj-section-label__line" />
           </div>
           {loggedIn ? (
             <div className="bj-col-8">

@@ -2,12 +2,12 @@
 
 import { useMemo } from 'react'
 import { useParams } from 'next/navigation'
-import Link from 'next/link'
 import { BOOKS } from '@/entities/book/model/books'
 import { getAuthor } from '@/entities/author/model/authors'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import BookRow from '@/widgets/book/BookRow'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function RateAuthorDetailView() {
   const params = useParams<{ id: string }>()
@@ -20,7 +20,7 @@ export default function RateAuthorDetailView() {
       <main className="bj-shell">
         <div className="bj-frame">
           <div className="bj-page-head">
-            <Link href="/rate" className="bj-icon-btn">←</Link>
+            <BackLink href="/rate" />
             <p className="bj-body" style={{ marginTop: 24, color: 'var(--color-text-muted)' }}>작가를 찾을 수 없어요.</p>
           </div>
         </div>
@@ -37,8 +37,8 @@ export default function RateAuthorDetailView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/rate" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">작가</span>
+        <BackLink href="/rate" />
+        <span className="bj-h2">작가</span>
       </header>
 
       <div className="bj-content--lg">
@@ -61,7 +61,6 @@ export default function RateAuthorDetailView() {
         <section>
           <p className="bj-section-label">
             작가의 책
-            <span className="bj-section-label__line" />
           </p>
           <div className="bj-col-10" style={{ marginTop: 12 }}>
             {books.map((b) => (

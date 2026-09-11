@@ -6,6 +6,7 @@ import { MOCK_PEOPLE } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getFollowerIds, isFollowing, toggleFollow } from '@/features/follow/model/follows'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowersView() {
   const [followerIds, setFollowerIds] = useState<string[]>([])
@@ -31,8 +32,8 @@ export default function MyFollowersView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/my" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">팔로워</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">팔로워</span>
       </header>
 
       <div className="bj-content">
