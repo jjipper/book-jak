@@ -161,9 +161,10 @@ body.bj-body {
 .bj-option--selected .bj-option__key {
   color: var(--color-accent-hover);
 }
-.bj-option__check {
-  margin-left: auto;
-  color: var(--color-accent);
+.bj-option__text {
+  /* 문항 선택지는 개행(\n)이 든 두 줄 카피가 온다 */
+  white-space: pre-line;
+  line-height: 1.5;
 }
 
 /* ========== 02b. PROGRESS (2/12) ========== */
@@ -302,7 +303,7 @@ body.bj-body {
   flex: none;
 }
 .bj-stat__name {
-  width: 56px;
+  width: 76px;
   font-weight: 500;
   flex: none;
 }
@@ -318,11 +319,18 @@ body.bj-body {
   background: var(--color-fill);
   border-radius: var(--radius-pill);
 }
-/* TypeCard 등장 애니메이션용 — 초기 0%에서 목표값까지 채워지는 스탯 바 */
-.bj-stat__fill--animated {
-  width: 0%;
-  transition: width 0.7s cubic-bezier(0.2, 0.7, 0.3, 1);
+/* TypeCard 등장 애니메이션 — 인라인 width는 그대로 두고 가로로만 펴진다 */
+@keyframes bj-stat-grow {
+  from { transform: scaleX(0); }
 }
+.bj-typecard .bj-stat__fill {
+  transform-origin: left;
+  animation: bj-stat-grow 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+.bj-typecard .bj-stat:nth-child(2) .bj-stat__fill { animation-delay: 0.08s; }
+.bj-typecard .bj-stat:nth-child(3) .bj-stat__fill { animation-delay: 0.16s; }
+.bj-typecard .bj-stat:nth-child(4) .bj-stat__fill { animation-delay: 0.24s; }
+.bj-typecard .bj-stat:nth-child(5) .bj-stat__fill { animation-delay: 0.32s; }
 .bj-stat__value {
   width: 32px;
   text-align: right;
@@ -544,12 +552,8 @@ body.bj-body {
   background: var(--color-fill);
 }
 
-/* TypeCard — 뇌구조 세그먼트 바 하단 여백 */
-.bj-typecard__brain-segmented {
-  margin-bottom: 12px;
-}
 
-/* ========== SECTION LABEL (대문자 구획 라벨 + 구분선) ========== */
+/* ========== SECTION LABEL (구획 라벨) ========== */
 .bj-section-label {
   display: flex;
   align-items: center;
@@ -558,10 +562,6 @@ body.bj-body {
   font-weight: 500;
   color: var(--color-text-caption);
   margin-bottom: 12px;
-}
-/* 라인 폐기 — 라벨 텍스트만으로 구획한다. 마크업은 뷰에 남아 있어 여기서 죽인다. */
-.bj-section-label__line {
-  display: none;
 }
 
 /* ========== SHEET (바텀시트 모달) ========== */
@@ -764,6 +764,14 @@ body.bj-body {
   justify-content: space-between;
   margin-bottom: 8px;
 }
+/* 섹션 헤더 오른쪽 액션 ("더보기 →", "+ 만들기") */
+.bj-section__action {
+  padding: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: none;
+}
 
 /* ========== RAIL (가로 스크롤 레일 — 카드 1.2개 노출) ========== */
 /* 부모 패딩 밖으로 블리드시키려면 인라인으로 margin-inline 음수를 준다.
@@ -859,22 +867,18 @@ body.bj-body {
 .bj-hero {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  background: var(--color-surface-spotlight);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  gap: 18px;
   margin-top: 12px;
-  padding: 16px;
 }
 .bj-hero__illust {
   width: 100%;
   background: var(--color-surface);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 .bj-hero__illust .bj-illust {
   width: 100%;
-  height: 200px;
+  height: 182px;
   aspect-ratio: unset;
 }
 .bj-hero__body {
@@ -882,19 +886,19 @@ body.bj-body {
 }
 .bj-hero__title {
   font-size: clamp(18px, 2.4vw, 24px);
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.3;
+  line-height: 1.4;
 }
 .bj-hero__sub {
   font-size: 12px;
   color: var(--color-text-muted);
-  line-height: 1.4;
+  line-height: 1.5;
   margin-top: 4px;
 }
 .bj-hero__cta {
   width: 100%;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 /* ========== v1 BACKWARD-COMPAT — 뷰 참조용, 신규 작성 금지 ========== */
@@ -999,7 +1003,7 @@ body.bj-body {
 .bj-subpage-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 16px 0 12px;
 }
 
@@ -1261,7 +1265,6 @@ body.bj-body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-lg) 0 var(--space-md);
 }
 
 /* 마이 프로필 행 — 아바타 + 닉네임/팔로우 */
@@ -1336,15 +1339,9 @@ body.bj-body {
 
 /* 배지 2열 그리드 */
 .bj-badge-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-/* 배지 셀 — 중앙 정렬, 여백 축소 */
-.bj-badge--centered {
-  justify-content: center;
-  padding: 8px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 /* 세로 스택 — gap-8 */
@@ -1404,28 +1401,19 @@ body.bj-body {
 /* TypeCard — 카드 래퍼 */
 .bj-typecard {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-/* TypeCard — 상단 코드 바 */
-.bj-typecard__topbar {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 14px 18px;
-}
-
-/* TypeCard — 상단 코드 텍스트 */
-.bj-typecard__topbar-code {
-  letter-spacing: 0.14em;
+  padding: 16px;
 }
 
 /* TypeCard — 캐릭터 일러스트 영역 (유형별 상단 틴트가 표면색으로 녹아드는 그라데이션) */
 .bj-typecard__illust-bg {
   position: relative;
-  padding: 12px 18px 0;
+  padding: 20px;
+  border-radius: var(--radius-md);
   background: linear-gradient(to bottom, var(--illust-top), var(--color-surface));
 }
 .bj-typecard__illust-bg--FCER { --illust-top: #FFF0C9; }
@@ -1445,63 +1433,123 @@ body.bj-body {
 .bj-typecard__illust-bg--TIGR { --illust-top: #FFE8C9; }
 .bj-typecard__illust-bg--TIGW { --illust-top: #FFF1C6; }
 
-/* TypeCard — 희소도 스티커 위치 */
+/* TypeCard — 희소도 스티커 위치 (일러스트 오른쪽 위로 걸친다) */
 .bj-typecard__rarity-slot {
   position: absolute;
-  top: 4px;
-  left: 20px;
+  top: -8px;
+  right: 8px;
 }
 
-/* TypeCard — 이름/태그라인 블록 */
+/* TypeCard — 배지/이름/태그라인 블록 */
 .bj-typecard__name-block {
-  padding: 18px 20px 6px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+.bj-typecard__name {
+  margin-top: 5px;
 }
 
 /* TypeCard — 태그라인 */
 .bj-typecard__tagline {
-  margin-top: 8px;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--color-text-muted);
 }
 
-/* TypeCard — 스탯 섹션 */
-.bj-typecard__stats {
-  padding: 14px 20px 0;
+/* TypeCard — 취향 키워드 칩 */
+.bj-typecard__keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-/* TypeCard — 뇌구조 섹션 */
+/* TypeCard — 스탯 / 뇌구조 섹션 */
+.bj-typecard__stats,
 .bj-typecard__brain {
-  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.bj-typecard__stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-/* TypeCard — 뇌구조 범례 그리드 */
+/* TypeCard — 뇌구조 도넛 + 범례 */
+.bj-typecard__brain-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.bj-brain-donut {
+  position: relative;
+  flex: none;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+}
+.bj-brain-donut__hole {
+  position: absolute;
+  inset: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+.bj-brain-donut__value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.bj-brain-donut__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-caption);
+}
+
+/* TypeCard — 뇌구조 범례 */
 .bj-typecard__brain-legend {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 
 /* TypeCard — 뇌구조 범례 행 */
 .bj-typecard__brain-row {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
 }
 
-/* TypeCard — 뇌구조 색 점 (opacity는 인라인) */
+/* TypeCard — 뇌구조 색 점 (농도는 인라인) */
 .bj-typecard__brain-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
   flex-shrink: 0;
-  background: var(--color-fill);
   display: inline-block;
+}
+.bj-typecard__brain-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* TypeCard — 뇌구조 % 텍스트 */
 .bj-typecard__brain-pct {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-text);
 }
@@ -1511,15 +1559,15 @@ body.bj-body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 20px;
-  border-top: 1px dashed var(--color-border);
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border-soft);
 }
 .bj-typecard__footer-brand {
-  font-size: 14px;
-  letter-spacing: 0.18em;
+  font-size: 16px;
+  color: var(--color-accent);
 }
 .bj-typecard__footer-caption {
-  letter-spacing: 0.1em;
+  color: var(--color-text-caption);
 }
 
 /* 팔로워/팔로잉 리스트 — 사람 링크 */
@@ -1647,12 +1695,6 @@ body.bj-body {
 }
 
 /* 소셜 허브 헤더 (space-between + 패딩) */
-.bj-hub-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-lg) 0 var(--space-md);
-}
 
 /* 허브 메인 세로 스택 (gap: 28px) */
 .bj-col-28 {
@@ -2000,20 +2042,18 @@ body.bj-body {
 }
 
 /* 카드 내 섹션 태그 텍스트 (action 색 + 자간) */
+/* 카드 안 섹션 라벨 — Figma 02 Components > 카드 섹션 라벨 CardSectionLabel */
 .bj-section-tag {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-caption);
 }
 
 /* TypeCard 섹션 라벨 — uppercase + 10px */
 .bj-typecard__section-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-caption);
 }
 
 /* 팔로잉/팔로워 숫자 강조 */
@@ -2441,13 +2481,6 @@ body.bj-body {
   gap: 8px;
 }
 
-/* 가로 flex — gap 16 + baseline 정렬 */
-.bj-row-baseline-16 {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
-}
-
 /* 페이지 콘텐츠 — col + gap 24 + pb 40 */
 .bj-content--24 {
   display: flex;
@@ -2511,13 +2544,6 @@ body.bj-body {
   flex: 1;
 }
 
-/* 저장 버튼 소형 */
-.bj-btn--save {
-  padding: 0 16px;
-  font-size: 13px;
-  flex-shrink: 0;
-}
-
 /* 책 줄거리 본문 */
 .bj-description {
   font-size: 14px;
@@ -2543,31 +2569,9 @@ body.bj-body {
   font-weight: 700;
 }
 
-/* 13px bold */
-.bj-text-13-bold {
-  font-size: 13px;
-  font-weight: 700;
-}
-
 /* 11px 텍스트 */
 .bj-text-11 {
   font-size: 11px;
-}
-
-/* 캡션 자간 넓힘 */
-.bj-caption--spaced {
-  letter-spacing: 0.06em;
-}
-
-/* 책 속성 3열 그리드 */
-.bj-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 12px 0;
-  margin-top: 12px;
-  border-top: 1px dashed var(--color-border);
-  border-bottom: 1px dashed var(--color-border);
 }
 
 /* 관련 책 링크 */
@@ -2863,26 +2867,6 @@ body.bj-body {
   line-height: 1.4;
 }
 
-/* TestView — 선택지 번호 원 (active bg/color는 JS 조건부라 인라인 유지) */
-.bj-choice-badge {
-  flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 1px;
-}
-
-/* TestView — 선택지 텍스트 */
-.bj-choice-text {
-  white-space: pre-line;
-  line-height: 1.6;
-}
-
 /* TestView — 하단 힌트 캡션 */
 .bj-question-hint {
   margin: 24px 0 32px;
@@ -2939,7 +2923,9 @@ body.bj-body {
 
 /* TestLoadingView — 진행 % 우측 정렬 */
 .bj-loading-pct {
-  text-align: right;
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-accent);
 }
 
 /* TestLoadingView — 하단 캡션 */
@@ -3055,7 +3041,22 @@ body.bj-body {
 .bj-login-hero {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-sm);
+}
+
+/* 로그인 일러스트 자리 — 흰 카드 + 심볼 */
+.bj-login-illust {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 240px;
+  max-width: 100%;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-caption);
 }
 
 .bj-login-body .bj-logo {
@@ -3064,6 +3065,7 @@ body.bj-body {
 
 .bj-login-tagline {
   color: var(--color-text-soft);
+  text-align: center;
 }
 
 .bj-login-action {
@@ -3132,21 +3134,11 @@ body.bj-body {
   transform: scale(1.08);
 }
 
-/* 타이틀 오버레이 — 이미지 좌측 하단 */
-.bj-blind-card__title-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 40px var(--space-lg) var(--space-lg);
-  background: linear-gradient(to top, rgba(20, 16, 12, 0.72) 0%, transparent 100%);
-  color: var(--color-text-on-accent);
-}
-
-.bj-blind-card__title-overlay .bj-display--lg {
-  color: var(--color-text-on-accent);
-  font-size: clamp(16px, 4vw, 22px);
-  line-height: 1.25;
+/* 취향 태그 줄 */
+.bj-blind-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .bj-blind-card__body {
@@ -3160,12 +3152,6 @@ body.bj-body {
   font-size: 14px;
   line-height: 1.75;
   color: var(--color-text-muted);
-}
-
-.bj-blind-card__meta {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
 }
 
 .bj-blind-card__actions {
