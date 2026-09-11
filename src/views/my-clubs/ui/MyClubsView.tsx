@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { loadClubs, displayMemberCount, getJoinedIds } from '@/entities/club/model/clubActions'
 import { getMyId } from '@/entities/user/model/profile'
 import type { BookClub } from '@/entities/club/model/clubs'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function MyClubsView() {
   const [clubs, setClubs] = useState<BookClub[]>([])
@@ -22,8 +23,8 @@ export default function MyClubsView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/my" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">신청한 모임</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">신청한 모임</span>
       </header>
 
       <div className="bj-content">

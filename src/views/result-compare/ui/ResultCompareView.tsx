@@ -9,6 +9,7 @@ import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { calcAffinity, affinityLabel } from '@/entities/reading-type/model/affinity'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function ResultCompareView() {
   return (
@@ -35,12 +36,13 @@ function CompareContent() {
 
   const affinity = myTypeCode && friendType ? calcAffinity(myTypeCode, friendType) : null
 
-  const cardBox = (t: typeof myType): React.ReactNode => {
+  const cardBox = (t: typeof myType, who: string): React.ReactNode => {
     if (!t) return null
     return (
       <div className="bj-card bj-col-10 bj-text-center bj-card--p12">
+        <p className="bj-caption bj-bold bj-text-action">{who}</p>
         <IllustPlaceholder code={t.code} alt={t.name} aspectRatio="1 / 1" />
-        <p className="bj-caption bj-bold">{t.code}</p>
+        <p className="bj-caption bj-bold bj-text-muted">{t.code}</p>
         <p className="bj-body bj-name-sm">{t.name}</p>
       </div>
     )
@@ -51,7 +53,7 @@ function CompareContent() {
       <div className="bj-frame">
       {/* 헤더 */}
       <header className="bj-subpage-head">
-        <Link href={myTypeCode ? `/result/${myTypeCode}` : '/home'} className="bj-icon-btn">←</Link>
+        <BackLink href={myTypeCode ? `/result/${myTypeCode}` : '/home'} />
         <div>
           <p className="bj-h2">친구 궁합 비교</p>
           <p className="bj-caption bj-mt-2">독서 취향이 얼마나 맞을까?</p>
@@ -64,9 +66,8 @@ function CompareContent() {
         <div className="bj-row-center">
           {/* 내 카드 */}
           <div className="bj-flex-1">
-            <p className="bj-caption bj-bold bj-text-center bj-mb-8">나</p>
             {myType
-              ? cardBox(myType)
+              ? cardBox(myType, '나')
               : <Link href="/test" className="bj-card--flat bj-unstyled-link bj-text-center bj-block">
                   <p className="bj-pick-placeholder">?</p>
                   <p className="bj-caption">테스트 먼저!</p>
@@ -87,9 +88,8 @@ function CompareContent() {
 
           {/* 친구 카드 */}
           <div className="bj-flex-1">
-            <p className="bj-caption bj-bold bj-text-center bj-mb-8">친구</p>
             {friendTypeData
-              ? cardBox(friendTypeData)
+              ? cardBox(friendTypeData, '친구')
               : <button onClick={() => setShowPicker(true)} className="bj-card--flat bj-friend-pick-btn">
                   <p className="bj-pick-placeholder">+</p>
                   <p className="bj-caption">친구 유형 선택</p>
@@ -125,8 +125,8 @@ function CompareContent() {
 
         {/* 친구 바꾸기 */}
         {friendType && (
-          <button onClick={() => { setFriendType(null); setShowPicker(true) }} className="bj-btn bj-btn--block">
-            친구 유형 바꾸기
+          <button onClick={() => { setFriendType(null); setShowPicker(true) }} className="bj-btn bj-btn--secondary bj-btn--block">
+            다른 유형으로 비교
           </button>
         )}
 

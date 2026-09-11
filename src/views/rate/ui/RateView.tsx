@@ -45,7 +45,9 @@ function RateCard({ book, myStars, onRate }: RateCardProps) {
       </div>
       <div className="bj-book-row__body">
         <p className="bj-body bj-book-title-sm">{book.title}</p>
-        <p className="bj-caption bj-truncate bj-caption--hint">{book.author}</p>
+        <p className="bj-caption bj-truncate bj-caption--hint">
+          {[book.author, book.publisher].filter(Boolean).join(' · ')}
+        </p>
         <div className="bj-book-row__meta-row">
           <StarRating value={myStars} onChange={(stars) => onRate(book, stars)} size={20} />
           {myStars > 0 && (
@@ -214,8 +216,10 @@ export default function RateView() {
         )}
 
         {/* 로딩 인디케이터 */}
-        {loading && (
+        {loading ? (
           <p className="bj-caption bj-text-muted bj-search-loading">책 불러오는 중…</p>
+        ) : books.length > 0 && (
+          <p className="bj-caption bj-text-muted bj-search-loading">스크롤하면 새 책이 계속 나와요</p>
         )}
 
         {/* 무한스크롤 sentinel */}

@@ -15,18 +15,6 @@ interface BlindBookCardProps {
   onSave: () => void
 }
 
-function MetaRow({ book }: { book: BlindBook }) {
-  return (
-    <div className="bj-blind-card__meta">
-      {book.meta.map((m) => (
-        <span key={m.key} className="bj-caption">
-          <span className="bj-bold">{m.key}</span> {m.value}
-        </span>
-      ))}
-    </div>
-  )
-}
-
 export default function BlindBookCard({ book, onPass, onSave }: BlindBookCardProps) {
   // 예측은 localStorage의 평가 이력을 읽으므로 마운트 후에만 계산한다
   const mounted = useMounted()
@@ -165,17 +153,24 @@ export default function BlindBookCard({ book, onPass, onSave }: BlindBookCardPro
         <IllustPlaceholder
           code={book.illustCode}
           alt="블라인드 책"
-          aspectRatio="2 / 3"
-          fit="cover"
+          aspectRatio="1 / 1"
+          fit="contain"
+          background="transparent"
           className="bj-blind-card__hero-img"
         />
-        <div className="bj-blind-card__title-overlay">
-          <p className="bj-display bj-display--lg">{headline}</p>
-        </div>
       </div>
 
       {/* 본문 */}
       <div className="bj-blind-card__body">
+        <p className="bj-display bj-display--lg">{headline}</p>
+
+        {/* 취향 태그 */}
+        <div className="bj-blind-card__tags">
+          {book.tags.map((tag) => (
+            <span key={tag.text} className="bj-chip">#{tag.text}</span>
+          ))}
+        </div>
+
         {/* AI 매칭도 — 간결하게 */}
         <div className="bj-callout">
           {match ? (
@@ -201,12 +196,9 @@ export default function BlindBookCard({ book, onPass, onSave }: BlindBookCardPro
           ))}
         </p>
 
-        {/* 메타 */}
-        <MetaRow book={book} />
-
         {/* 액션 버튼 */}
         <div className="bj-blind-card__actions no-drag">
-          <button type="button" onClick={triggerPass} className="bj-btn" style={{ flex: 1 }}>
+          <button type="button" onClick={triggerPass} className="bj-btn bj-btn--secondary" style={{ flex: 1 }}>
             패스
           </button>
           <button

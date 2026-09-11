@@ -3,6 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowser } from "@/shared/api/supabase-browser";
 import Logo from "@/shared/ui/Logo";
+import Icon from "@/shared/ui/Icon";
 
 export default function LoginView() {
   const searchParams = useSearchParams();
@@ -29,8 +30,12 @@ export default function LoginView() {
         <div className="bj-login-hero">
           <Logo riso />
           <p className="bj-caption bj-login-tagline">
-            취향으로 북적이는 독서 취향 소셜
+            읽는 취향이, 나를 만든다
           </p>
+        </div>
+
+        <div className="bj-login-illust">
+          <Icon name="book" size={48} />
         </div>
 
         <div className="bj-login-action">
@@ -44,8 +49,11 @@ export default function LoginView() {
             onClick={handleKakaoLogin}
             className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
           >
-            카카오로 시작하기
+            카카오로 3초 만에 시작하기
           </button>
+          <p className="bj-caption bj-login-tagline">
+            로그인하면 평가 기록과 뱃지가 저장돼요
+          </p>
         </div>
       </div>
     </main>

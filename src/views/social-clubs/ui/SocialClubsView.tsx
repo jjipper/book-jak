@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { loadClubs, displayMemberCount } from '@/entities/club/model/clubActions'
 import { resolveAuthor } from '@/features/resolve-author/model/author'
 import type { BookClub } from '@/entities/club/model/clubs'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function SocialClubsView() {
   const [clubs, setClubs] = useState<BookClub[]>([])
@@ -15,8 +16,8 @@ export default function SocialClubsView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">책 모임</span>
+        <BackLink href="/social" />
+        <span className="bj-h2">책 모임</span>
       </header>
 
       <div className="bj-content--lg">

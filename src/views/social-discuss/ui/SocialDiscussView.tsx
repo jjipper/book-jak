@@ -11,6 +11,7 @@ import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNic
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import BackLink from '@/shared/ui/BackLink'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -82,8 +83,8 @@ export default function SocialDiscussView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">의견 나누기</span>
+        <BackLink href="/social" />
+        <span className="bj-h2">의견 나누기</span>
       </header>
 
       <div className="bj-content--discuss">

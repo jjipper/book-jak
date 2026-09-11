@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import Link from 'next/link'
 import { loadClub, displayMemberCount, isJoined, joinClub, leaveClub } from '@/entities/club/model/clubActions'
 import { resolveAuthor } from '@/features/resolve-author/model/author'
 import { getMyId } from '@/entities/user/model/profile'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import type { BookClub } from '@/entities/club/model/clubs'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function SocialClubDetailView() {
   const params = useParams<{ id: string }>()
@@ -30,7 +30,7 @@ export default function SocialClubDetailView() {
       <main className="bj-shell">
         <div className="bj-frame">
           <div className="bj-subpage-loading">
-            <Link href="/social/clubs" className="bj-icon-btn">←</Link>
+            <BackLink href="/social/clubs" />
           </div>
         </div>
       </main>
@@ -72,8 +72,8 @@ export default function SocialClubDetailView() {
 
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social/clubs" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">모임 상세</span>
+        <BackLink href="/social/clubs" />
+        <span className="bj-h2">모임 상세</span>
       </header>
 
       <div className="bj-content--lg">

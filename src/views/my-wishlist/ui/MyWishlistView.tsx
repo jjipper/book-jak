@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { loadWishlist, removeFromWishlist, type WishlistRecord } from '@/features/wishlist/model/wishlist'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function MyWishlistView() {
   const mounted = useMounted()
@@ -25,8 +26,8 @@ export default function MyWishlistView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/my" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">읽고 싶어요</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">읽고 싶어요</span>
       </header>
 
       <div className="bj-content">

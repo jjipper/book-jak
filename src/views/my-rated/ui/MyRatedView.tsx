@@ -10,6 +10,7 @@ import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/m
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Stars from '@/shared/ui/Stars'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function MyRatedView() {
   const mounted = useMounted()
@@ -22,8 +23,8 @@ export default function MyRatedView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/my" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">별점 준 책</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">별점 준 책</span>
       </header>
 
       <div className="bj-content">

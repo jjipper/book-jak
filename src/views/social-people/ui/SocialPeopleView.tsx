@@ -10,6 +10,7 @@ import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function SocialPeopleView() {
   const mounted = useMounted()
@@ -36,8 +37,8 @@ export default function SocialPeopleView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/social" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">취향 맞는 사람 찾기</span>
+        <BackLink href="/social" />
+        <span className="bj-h2">취향 맞는 사람 찾기</span>
       </header>
 
       <div className="bj-content--new">

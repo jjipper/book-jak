@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { searchExternalBooks, type ExternalBook } from '@/entities/external-book/model/externalBooks'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import ExternalBookRow from '@/widgets/book/ExternalBookRow'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function SearchView() {
   const [query, setQuery] = useState('')
@@ -39,8 +39,8 @@ export default function SearchView() {
     <main className="bj-shell">
       <div className="bj-frame">
         <header className="bj-subpage-head">
-          <Link href="/home" className="bj-icon-btn">←</Link>
-          <span className="bj-display bj-display--lg">책 검색</span>
+          <BackLink href="/home" />
+          <span className="bj-h2">책 검색</span>
         </header>
 
         <div className="bj-content--lg">

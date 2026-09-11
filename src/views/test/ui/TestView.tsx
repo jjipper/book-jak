@@ -7,12 +7,14 @@ import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { QUESTIONS } from '@/entities/reading-type/model/questions'
 import type { TestAnswer } from '@/entities/reading-type/model/scoring'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import Option from '@/shared/ui/Option'
+import Icon from '@/shared/ui/Icon'
 
 const AXIS_LABELS: Record<string, string> = {
-  FT: '감정 · 사유',
-  IC: '몰입 · 사색',
-  EG: '도피 · 성장',
-  RW: '현실 · 환상',
+  FT: '감정·사유',
+  IC: '몰입·사색',
+  EG: '도피·성장',
+  RW: '현실·환상',
 }
 
 export default function TestView() {
@@ -119,8 +121,9 @@ export default function TestView() {
             else goBack()
           }}
           className="bj-icon-btn"
+          aria-label="이전"
         >
-          ←
+          <Icon name="chevron-left" size={24} />
         </button>
 
         {/* 진행바 */}
@@ -164,29 +167,16 @@ export default function TestView() {
 
         {/* 선택지 */}
         <div className="bj-col-10">
-          {question.options.map((option) => {
-            const isSelected = currentAnswer?.selectedOptionId === option.id
-            return (
-              <button
-                key={option.id}
-                onClick={() => handleSelect(option.id, option.value, option.badgeKey)}
-                className={`bj-choice bj-choice--flex-row${isSelected ? ' is-active' : ''}`}
-              >
-                <span
-                  className="bj-choice-badge"
-                  style={{
-                    background: isSelected ? 'var(--color-accent)' : 'var(--color-bg-sunken)',
-                    color: isSelected ? 'var(--color-text-on-accent)' : 'var(--color-text-caption)',
-                  }}
-                >
-                  {option.id}
-                </span>
-                <span className="bj-choice-text">
-                  {option.label}
-                </span>
-              </button>
-            )
-          })}
+          {question.options.map((option) => (
+            <Option
+              key={option.id}
+              optionKey={option.id}
+              selected={currentAnswer?.selectedOptionId === option.id}
+              onSelect={() => handleSelect(option.id, option.value, option.badgeKey)}
+            >
+              {option.label}
+            </Option>
+          ))}
         </div>
 
         <p className="bj-caption bj-text-center bj-question-hint">

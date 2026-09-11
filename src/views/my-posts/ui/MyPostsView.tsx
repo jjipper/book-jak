@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { loadQuestions, loadAnswers, type DiscussionQuestion } from '@/entities/discussion/model/discussionActions'
 import { getMyId } from '@/entities/user/model/profile'
+import BackLink from '@/shared/ui/BackLink'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -31,8 +32,8 @@ export default function MyPostsView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/my" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">남긴 글</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">남긴 글</span>
       </header>
 
       <div className="bj-content">

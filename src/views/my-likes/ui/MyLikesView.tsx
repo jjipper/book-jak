@@ -6,6 +6,7 @@ import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { loadQuestions, loadAnswers, type DiscussionQuestion } from '@/entities/discussion/model/discussionActions'
 import { resolveAuthor } from '@/features/resolve-author/model/author'
 import { getLikedIds } from '@/features/like/model/likes'
+import BackLink from '@/shared/ui/BackLink'
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -33,8 +34,8 @@ export default function MyLikesView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <Link href="/my" className="bj-icon-btn">←</Link>
-        <span className="bj-display bj-display--lg">좋아요 한 글</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">좋아요 한 글</span>
       </header>
 
       <div className="bj-content">

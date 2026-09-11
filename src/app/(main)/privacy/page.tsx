@@ -1,12 +1,12 @@
-import Link from 'next/link'
+import BackLink from '@/shared/ui/BackLink'
 
 export default function PrivacyPage() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
         <header className="bj-subpage-head">
-          <Link href="/home" className="bj-icon-btn">←</Link>
-          <span className="bj-display bj-display--lg">개인정보처리방침</span>
+          <BackLink href="/home" />
+          <span className="bj-h2">개인정보처리방침</span>
         </header>
         <div className="bj-content--lg">
           <div className="bj-card--flat bj-text-center">

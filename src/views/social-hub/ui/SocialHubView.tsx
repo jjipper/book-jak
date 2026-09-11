@@ -118,8 +118,9 @@ export default function SocialHubView() {
   return (
     <main className="bj-shell bj-shell--pb">
       <div className="bj-frame">
-        <header className="bj-hub-header">
+        <header className="bj-page-head">
           <span className="bj-display bj-display--lg">모임</span>
+          <p className="bj-caption">공식 이벤트 · 이달의 캘린더 · 소규모 모임</p>
         </header>
 
         <div className="bj-col-28">
@@ -146,7 +147,7 @@ export default function SocialHubView() {
           <section>
             <div className="bj-section__head">
               <p className="bj-h2">모임 열기</p>
-              <Link href="/social/clubs/new" className="bj-caption bj-bold">+ 만들기</Link>
+              <Link href="/social/clubs/new" className="bj-section__action">+ 만들기</Link>
             </div>
             {communityItems.length > 0 ? (
               <div className="bj-list bj-list--lg-grid-2 bj-col-10">

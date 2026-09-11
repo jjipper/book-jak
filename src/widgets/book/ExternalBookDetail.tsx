@@ -5,7 +5,6 @@
 // 별점 분포·예상 점수·연관 책은 서비스 평가 데이터가 쌓여야 가능해서 안내만 표시.
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { lookupExternalBook, type ExternalBook } from '@/entities/external-book/model/externalBooks'
 import { getBookRating, saveBookRating, removeBookRating, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import { pushRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
@@ -16,12 +15,12 @@ import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
 import { useMounted } from '@/shared/lib/useMounted'
+import BackLink from '@/shared/ui/BackLink'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <p className="bj-section-label">
       {children}
-      <span className="bj-section-label__line" />
     </p>
   )
 }
@@ -62,7 +61,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   if (loading) {
     return (
       <main className="bj-ext-shell--loading">
-        <Link href="/rate" className="bj-icon-btn">←</Link>
+        <BackLink href="/rate" />
         <p className="bj-caption bj-text-center" style={{ marginTop: 60 }}>책 정보를 불러오는 중…</p>
       </main>
     )
@@ -71,7 +70,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   if (!book) {
     return (
       <main className="bj-ext-shell--loading">
-        <Link href="/rate" className="bj-icon-btn">←</Link>
+        <BackLink href="/rate" />
         <p className="bj-body bj-text-muted" style={{ marginTop: 24 }}>책 정보를 불러올 수 없어요.</p>
       </main>
     )
@@ -123,7 +122,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   return (
     <main className="bj-ext-shell">
       <header className="bj-ext-shell__header">
-        <Link href="/rate" className="bj-icon-btn">←</Link>
+        <BackLink href="/rate" />
         <span className="bj-display bj-display--lg">책 정보</span>
       </header>
 
