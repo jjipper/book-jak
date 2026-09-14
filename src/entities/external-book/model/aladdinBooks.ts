@@ -53,3 +53,12 @@ export async function fetchAladdinBooks(params: {
   if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
   return data.books ?? []
 }
+
+/** 키워드 검색 (글쓰기 책 첨부용) */
+export async function searchAladdinBooks(q: string, maxResults = 10): Promise<AladdinBook[]> {
+  const sp = new URLSearchParams({ q, maxResults: String(maxResults) })
+  const res = await fetch(`/api/aladdin/search?${sp}`)
+  const data = (await res.json()) as { books?: AladdinBook[]; error?: string }
+  if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
+  return data.books ?? []
+}
