@@ -161,14 +161,55 @@ create table if not exists public.posts (
   author_id uuid not null references auth.users (id) on delete cascade,
   content text not null,
   book_title text,
+  book_isbn text,
+  book_cover text,
   like_count int not null default 0,
   comment_count int not null default 0,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  updated_at timestamptz
 );
+-- 기존 배포본에 컬럼 추가 (재실행 안전)
+alter table public.posts add column if not exists book_isbn text;
+alter table public.posts add column if not exists book_cover text;
+alter table public.posts add column if not exists updated_at timestamptz;
+
 alter table public.posts enable row level security;
 create policy "posts: 누구나 조회" on public.posts for select using (true);
 create policy "posts: 본인만 등록" on public.posts for insert to authenticated with check (auth.uid() = author_id);
+create policy "posts: 본인만 수정" on public.posts for update to authenticated using (auth.uid() = author_id) with check (auth.uid() = author_id);
 create policy "posts: 본인만 삭제" on public.posts for delete to authenticated using (auth.uid() = author_id);
+
+-- 포스트 댓글
+create table if not exists public.post_comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts (id) on delete cascade,
+  author_id uuid not null references auth.users (id) on delete cascade,
+  content text not null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz
+);
+create index if not exists post_comments_post_id_idx on public.post_comments (post_id, created_at);
+alter table public.post_comments enable row level security;
+create policy "post_comments: 누구나 조회" on public.post_comments for select using (true);
+create policy "post_comments: 본인만 등록" on public.post_comments for insert to authenticated with check (auth.uid() = author_id);
+create policy "post_comments: 본인만 수정" on public.post_comments for update to authenticated using (auth.uid() = author_id) with check (auth.uid() = author_id);
+create policy "post_comments: 본인만 삭제" on public.post_comments for delete to authenticated using (auth.uid() = author_id);
+
+-- 댓글 수 동기화 — 댓글 추가/삭제 시 posts.comment_count를 맞춘다
+create or replace function public.sync_post_comment_count()
+returns trigger language plpgsql security definer as $$
+begin
+  update public.posts
+     set comment_count = (select count(*) from public.post_comments where post_id = coalesce(new.post_id, old.post_id))
+   where id = coalesce(new.post_id, old.post_id);
+  return null;
+end;
+$$;
+
+drop trigger if exists post_comments_count_trigger on public.post_comments;
+create trigger post_comments_count_trigger
+after insert or delete on public.post_comments
+for each row execute function public.sync_post_comment_count();
 
 -- 포스트 좋아요 카운트 증감 RPC (likes 테이블과 연동)
 create or replace function public.increment_post_like(post_id uuid)
