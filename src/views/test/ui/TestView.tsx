@@ -9,6 +9,7 @@ import type { TestAnswer } from '@/entities/reading-type/model/scoring'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Option from '@/shared/ui/Option'
 import Icon from '@/shared/ui/Icon'
+import Logo from '@/shared/ui/Logo'
 
 const AXIS_LABELS: Record<string, string> = {
   FT: '감정·사유',
@@ -50,12 +51,8 @@ export default function TestView() {
       <main className="bj-shell bj-shell--col">
         <div className="bj-frame bj-frame--col">
         <header className="bj-page-head">
-          <Link href="/home" className="bj-inline-row">
-            <span className="bj-riso bj-riso--26">
-              <span className="bj-riso__a bj-riso__a--action" />
-              <span className="bj-riso__b bj-riso__b--blue" />
-            </span>
-            <span className="bj-display bj-display--lg">북작</span>
+          <Link href="/home" className="bj-unstyled-link">
+            <Logo riso />
           </Link>
         </header>
 
