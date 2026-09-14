@@ -1,7 +1,7 @@
 // 포스트 댓글 Supabase CRUD
 // postsRemote와 같은 패턴 — 로그인 세션이 있으면 서버, 없으면 localStorage + 시드.
 
-import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
+import { createSupabaseBrowser, tryRemote } from '@/shared/api/supabase-browser'
 import { getNickname, getMyId } from '@/entities/user/model/profile'
 import { SEED_COMMENTS, type PostComment } from '@/entities/post/model/comments'
 
@@ -48,11 +48,13 @@ export async function loadComments(postId: string): Promise<PostComment[]> {
   const local = [...SEED_COMMENTS, ...loadLocalComments()].filter((c) => c.postId === postId)
 
   const sb = createSupabaseBrowser()
-  const { data } = await sb
-    .from('post_comments')
-    .select(COMMENT_SELECT)
-    .eq('post_id', postId)
-    .order('created_at', { ascending: true })
+  const data = await tryRemote(async () =>
+    (await sb
+      .from('post_comments')
+      .select(COMMENT_SELECT)
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true })).data,
+  )
 
   const server = data?.map(mapComment) ?? []
   return [...local, ...server].sort((a, b) => a.ts - b.ts)
@@ -62,9 +64,10 @@ export async function loadComments(postId: string): Promise<PostComment[]> {
 export async function createComment(postId: string, content: string): Promise<PostComment> {
   const text = content.trim()
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
+  const remote = await tryRemote(async () => {
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return null
 
-  if (user) {
     const { data: profileData } = await sb
       .from('profiles')
       .select('nickname, type_code')
@@ -77,13 +80,13 @@ export async function createComment(postId: string, content: string): Promise<Po
       .select()
       .single()
 
-    if (!error && data) {
-      return mapComment({
-        ...data,
-        profiles: { nickname: profileData?.nickname ?? getNickname() ?? '알 수 없음', type_code: profileData?.type_code ?? null },
-      })
-    }
-  }
+    if (error || !data) return null
+    return mapComment({
+      ...data,
+      profiles: { nickname: profileData?.nickname ?? getNickname() ?? '알 수 없음', type_code: profileData?.type_code ?? null },
+    })
+  })
+  if (remote) return remote
 
   const comment: PostComment = {
     id: `local-c-${Date.now()}`,
@@ -113,12 +116,14 @@ export async function updateComment(id: string, content: string): Promise<PostCo
   }
 
   const sb = createSupabaseBrowser()
-  const { data } = await sb
-    .from('post_comments')
-    .update({ content: text, updated_at: new Date().toISOString() })
-    .eq('id', id)
-    .select(COMMENT_SELECT)
-    .maybeSingle()
+  const data = await tryRemote(async () =>
+    (await sb
+      .from('post_comments')
+      .update({ content: text, updated_at: new Date().toISOString() })
+      .eq('id', id)
+      .select(COMMENT_SELECT)
+      .maybeSingle()).data,
+  )
 
   return data ? mapComment(data) : null
 }
@@ -132,13 +137,15 @@ export async function deleteComment(id: string): Promise<boolean> {
   }
 
   const sb = createSupabaseBrowser()
-  const { error } = await sb.from('post_comments').delete().eq('id', id)
-  return !error
+  const ok = await tryRemote(async () =>
+    !(await sb.from('post_comments').delete().eq('id', id)).error,
+  )
+  return ok ?? false
 }
 
 /** 지금 로그인한 사람이 이 댓글의 작성자인지 */
 export async function getMyAuthorIds(): Promise<Set<string>> {
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
-  return new Set([getMyId(), ...(user ? [user.id] : [])])
+  const userId = await tryRemote(async () => (await sb.auth.getUser()).data.user?.id ?? null)
+  return new Set([getMyId(), ...(userId ? [userId] : [])])
 }

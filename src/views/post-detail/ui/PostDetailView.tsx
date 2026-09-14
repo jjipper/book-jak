@@ -25,6 +25,7 @@ export default function PostDetailView() {
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(0)
   const [comments, setComments] = useState<PostComment[]>([])
+  const [commentsLoaded, setCommentsLoaded] = useState(false)
   const [myIds, setMyIds] = useState<Set<string>>(new Set())
   const [draft, setDraft] = useState('')
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -32,6 +33,7 @@ export default function PostDetailView() {
   const [confirm, setConfirm] = useState<{ kind: 'post' } | { kind: 'comment'; id: string } | null>(null)
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
+  // 글 본문과 댓글은 서로 기다리지 않는다 — 한쪽이 느려도 다른 쪽은 그려져야 한다
   useEffect(() => {
     async function load() {
       const found = await loadPost(id)
@@ -40,8 +42,15 @@ export default function PostDetailView() {
       setLikeCount(found.likeCount)
       setLiked(isPostLiked(found.id))
       setMine(await isMyPost(found))
-      setMyIds(await getMyAuthorIds())
+    }
+    void load()
+  }, [id])
+
+  useEffect(() => {
+    async function load() {
       setComments(await loadComments(id))
+      setCommentsLoaded(true)
+      setMyIds(await getMyAuthorIds())
     }
     void load()
   }, [id])
@@ -204,7 +213,9 @@ export default function PostDetailView() {
                   ))}
 
                   {comments.length === 0 && (
-                    <p className="bj-caption bj-text-muted">첫 댓글을 남겨보세요</p>
+                    <p className="bj-caption bj-text-muted">
+                      {commentsLoaded ? '첫 댓글을 남겨보세요' : '댓글 불러오는 중…'}
+                    </p>
                   )}
                 </div>
 

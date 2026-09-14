@@ -1,7 +1,7 @@
 // 피드 포스트 Supabase CRUD
 // 로컬(localStorage) fallback → Supabase 동기화 레이어 패턴 (discussionActions와 동일)
 
-import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
+import { createSupabaseBrowser, tryRemote } from '@/shared/api/supabase-browser'
 import { getNickname, getMyId } from '@/entities/user/model/profile'
 import { SEED_POSTS, type Post } from '@/entities/post/model/posts'
 
@@ -73,20 +73,20 @@ const POST_SELECT = '*, profiles!author_id(nickname, type_code)'
 
 // ── Public API ────────────────────────────────────────────────
 
-/** 피드 포스트 로드 (최신순, 페이지네이션) */
+/** 피드 포스트 로드 (최신순, 페이지네이션). 서버 응답까지 기다린다 */
 export async function loadPosts(params?: { offset?: number; limit?: number }): Promise<Post[]> {
   const offset = params?.offset ?? 0
   const limit = params?.limit ?? 20
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
-
-  if (!user) return localFeed().slice(offset, offset + limit)
-
-  const { data } = await sb
-    .from('posts')
-    .select(POST_SELECT)
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
+  const data = await tryRemote(async () => {
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return null
+    return (await sb
+      .from('posts')
+      .select(POST_SELECT)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)).data
+  })
 
   if (data) {
     const server = data.map(mapPost)
@@ -99,11 +99,13 @@ export async function loadPosts(params?: { offset?: number; limit?: number }): P
 /** 인기글 (likeCount 기준 상위 n개) */
 export async function loadPopularPosts(limit = 5): Promise<Post[]> {
   const sb = createSupabaseBrowser()
-  const { data } = await sb
-    .from('posts')
-    .select(POST_SELECT)
-    .order('like_count', { ascending: false })
-    .limit(limit)
+  const data = await tryRemote(async () =>
+    (await sb
+      .from('posts')
+      .select(POST_SELECT)
+      .order('like_count', { ascending: false })
+      .limit(limit)).data,
+  )
 
   if (data?.length) return data.map(mapPost)
   // 시드 데이터에서 인기글 추출
@@ -116,7 +118,9 @@ export async function loadPost(id: string): Promise<Post | null> {
   if (local) return local
 
   const sb = createSupabaseBrowser()
-  const { data } = await sb.from('posts').select(POST_SELECT).eq('id', id).maybeSingle()
+  const data = await tryRemote(async () =>
+    (await sb.from('posts').select(POST_SELECT).eq('id', id).maybeSingle()).data,
+  )
   return data ? mapPost(data) : null
 }
 
@@ -128,9 +132,10 @@ export async function createPost(params: {
   const content = params.content.trim()
   const book = params.book ?? null
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
+  const remote = await tryRemote(async () => {
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return null
 
-  if (user) {
     const { data: profileData } = await sb
       .from('profiles')
       .select('nickname, type_code')
@@ -149,13 +154,13 @@ export async function createPost(params: {
       .select()
       .single()
 
-    if (!error && data) {
-      return mapPost({
-        ...data,
-        profiles: { nickname: profileData?.nickname ?? getNickname() ?? '알 수 없음', type_code: profileData?.type_code ?? null },
-      })
-    }
-  }
+    if (error || !data) return null
+    return mapPost({
+      ...data,
+      profiles: { nickname: profileData?.nickname ?? getNickname() ?? '알 수 없음', type_code: profileData?.type_code ?? null },
+    })
+  })
+  if (remote) return remote
 
   // localStorage fallback
   const post: Post = {
@@ -201,18 +206,20 @@ export async function updatePost(
   }
 
   const sb = createSupabaseBrowser()
-  const { data } = await sb
-    .from('posts')
-    .update({
-      content,
-      book_title: book?.title ?? null,
-      book_isbn: book?.isbn ?? null,
-      book_cover: book?.cover ?? null,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', id)
-    .select(POST_SELECT)
-    .maybeSingle()
+  const data = await tryRemote(async () =>
+    (await sb
+      .from('posts')
+      .update({
+        content,
+        book_title: book?.title ?? null,
+        book_isbn: book?.isbn ?? null,
+        book_cover: book?.cover ?? null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select(POST_SELECT)
+      .maybeSingle()).data,
+  )
 
   return data ? mapPost(data) : null
 }
@@ -226,15 +233,15 @@ export async function deletePost(id: string): Promise<boolean> {
   }
 
   const sb = createSupabaseBrowser()
-  const { error } = await sb.from('posts').delete().eq('id', id)
-  return !error
+  const ok = await tryRemote(async () => !(await sb.from('posts').delete().eq('id', id)).error)
+  return ok ?? false
 }
 
 /** 지금 로그인한 사람이 이 글의 작성자인지 — 서버 세션이 있으면 그쪽 id가 기준 */
 export async function isMyPost(post: Post): Promise<boolean> {
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
-  return post.authorId === (user?.id ?? getMyId())
+  const userId = await tryRemote(async () => (await sb.auth.getUser()).data.user?.id ?? null)
+  return post.authorId === (userId ?? getMyId())
 }
 
 /** 좋아요 토글 — 낙관적 업데이트, 서버 동기화 */
@@ -247,8 +254,9 @@ export async function togglePostLike(postId: string): Promise<{ liked: boolean }
   saveLikedIds(ids)
 
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
-  if (user) {
+  await tryRemote(async () => {
+    const { data: { user } } = await sb.auth.getUser()
+    if (!user) return
     if (wasLiked) {
       await sb.from('likes').delete()
         .eq('user_id', user.id).eq('target_id', postId).eq('target_type', 'post')
@@ -260,7 +268,7 @@ export async function togglePostLike(postId: string): Promise<{ liked: boolean }
       )
       await sb.rpc('increment_post_like', { post_id: postId })
     }
-  }
+  })
 
   return { liked: !wasLiked }
 }
