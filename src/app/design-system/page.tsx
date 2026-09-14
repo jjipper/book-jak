@@ -302,7 +302,6 @@ export default function DesignSystemPreviewPage() {
           <div style={row}>
             <TypeBadge code="ENFP" />
             <TypeBadge code="ISTJ" />
-            <TypeBadge code={null} />
           </div>
         </Card>
       </Section>
@@ -358,16 +357,23 @@ export default function DesignSystemPreviewPage() {
               <span className="bj-post-card__author bj-bold">밤샘독서가</span>
               <span className="bj-post-card__time bj-caption">2시간 전</span>
             </div>
-            <p className="bj-post-card__content bj-body">
-              오늘 읽은 문장이 계속 맴돈다. 이런 밤이 좋다.
-            </p>
-            <span className="bj-post-card__book-tag bj-caption">아무튼, 계속</span>
+            <div className="bj-post-card__body">
+              <p className="bj-post-card__content bj-body">
+                오늘 읽은 문장이 계속 맴돈다. 이런 밤이 좋다.
+              </p>
+              <span className="bj-post-book bj-post-book--aside">
+                <span className="bj-post-book__cover" />
+                <span className="bj-post-book__title">아무튼, 계속</span>
+              </span>
+            </div>
             <div className="bj-post-card__footer">
               <button type="button" className="bj-post-card__like-btn bj-post-card__like-btn--active">
                 <Icon name="heart-fill" size={16} />
                 <span>12</span>
               </button>
-              <span className="bj-post-card__comment-count bj-caption">3</span>
+              <span className="bj-post-card__comment-count bj-caption">
+                <Icon name="comment" size={16} />3
+              </span>
             </div>
           </article>
 

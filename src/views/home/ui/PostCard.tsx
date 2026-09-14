@@ -1,20 +1,12 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import type { Post } from '@/entities/post/model/posts'
+import { formatRelTime } from '@/entities/post/model/relTime'
 import { togglePostLike, isPostLiked } from '@/entities/post/api/postsRemote'
+import Icon from '@/shared/ui/Icon'
 import TypeBadge from '@/shared/ui/TypeBadge'
-
-function formatRelTime(ts: number): string {
-  const diff = Date.now() - ts
-  const m = Math.floor(diff / 60000)
-  if (m < 1) return '방금'
-  if (m < 60) return `${m}분 전`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}시간 전`
-  const d = Math.floor(h / 24)
-  return `${d}일 전`
-}
 
 interface PostCardProps {
   post: Post
@@ -33,43 +25,43 @@ export default function PostCard({ post }: PostCardProps) {
 
   return (
     <article className="bj-post-card">
-      <div className="bj-post-card__header">
-        <TypeBadge code={post.authorTypeCode} />
-        <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
-        <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
-      </div>
+      {/* 본문 영역만 링크 — 푸터 버튼은 링크 밖에 둬야 클릭이 겹치지 않는다 */}
+      <Link href={`/posts/${post.id}`} className="bj-post-card__link">
+        <div className="bj-post-card__header">
+          <TypeBadge code={post.authorTypeCode} />
+          <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
+          <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
+        </div>
 
-      <p className="bj-post-card__content bj-body">{post.content}</p>
-
-      {post.bookTitle && (
-        <span className="bj-post-card__book-tag bj-caption">
-          {post.bookTitle}
-        </span>
-      )}
+        <div className="bj-post-card__body">
+          <p className="bj-post-card__content bj-body bj-clamp-3">{post.content}</p>
+          {post.bookTitle && (
+            <span className="bj-post-book bj-post-book--aside">
+              {post.bookCover && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={post.bookCover} alt="" className="bj-post-book__cover" />
+              )}
+              <span className="bj-post-book__title">{post.bookTitle}</span>
+            </span>
+          )}
+        </div>
+      </Link>
 
       <div className="bj-post-card__footer">
         <button
           type="button"
           onClick={handleLike}
           className={`bj-post-card__like-btn${liked ? ' bj-post-card__like-btn--active' : ''}`}
+          aria-label={liked ? '좋아요 취소' : '좋아요'}
         >
-          <HeartIcon filled={liked} />
+          <Icon name={liked ? 'heart-fill' : 'heart'} size={16} />
           {likeCount > 0 && <span>{likeCount}</span>}
         </button>
-        {post.commentCount > 0 && (
-          <span className="bj-post-card__comment-count bj-caption">
-            {post.commentCount}
-          </span>
-        )}
+        <Link href={`/posts/${post.id}`} className="bj-post-card__comment-count bj-caption">
+          <Icon name="comment" size={16} />
+          {post.commentCount}
+        </Link>
       </div>
     </article>
-  )
-}
-
-function HeartIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
   )
 }

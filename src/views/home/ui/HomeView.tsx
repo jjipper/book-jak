@@ -8,16 +8,15 @@ import type { Post } from '@/entities/post/model/posts'
 import HomeTopbar from './HomeTopbar'
 import HomeHero from './HomeHero'
 import PostCard from './PostCard'
-import PostCreateSheet from './PostCreateSheet'
 import { useMounted } from '@/shared/lib/useMounted'
 import Icon from '@/shared/ui/Icon'
+import Link from 'next/link'
 
 export default function HomeView() {
   const [popularPosts, setPopularPosts] = useState<Post[]>([])
   const [feedPosts, setFeedPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [showCreate, setShowCreate] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
   const offsetRef = useRef(0)
@@ -76,11 +75,6 @@ export default function HomeView() {
     return () => obs.disconnect()
   }, [loadMore])
 
-  function handlePostCreated(post: Post) {
-    setFeedPosts((prev) => [post, ...prev])
-    offsetRef.current += 1
-  }
-
   // 인기글과 피드에서 중복 제거 (인기글은 피드에서 빼지 않고 그냥 보여줌)
   const popularIds = new Set(popularPosts.map((p) => p.id))
   const mainFeed = feedPosts.filter((p) => !popularIds.has(p.id))
@@ -109,13 +103,9 @@ export default function HomeView() {
         <section className="bj-section">
           <div className="bj-section__head">
             <p className="bj-h2">모든 글</p>
-            <button
-              type="button"
-              className="bj-section__action"
-              onClick={() => setShowCreate(true)}
-            >
+            <Link href="/posts/new" className="bj-section__action">
               + 만들기
-            </button>
+            </Link>
           </div>
           <div className="bj-col-10">
             {mainFeed.map((p) => (
@@ -130,20 +120,9 @@ export default function HomeView() {
       </div>
 
       {/* 글쓰기 FAB */}
-      <button
-        type="button"
-        className="bj-fab"
-        onClick={() => setShowCreate(true)}
-        aria-label="글 쓰기"
-      >
+      <Link href="/posts/new" className="bj-fab" aria-label="글 쓰기">
         <Icon name="edit" size={22} />
-      </button>
-
-      <PostCreateSheet
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-        onCreated={handlePostCreated}
-      />
+      </Link>
     </main>
   )
 }
