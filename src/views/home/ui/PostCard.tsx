@@ -35,15 +35,19 @@ export default function PostCard({ post }: PostCardProps) {
 
         <div className="bj-post-card__body">
           <p className="bj-post-card__content bj-body bj-clamp-3">{post.content}</p>
-          {post.bookTitle && (
+          {post.bookCover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.bookCover}
+              alt={post.bookTitle ?? ''}
+              className="bj-post-card__cover"
+            />
+          ) : post.bookTitle ? (
+            /* 표지가 없는 책(직접 입력·구간 절판 등)은 제목으로 대신 표시한다 */
             <span className="bj-post-book bj-post-book--aside">
-              {post.bookCover && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={post.bookCover} alt="" className="bj-post-book__cover" />
-              )}
               <span className="bj-post-book__title">{post.bookTitle}</span>
             </span>
-          )}
+          ) : null}
         </div>
       </Link>
 
