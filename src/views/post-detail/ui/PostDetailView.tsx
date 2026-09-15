@@ -8,6 +8,7 @@ import { loadComments, createComment, updateComment, deleteComment, getMyAuthorI
 import type { Post } from '@/entities/post/model/posts'
 import type { PostComment } from '@/entities/post/model/comments'
 import { formatRelTime } from '@/entities/post/model/relTime'
+import { bookDetailHref } from '@/entities/external-book/model/aladdinBooks'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
 import BackLink from '@/shared/ui/BackLink'
@@ -129,13 +130,20 @@ export default function PostDetailView() {
                 <p className="bj-body bj-post-detail__content">{post.content}</p>
 
                 {post.bookTitle && (
-                  <div className="bj-post-book">
-                    {post.bookCover && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={post.bookCover} alt="" className="bj-post-book__cover" />
-                    )}
-                    <span className="bj-post-book__title">{post.bookTitle}</span>
-                  </div>
+                  post.bookIsbn ? (
+                    <Link href={bookDetailHref(post.bookIsbn)} className="bj-post-book">
+                      {post.bookCover && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={post.bookCover} alt="" className="bj-post-book__cover" />
+                      )}
+                      <span className="bj-post-book__title">{post.bookTitle}</span>
+                      <Icon name="chevron-right" size={16} />
+                    </Link>
+                  ) : (
+                    <div className="bj-post-book">
+                      <span className="bj-post-book__title">{post.bookTitle}</span>
+                    </div>
+                  )
                 )}
 
                 <div className="bj-post-card__footer">

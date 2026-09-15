@@ -1102,29 +1102,6 @@ body.bj-body {
   gap: 10px;
 }
 
-/* ========== EXTERNAL DETAIL (standalone — bj-frame 미사용) ========== */
-/* 카카오 책 상세처럼 bj-frame 없이 직접 padding을 갖는 뷰 */
-.bj-ext-shell {
-  min-height: 100dvh;
-  padding-bottom: 40px;
-}
-.bj-ext-shell__header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 52px 20px 16px;
-}
-.bj-ext-shell__body {
-  padding: 0 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-.bj-ext-shell--loading {
-  min-height: 100dvh;
-  padding: 52px 20px;
-}
-
 /* ========== BOOK INFO ========== */
 /* 책 기본정보 영역 — 표지(고정폭) + 텍스트(flex-1) */
 .bj-book-head {
@@ -3208,7 +3185,19 @@ body.bj-body {
   border-radius: var(--radius-md);
   background: var(--color-control-surface);
   width: fit-content;
+  color: var(--color-text-muted);
+  text-decoration: none;
 }
+/* 피드 카드 오른쪽 표지 썸네일 */
+.bj-post-card__cover {
+  flex: none;
+  width: 56px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--color-track);
+}
+
 .bj-post-book--aside {
   flex: none;
   flex-direction: column;

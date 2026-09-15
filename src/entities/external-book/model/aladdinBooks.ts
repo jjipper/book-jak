@@ -62,3 +62,8 @@ export async function searchAladdinBooks(q: string, maxResults = 10): Promise<Al
   if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
   return data.books ?? []
 }
+
+/** ISBN13 → 책 상세 경로. /rate/books/[id]가 'isbn-' 접두 id를 받는다 */
+export function bookDetailHref(isbn13: string): string {
+  return `/rate/books/isbn-${isbn13}`
+}
