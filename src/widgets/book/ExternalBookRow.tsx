@@ -27,25 +27,28 @@ export default function ExternalBookRow({ book, myStars }: ExternalBookRowProps)
   }
 
   return (
-    <Link href={`/rate/books/${book.id}`} className="bj-row bj-book-link bj-unstyled-link">
-      <div className="bj-ext-book-cover">
+    <div className="bj-row bj-book-link">
+      {/* 표지·제목만 링크 — 별점은 링크 밖에 둬야 별을 눌렀을 때 상세로 튀지 않는다 */}
+      <Link href={`/rate/books/${book.id}`} className="bj-ext-book-cover bj-unstyled-link">
         {book.thumbnail && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={book.thumbnail} alt={book.title} className="bj-cover-img" />
         )}
-      </div>
+      </Link>
       <div className="bj-book-row__body">
-        <p className="bj-body bj-book-title-sm">
-          {book.title}
-        </p>
-        <p className="bj-caption bj-truncate bj-caption--hint">
-          {book.authors.join(', ') || '작자 미상'} · {book.publisher}{book.year ? ` · ${book.year}` : ''}
-        </p>
+        <Link href={`/rate/books/${book.id}`} className="bj-unstyled-link">
+          <p className="bj-body bj-book-title-sm">
+            {book.title}
+          </p>
+          <p className="bj-caption bj-truncate bj-caption--hint">
+            {book.authors.join(', ') || '작자 미상'} · {book.publisher}{book.year ? ` · ${book.year}` : ''}
+          </p>
+        </Link>
         <div className="bj-book-row__meta-row">
           <StarRating value={stars} onChange={handleRate} size={16} />
           {stars > 0 && <span className="bj-caption bj-bold bj-caption--action">내 별점 {stars}점</span>}
         </div>
       </div>
-    </Link>
+    </div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import {
   ALADDIN_CATEGORIES,
   type AladdinBook,
@@ -37,17 +38,20 @@ interface RateCardProps {
 function RateCard({ book, myStars, onRate }: RateCardProps) {
   return (
     <div className="bj-row">
-      <div className="bj-ext-book-cover">
+      {/* 표지·제목만 링크 — 별점은 링크 밖에 둬야 별을 눌렀을 때 상세로 튀지 않는다 */}
+      <Link href={`/rate/books/${book.id}`} className="bj-ext-book-cover bj-unstyled-link">
         {book.cover && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={book.cover} alt={book.title} className="bj-cover-img" />
         )}
-      </div>
+      </Link>
       <div className="bj-book-row__body">
-        <p className="bj-body bj-book-title-sm">{book.title}</p>
-        <p className="bj-caption bj-truncate bj-caption--hint">
-          {[book.author, book.publisher].filter(Boolean).join(' · ')}
-        </p>
+        <Link href={`/rate/books/${book.id}`} className="bj-unstyled-link">
+          <p className="bj-body bj-book-title-sm">{book.title}</p>
+          <p className="bj-caption bj-truncate bj-caption--hint">
+            {[book.author, book.publisher].filter(Boolean).join(' · ')}
+          </p>
+        </Link>
         <div className="bj-book-row__meta-row">
           <StarRating value={myStars} onChange={(stars) => onRate(book, stars)} size={20} />
           {myStars > 0 && (
