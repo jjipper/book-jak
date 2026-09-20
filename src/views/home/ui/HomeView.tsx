@@ -5,11 +5,14 @@ import { loadResult } from '@/entities/reading-type/model/scoring'
 import type { TypeCode } from '@/entities/reading-type/model/readingTypes'
 import { loadPosts, loadPopularPosts } from '@/entities/post/api/postsRemote'
 import type { Post } from '@/entities/post/model/posts'
+import { getBlockedIds } from '@/entities/report/api/moderationRemote'
 import HomeTopbar from './HomeTopbar'
 import HomeHero from './HomeHero'
 import PostCard from './PostCard'
 import PostCreateSheet from './PostCreateSheet'
 import { useMounted } from '@/shared/lib/useMounted'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import Icon from '@/shared/ui/Icon'
 
 export default function HomeView() {
@@ -18,6 +21,8 @@ export default function HomeView() {
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
+  const [blocked, setBlocked] = useState<string[]>([])
+  const { showGate, closeGate, requireAuth } = useAuthGate()
   const sentinelRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
   const offsetRef = useRef(0)
@@ -29,10 +34,12 @@ export default function HomeView() {
   // 초기 로드
   useEffect(() => {
     async function init() {
-      const [popular, feed] = await Promise.all([
+      const [popular, feed, blockedIds] = await Promise.all([
         loadPopularPosts(3),
         loadPosts({ offset: 0, limit: 20 }),
+        getBlockedIds(),
       ])
+      setBlocked(blockedIds)
       setPopularPosts(popular)
       setFeedPosts(feed)
       offsetRef.current = feed.length
@@ -81,9 +88,17 @@ export default function HomeView() {
     offsetRef.current += 1
   }
 
+  function handleRemoved(postId: string) {
+    setFeedPosts((prev) => prev.filter((p) => p.id !== postId))
+    setPopularPosts((prev) => prev.filter((p) => p.id !== postId))
+  }
+
   // 인기글과 피드에서 중복 제거 (인기글은 피드에서 빼지 않고 그냥 보여줌)
-  const popularIds = new Set(popularPosts.map((p) => p.id))
-  const mainFeed = feedPosts.filter((p) => !popularIds.has(p.id))
+  // ponytail: 차단 필터는 클라이언트에서. 쿼리 레벨로 옮기려면 postsRemote.loadPosts 수정 필요.
+  const blockedSet = new Set(blocked)
+  const visiblePopular = popularPosts.filter((p) => !blockedSet.has(p.authorId))
+  const popularIds = new Set(visiblePopular.map((p) => p.id))
+  const mainFeed = feedPosts.filter((p) => !popularIds.has(p.id) && !blockedSet.has(p.authorId))
 
   return (
     <main className="bj-shell">
@@ -92,14 +107,19 @@ export default function HomeView() {
         <HomeHero typeCode={typeCode} />
 
         {/* 인기글 */}
-        {popularPosts.length > 0 && (
+        {visiblePopular.length > 0 && (
           <section className="bj-section">
             <div className="bj-section__head">
               <p className="bj-h2">인기글</p>
             </div>
             <div className="bj-col-10">
-              {popularPosts.map((p) => (
-                <PostCard key={p.id} post={p} />
+              {visiblePopular.map((p) => (
+                <PostCard
+                  key={p.id}
+                  post={p}
+                  onRemoved={handleRemoved}
+                  onBlocked={(id) => setBlocked((prev) => [...prev, id])}
+                />
               ))}
             </div>
           </section>
@@ -119,7 +139,12 @@ export default function HomeView() {
           </div>
           <div className="bj-col-10">
             {mainFeed.map((p) => (
-              <PostCard key={p.id} post={p} />
+              <PostCard
+                key={p.id}
+                post={p}
+                onRemoved={handleRemoved}
+                onBlocked={(id) => setBlocked((prev) => [...prev, id])}
+              />
             ))}
           </div>
           {loading && (
@@ -133,7 +158,7 @@ export default function HomeView() {
       <button
         type="button"
         className="bj-fab"
-        onClick={() => setShowCreate(true)}
+        onClick={() => void requireAuth(() => setShowCreate(true))}
         aria-label="글 쓰기"
       >
         <Icon name="edit" size={22} />
@@ -144,6 +169,8 @@ export default function HomeView() {
         onClose={() => setShowCreate(false)}
         onCreated={handlePostCreated}
       />
+
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/home" />
     </main>
   )
 }
