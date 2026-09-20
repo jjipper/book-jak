@@ -15,17 +15,24 @@ export default function PostCreateSheet({ open, onClose, onCreated }: PostCreate
   const [content, setContent] = useState('')
   const [bookTitle, setBookTitle] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // DB 제약은 2자 이상 — 1자 글이 등록 실패로 떨어지지 않게 여기서 막는다
+  const tooShort = content.trim().length < 2
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!content.trim() || submitting) return
+    if (tooShort || submitting) return
     setSubmitting(true)
+    setError(null)
     try {
       const post = await createPost({ content, bookTitle: bookTitle.trim() || null })
       onCreated(post)
       setContent('')
       setBookTitle('')
       onClose()
+    } catch {
+      setError('올리지 못했어요. 잠시 후 다시 시도해 주세요')
     } finally {
       setSubmitting(false)
     }
@@ -63,10 +70,12 @@ export default function PostCreateSheet({ open, onClose, onCreated }: PostCreate
           maxLength={80}
         />
 
+        {error && <p className="bj-caption bj-text-muted">{error}</p>}
+
         <button
           type="submit"
           className="bj-btn bj-btn--primary"
-          disabled={!content.trim() || submitting}
+          disabled={tooShort || submitting}
         >
           {submitting ? '등록 중…' : '올리기'}
         </button>
