@@ -26,7 +26,9 @@ export default function MyRatedView() {
       </header>
 
       <div className="bj-content">
-        {ratings.length === 0 ? (
+        {!mounted ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : ratings.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 별점 준 책이 없어요</p>
             <Link href="/rate" className="bj-btn bj-btn--primary bj-btn--cta">

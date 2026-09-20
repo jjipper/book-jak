@@ -13,7 +13,7 @@ function bookTitle(bookId: number | null): string {
 }
 
 export default function MyPostsView() {
-  const [questions, setQuestions] = useState<DiscussionQuestion[]>([])
+  const [questions, setQuestions] = useState<DiscussionQuestion[] | null>(null)
   const [answerCounts, setAnswerCounts] = useState<Record<string, number>>({})
 
   useEffect(() => {
@@ -37,7 +37,9 @@ export default function MyPostsView() {
       </header>
 
       <div className="bj-content">
-        {questions.length === 0 ? (
+        {questions === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : questions.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 남긴 글이 없어요</p>
             <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--cta">

@@ -8,7 +8,7 @@ import type { BookClub } from '@/entities/club/model/clubs'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function MyClubsView() {
-  const [clubs, setClubs] = useState<BookClub[]>([])
+  const [clubs, setClubs] = useState<BookClub[] | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -28,7 +28,9 @@ export default function MyClubsView() {
       </header>
 
       <div className="bj-content">
-        {clubs.length === 0 ? (
+        {clubs === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : clubs.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 신청한 모임이 없어요</p>
             <Link href="/social/clubs" className="bj-btn bj-btn--primary bj-btn--cta">

@@ -12,7 +12,7 @@ import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowersView() {
-  const [people, setPeople] = useState<Person[]>([])
+  const [people, setPeople] = useState<Person[] | null>(null)
   const [followingIds, setFollowingIds] = useState<string[]>([])
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
@@ -43,10 +43,15 @@ export default function MyFollowersView() {
       </header>
 
       <div className="bj-content">
-        {people.length === 0 ? (
+        {people === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : people.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 나를 팔로우한 사람이 없어요</p>
-            <p className="bj-caption">활동을 남기면 나를 팔로우하는 사람이 생겨요</p>
+            <p className="bj-caption bj-mb-16">질문을 남기면 취향이 닿는 사람이 찾아와요</p>
+            <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--cta">
+              질문 남기러 가기
+            </Link>
           </div>
         ) : (
           people.map((person) => {

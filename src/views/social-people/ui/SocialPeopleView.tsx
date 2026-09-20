@@ -61,10 +61,13 @@ export default function SocialPeopleView() {
         ) : ranked.length === 0 ? (
           // 초기 런칭 — 유형 진단을 마친 다른 가입자가 아직 없을 때
           <div className="bj-empty-card">
-            <p className="bj-h1 bj-mb-10">아직 보여드릴 사람이 없어요</p>
-            <p className="bj-body bj-text-muted">
-              독서유형 테스트를 마친 사람이 늘어나면<br />나와 취향 맞는 순서로 보여드려요
+            <p className="bj-h1 bj-mb-10">아직 취향 매칭 유저가 없어요</p>
+            <p className="bj-body bj-text-muted bj-mb-20">
+              대신 의견 나누기에서<br />다른 사람 질문을 둘러볼까요?
             </p>
+            <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--block">
+              의견 나누기 둘러보기
+            </Link>
           </div>
         ) : (
           <>

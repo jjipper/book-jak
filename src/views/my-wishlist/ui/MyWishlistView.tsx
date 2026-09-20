@@ -31,7 +31,9 @@ export default function MyWishlistView() {
       </header>
 
       <div className="bj-content">
-        {items.length === 0 ? (
+        {!mounted ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : items.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 담아둔 책이 없어요</p>
             <p className="bj-caption bj-mb-16">발견 탭에서 궁금한 책을 읽고싶어요로 담아보세요</p>

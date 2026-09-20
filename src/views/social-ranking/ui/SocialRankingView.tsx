@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { loadRanking, type RankingEntry } from '@/entities/person/api/personRemote'
 import { READING_TYPES, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
@@ -20,7 +21,7 @@ const BREAKDOWN: { key: keyof RankingEntry; label: string }[] = [
 ]
 
 export default function SocialRankingView() {
-  const [ranked, setRanked] = useState<RankingEntry[]>([])
+  const [ranked, setRanked] = useState<RankingEntry[] | null>(null)
   const [myId, setMyId] = useState<string | null>(null)
 
   useEffect(() => {
@@ -33,7 +34,9 @@ export default function SocialRankingView() {
     void load()
   }, [])
 
-  const me = myId ? ranked.find((r) => r.userId === myId) : undefined
+  const me = myId ? ranked?.find((r) => r.userId === myId) : undefined
+  // 가입자가 나뿐이면 "1위"가 민망하므로 순위 대신 안내를 띄운다.
+  const onlyMe = ranked !== null && ranked.length === 1 && ranked[0].userId === myId
   const summaryEntries = me ? BREAKDOWN.filter(({ key }) => (me[key] as number) > 0) : []
 
   return (
@@ -45,21 +48,28 @@ export default function SocialRankingView() {
       </header>
 
       <div className="bj-content--lg">
-        <div className="bj-card--flat">
-          <p className="bj-body bj-semibold bj-mb-6">내 활동 내역 · {me?.score ?? 0}점</p>
-          {summaryEntries.length > 0 ? (
-            <p className="bj-caption">
-              {summaryEntries.map(({ key, label }) => `${label} ${me![key]}번`).join(' · ')}
-            </p>
-          ) : (
-            <p className="bj-caption">책 읽고 평가하고 질문 남기면 점수가 쌓여요</p>
-          )}
-        </div>
+        {ranked !== null && (
+          <div className="bj-card--flat">
+            <p className="bj-body bj-semibold bj-mb-6">내 활동 내역 · {me?.score ?? 0}점</p>
+            {summaryEntries.length > 0 ? (
+              <p className="bj-caption">
+                {summaryEntries.map(({ key, label }) => `${label} ${me![key]}번`).join(' · ')}
+              </p>
+            ) : (
+              <p className="bj-caption">책 읽고 평가하고 질문 남기면 점수가 쌓여요</p>
+            )}
+          </div>
+        )}
 
-        {ranked.length === 0 ? (
+        {ranked === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : ranked.length === 0 || onlyMe ? (
           <div className="bj-empty bj-card">
-            <p className="bj-body bj-bold bj-mb-6">아직 랭킹이 없어요</p>
-            <p className="bj-caption">첫 활동을 남기면 여기에 이름이 올라가요</p>
+            <p className="bj-body bj-bold bj-mb-6">순위를 겨룰 사람이 아직 없어요</p>
+            <p className="bj-caption bj-mb-16">먼저 점수를 쌓아두면<br />사람들이 들어올 때 위에서 기다릴 수 있어요</p>
+            <Link href="/rate" className="bj-btn bj-btn--primary bj-btn--cta">
+              읽은 책 평가하러 가기
+            </Link>
           </div>
         ) : (
           <div className="bj-col-10">

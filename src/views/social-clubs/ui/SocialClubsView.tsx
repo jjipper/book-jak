@@ -8,7 +8,7 @@ import type { BookClub } from '@/entities/club/model/clubs'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function SocialClubsView() {
-  const [clubs, setClubs] = useState<BookClub[]>([])
+  const [clubs, setClubs] = useState<BookClub[] | null>(null)
 
   useEffect(() => { async function load() { setClubs(await loadClubs()) }; void load() }, [])
 
@@ -25,6 +25,14 @@ export default function SocialClubsView() {
           모임 만들기
         </Link>
 
+        {clubs === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : clubs.length === 0 ? (
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 열린 모임이 없어요</p>
+            <p className="bj-caption">첫 모임을 열면 관심 있는 사람이 모여요</p>
+          </div>
+        ) : (
         <div className="bj-col-10">
           {clubs.map((club) => {
             const organizer = resolveAuthor(club.organizerId)
@@ -52,6 +60,7 @@ export default function SocialClubsView() {
             )
           })}
         </div>
+        )}
       </div>
       </div>
     </main>

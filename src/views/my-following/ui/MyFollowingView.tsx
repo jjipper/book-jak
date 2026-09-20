@@ -10,7 +10,7 @@ import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowingView() {
-  const [people, setPeople] = useState<Person[]>([])
+  const [people, setPeople] = useState<Person[] | null>(null)
 
   useEffect(() => {
     async function load() {
@@ -21,7 +21,7 @@ export default function MyFollowingView() {
 
   async function handleUnfollow(id: string) {
     await unfollowPerson(id)
-    setPeople((prev) => prev.filter((p) => p.id !== id))
+    setPeople((prev) => prev?.filter((p) => p.id !== id) ?? null)
   }
 
   return (
@@ -33,7 +33,9 @@ export default function MyFollowingView() {
       </header>
 
       <div className="bj-content">
-        {people.length === 0 ? (
+        {people === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : people.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 팔로우한 사람이 없어요</p>
             <p className="bj-caption bj-mb-16">취향 맞는 사람을 찾아 팔로우해보세요</p>
