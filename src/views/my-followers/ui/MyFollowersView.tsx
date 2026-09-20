@@ -2,31 +2,37 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { MOCK_PEOPLE } from '@/entities/person/model/people'
+import { loadPeopleByIds } from '@/entities/person/api/personRemote'
+import type { Person } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
-import { getFollowerIds, isFollowing, toggleFollow } from '@/features/follow/model/follows'
+import { getFollowerIds, getFollowingIds, toggleFollow } from '@/features/follow/model/follows'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowersView() {
-  const [followerIds, setFollowerIds] = useState<string[]>([])
+  const [people, setPeople] = useState<Person[]>([])
   const [followingIds, setFollowingIds] = useState<string[]>([])
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
     async function load() {
-      const ids = await getFollowerIds()
-      setFollowerIds(ids)
-      setFollowingIds(ids.filter((id) => isFollowing(id)))
+      const [followerIds, following] = await Promise.all([getFollowerIds(), getFollowingIds()])
+      setPeople(await loadPeopleByIds(followerIds))
+      setFollowingIds(following.filter((id) => followerIds.includes(id)))
     }
     void load()
   }, [])
 
-  async function handleToggleFollow(id: string) {
-    const nowFollowing = await toggleFollow(id)
-    setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+  function handleToggleFollow(id: string) {
+    requireAuth(() => {
+      void (async () => {
+        const nowFollowing = await toggleFollow(id)
+        setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
+      })()
+    })
   }
-
-  const people = MOCK_PEOPLE.filter((p) => followerIds.includes(p.id))
 
   return (
     <main className="bj-shell">
@@ -44,17 +50,17 @@ export default function MyFollowersView() {
           </div>
         ) : (
           people.map((person) => {
-            const type = READING_TYPES[person.typeCode]
+            const type = person.typeCode ? READING_TYPES[person.typeCode] : null
             const following = followingIds.includes(person.id)
             return (
               <div key={person.id} className="bj-row">
                 <Link href={`/people/${person.id}`} className="bj-people-link">
                   <div className="bj-people-thumb">
-                    <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
+                    {type && <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />}
                   </div>
                   <div className="bj-flex-1">
                     <p className="bj-body bj-bold bj-body--sm">{person.nickname}</p>
-                    <p className="bj-caption">{type.name}</p>
+                    <p className="bj-caption">{type?.name ?? '유형 미진단'}</p>
                   </div>
                 </Link>
                 <button
@@ -69,6 +75,7 @@ export default function MyFollowersView() {
           })
         )}
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/my/followers" />
       </div>
     </main>
   )

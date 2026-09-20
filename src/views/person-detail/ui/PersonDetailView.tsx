@@ -1,60 +1,59 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { MOCK_PEOPLE } from '@/entities/person/model/people'
+import { loadPerson } from '@/entities/person/api/personRemote'
+import type { Person } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
-import { BADGE_LIST } from '@/entities/reading-type/model/badges'
 import { affinityLabel } from '@/entities/reading-type/model/affinity'
 import { getPersonInsight, type PersonInsight } from '@/features/people-match/model/peopleMatch'
-import { isFollowing, toggleFollow } from '@/features/follow/model/follows'
+import { getFollowingIds, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import { useMounted } from '@/shared/lib/useMounted'
 import BackLink from '@/shared/ui/BackLink'
-import RarityBadge from '@/shared/ui/RarityBadge'
 import TypeBadge from '@/shared/ui/TypeBadge'
 
-// TODO: 실 사용자 프로필 Supabase 연동
-//   - MOCK_PEOPLE.find → sb.from('profiles').select().eq('id', id).single()
-//   - 팔로우 액션도 서버 반영 필요 (현재 localStorage만)
 export default function PersonDetailView() {
   const params = useParams<{ id: string }>()
-  const person = MOCK_PEOPLE.find((p) => p.id === params.id) ?? null
-
-  // 팔로우 여부·궁합 모두 localStorage를 읽으므로 마운트 후에만 계산한다
-  const mounted = useMounted()
-  const [toggled, setToggled] = useState<boolean | null>(null)
-  const following = toggled ?? (mounted && person ? isFollowing(person.id) : false)
-  const insight: PersonInsight | null = useMemo(
-    () => (mounted && person ? getPersonInsight(person) : null),
-    [mounted, person],
-  )
+  const [person, setPerson] = useState<Person | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [insight, setInsight] = useState<PersonInsight | null>(null)
+  const [following, setFollowing] = useState(false)
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
-  if (!person) {
+  useEffect(() => {
+    async function load() {
+      const [p, following] = await Promise.all([loadPerson(params.id), getFollowingIds()])
+      setPerson(p)
+      setInsight(p ? getPersonInsight(p) : null)
+      setFollowing(following.includes(params.id))
+      setLoading(false)
+    }
+    void load()
+  }, [params.id])
+
+  function handleToggleFollow() {
+    requireAuth(() => {
+      void toggleFollow(params.id).then(setFollowing)
+    })
+  }
+
+  if (loading || !person) {
     return (
       <main className="bj-shell">
         <div className="bj-frame">
           <div className="bj-pad-v-lg">
             <BackLink href="/social/people" />
-            <p className="bj-body bj-mt-20">사람을 찾을 수 없어요</p>
+            <p className="bj-body bj-mt-20">{loading ? '불러오는 중…' : '사람을 찾을 수 없어요'}</p>
           </div>
         </div>
       </main>
     )
   }
 
-  const type = READING_TYPES[person.typeCode]
-  const badges = BADGE_LIST.filter((b) => person.badgeKeys.includes(b.key))
-
-  function handleToggleFollow() {
-    requireAuth(() => {
-      void toggleFollow(person!.id).then((nowFollowing) => setToggled(nowFollowing))
-    })
-  }
+  const type = person.typeCode ? READING_TYPES[person.typeCode] : null
 
   return (
     <main className="bj-shell">
@@ -69,7 +68,7 @@ export default function PersonDetailView() {
         {/* 프로필 */}
         <div className="bj-person-profile">
           <div className="bj-person-thumb">
-            <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
+            {type && <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />}
           </div>
           <div className="bj-flex-1">
             <p className="bj-h2 bj-truncate">{person.nickname}</p>
@@ -101,94 +100,69 @@ export default function PersonDetailView() {
             <span className="bj-section-tag">나와의 궁합</span>
           </div>
 
-          {insight?.affinity !== null && insight?.affinity !== undefined ? (
+          {insight && insight.affinity !== null ? (
             <>
               <div className="bj-affinity-center">
                 <p className="bj-display bj-display--xl bj-affinity-pct--xl">{insight.affinity}%</p>
                 <p className="bj-body bj-affinity-label">{affinityLabel(insight.affinity)}</p>
               </div>
 
-              <div className="bj-col-10">
-                <div>
-                  <p className="bj-caption bj-bold bj-mb-6">겹치는 취향</p>
-                  {insight.sharedTags.length > 0 ? (
-                    <div className="bj-tag-group">
-                      {insight.sharedTags.map((tag) => (
-                        <span key={tag} className="bj-chip">#{tag}</span>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="bj-caption">아직 겹치는 취향을 못 찾았어요</p>
-                  )}
-                </div>
-                <div>
-                  <p className="bj-caption bj-bold bj-mb-6">동시에 좋아하는 책</p>
-                  {insight.sharedBooks.length > 0 ? (
-                    <div className="bj-col-6">
-                      {insight.sharedBooks.map((book) => (
-                        <div key={book.id} className="bj-row bj-row--compact">
-                          <p className="bj-activity-label bj-activity-label--sm">{book.title}</p>
-                          <span className="bj-caption">{book.author}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <p className="bj-caption">아직 같이 좋아하는 책을 못 찾았어요</p>
-                  )}
-                </div>
+              <div>
+                <p className="bj-caption bj-bold bj-mb-6">겹치는 취향</p>
+                {insight.sharedTags.length > 0 ? (
+                  <div className="bj-tag-group">
+                    {insight.sharedTags.map((tag) => (
+                      <span key={tag} className="bj-chip">#{tag}</span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="bj-caption">아직 겹치는 취향을 못 찾았어요</p>
+                )}
               </div>
             </>
           ) : (
             <div className="bj-text-center bj-pad-v-sm">
-              <p className="bj-caption bj-caption--mb12">내 독서유형을 알아야 궁합을 볼 수 있어요</p>
-              <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta-sm">
-                테스트 시작하기 →
-              </Link>
+              <p className="bj-caption bj-caption--mb12">
+                {person.typeCode
+                  ? '내 독서유형을 알아야 궁합을 볼 수 있어요'
+                  : '이 사람이 아직 독서유형 테스트를 하지 않았어요'}
+              </p>
+              {!person.typeCode ? null : (
+                <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta-sm">
+                  테스트 시작하기 →
+                </Link>
+              )}
             </div>
           )}
         </div>
 
         {/* 성향 */}
-        <Link href={`/result/${type.code}`} className="bj-card bj-person-type-link">
-          <div className="bj-person-thumb">
-            <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
-          </div>
-          <div>
-            <div className="bj-mb-8"><TypeBadge code={type.code} /></div>
-            <p className="bj-display bj-display--lg">{type.name}</p>
-            <p className="bj-caption bj-mt-4">유형 자세히 보기 →</p>
-          </div>
-        </Link>
+        {type && (
+          <Link href={`/result/${type.code}`} className="bj-card bj-person-type-link">
+            <div className="bj-person-thumb">
+              <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
+            </div>
+            <div>
+              <div className="bj-mb-8"><TypeBadge code={type.code} /></div>
+              <p className="bj-display bj-display--lg">{type.name}</p>
+              <p className="bj-caption bj-mt-4">유형 자세히 보기 →</p>
+            </div>
+          </Link>
+        )}
 
         {/* 좋아하는 책 스타일 */}
-        <div className="bj-card">
-          <div className="bj-card-section-head">
-            <span className="bj-section-tag">좋아하는 책 스타일</span>
-          </div>
-          <div className="bj-tag-group">
-            {person.favoriteTags.map((tag) => (
-              <span key={tag} className="bj-chip">#{tag}</span>
-            ))}
-          </div>
-        </div>
-
-        {/* 배지 */}
-        <div className="bj-card">
-          <div className="bj-card-section-head--mb16">
-            <span className="bj-section-tag">보유 배지</span>
-            <span className="bj-caption">{badges.length}/{BADGE_LIST.length}</span>
-          </div>
-
-          {badges.length > 0 ? (
-            <div className="bj-badge-grid">
-              {badges.map((badge) => (
-                <RarityBadge key={badge.key} variant="common" label={badge.name} size="sm" />
+        {person.favoriteTags.length > 0 && (
+          <div className="bj-card">
+            <div className="bj-card-section-head">
+              <span className="bj-section-tag">좋아하는 책 스타일</span>
+            </div>
+            <div className="bj-tag-group">
+              {person.favoriteTags.map((tag) => (
+                <span key={tag} className="bj-chip">#{tag}</span>
               ))}
             </div>
-          ) : (
-            <p className="bj-caption bj-text-center">아직 획득한 배지가 없어요</p>
-          )}
-        </div>
+          </div>
+        )}
       </div>
       <LoginGateSheet open={showGate} onClose={closeGate} next={`/people/${params.id}`} />
       </div>

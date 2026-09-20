@@ -1,29 +1,29 @@
 // Phase 3 — 취향 맞는 사람 계산 (허브 미리보기·people 목록 공용)
-// TODO: 실 사용자 매칭 서버 연동
-//   - MOCK_PEOPLE → sb.from('profiles').select('id, nickname, type_code, favorite_tags, ...')
-//   - 취향 일치율은 calcAffinity 유지, 공유 태그는 서버 데이터로 계산
-//   - 내가 이미 팔로우한 사람 제외 옵션 추가 고려
+// 사람 데이터는 Supabase profiles, 궁합은 profiles.type_code 기반.
 
-import { MOCK_PEOPLE, type MockPerson } from '@/entities/person/model/people'
-import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
+import { loadPeople } from '@/entities/person/api/personRemote'
+import type { Person } from '@/entities/person/model/people'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { loadBlindRatings } from '@/entities/blind-rating/model/blindRatings'
 import { calcAffinity } from '@/entities/reading-type/model/affinity'
 
 export interface MatchedPerson {
-  person: MockPerson
+  person: Person
   affinity: number
   sharedTags: string[]
 }
 
-export function getMatchedPeople(): MatchedPerson[] {
+/** 내 유형이 없으면 빈 배열(테스트 유도), 다른 가입자가 없어도 빈 배열(빈 상태). */
+export async function getMatchedPeople(): Promise<MatchedPerson[]> {
   const myTypeCode = loadResult()?.typeCode
   if (!myTypeCode) return []
   const myTags = new Set(loadBlindRatings().flatMap((r) => r.tags))
-  return MOCK_PEOPLE
+  const people = await loadPeople()
+  return people
+    .filter((p) => p.typeCode)
     .map((person) => ({
       person,
-      affinity: calcAffinity(myTypeCode, person.typeCode),
+      affinity: calcAffinity(myTypeCode, person.typeCode!),
       sharedTags: person.favoriteTags.filter((t) => myTags.has(t)),
     }))
     .sort((a, b) => b.affinity - a.affinity)
@@ -32,21 +32,15 @@ export function getMatchedPeople(): MatchedPerson[] {
 export interface PersonInsight {
   affinity: number | null
   sharedTags: string[]
-  sharedBooks: { id: number; title: string; author: string }[]
 }
 
 // 마이 · 소셜 어디서 프로필을 봐도 "나와 이 사람" 궁합 데이터를 동일하게 계산
-export function getPersonInsight(person: MockPerson): PersonInsight {
+export function getPersonInsight(person: Person): PersonInsight {
   const myTypeCode = loadResult()?.typeCode
-  const myRatings = loadBlindRatings()
-  const myTags = new Set(myRatings.flatMap((r) => r.tags))
-  const myLikedBookIds = new Set(myRatings.filter((r) => r.stars >= 4).map((r) => r.bookId))
+  const myTags = new Set(loadBlindRatings().flatMap((r) => r.tags))
 
   return {
-    affinity: myTypeCode ? calcAffinity(myTypeCode, person.typeCode) : null,
+    affinity: myTypeCode && person.typeCode ? calcAffinity(myTypeCode, person.typeCode) : null,
     sharedTags: person.favoriteTags.filter((t) => myTags.has(t)),
-    sharedBooks: BLIND_BOOKS
-      .filter((b) => person.favoriteBookIds.includes(b.id) && myLikedBookIds.has(b.id))
-      .map((b) => ({ id: b.id, title: b.title, author: b.author })),
   }
 }

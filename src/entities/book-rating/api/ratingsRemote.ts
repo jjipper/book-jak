@@ -1,8 +1,9 @@
-// 평가·리뷰 공유 (Supabase) — 키가 없으면 모든 함수가 조용히 no-op/null
-// 로컬(localStorage) 저장이 항상 먼저고, 여기는 그 위에 얹는 동기화 레이어.
+// 평가·리뷰 (Supabase ratings/books) — 원본 데이터는 여기에 있다.
+// 화면이 동기로 읽는 localStorage 사본은 syncMyRatings()가 서버 기준으로 맞춘다.
 
-import { getSupabase, ensureSession } from '@/shared/api/supabase'
+import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import { getNickname } from '@/entities/user/model/profile'
+import { replaceBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 
 export interface RemoteBookInput {
   id: string // 'b01' 또는 'isbn-{ISBN13}'
@@ -29,12 +30,12 @@ export interface RemoteBookStats {
   myUserId: string | null
 }
 
-// 내 평가를 서버에 업서트 (책 메타데이터도 함께 스냅샷)
+// 내 평가를 서버에 업서트 (책 메타데이터도 함께 스냅샷) — 로그인 필수
 export async function pushRating(book: RemoteBookInput, stars: number, review?: string): Promise<void> {
-  const sb = getSupabase()
-  if (!sb) return
-  const userId = await ensureSession()
-  if (!userId) return
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) throw new Error('로그인이 필요해요')
+  const userId = user.id
 
   const { error: bookError } = await sb.from('books').upsert({
     id: book.id,
@@ -62,8 +63,7 @@ export async function pushRating(book: RemoteBookInput, stars: number, review?: 
 
 // 책 하나의 커뮤니티 통계 + 리뷰 목록
 export async function fetchBookStats(bookId: string): Promise<RemoteBookStats | null> {
-  const sb = getSupabase()
-  if (!sb) return null
+  const sb = createSupabaseBrowser()
 
   const { data, error } = await sb
     .from('ratings')
@@ -100,4 +100,25 @@ export async function fetchBookStats(bookId: string): Promise<RemoteBookStats | 
       })),
     myUserId,
   }
+}
+
+// 서버의 내 평가를 로컬 사본에 반영 — 평가 화면 진입 시 한 번 호출한다.
+// 기기를 바꾸거나 저장소를 비워도 내 평가가 그대로 보이게 하는 게 목적.
+export async function syncMyRatings(): Promise<void> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) return
+  const { data } = await sb
+    .from('ratings')
+    .select('book_id, stars, review, updated_at, books(title)')
+    .eq('user_id', user.id)
+  if (!data) return
+  const records: BookRatingRecord[] = data.map((r: Record<string, unknown>) => ({
+    bookId: r.book_id as string,
+    title: (r.books as { title: string } | null)?.title,
+    stars: r.stars as number,
+    review: (r.review as string | null) ?? undefined,
+    ts: new Date(r.updated_at as string).getTime(),
+  }))
+  replaceBookRatings(records)
 }
