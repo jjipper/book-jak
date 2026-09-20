@@ -1,34 +1,38 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getMatchedPeople, type MatchedPerson } from '@/features/people-match/model/peopleMatch'
 import { affinityLabel } from '@/entities/reading-type/model/affinity'
-import { isFollowing, toggleFollow } from '@/features/follow/model/follows'
+import { loadResult } from '@/entities/reading-type/model/scoring'
+import { getFollowingIds, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import { useMounted } from '@/shared/lib/useMounted'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function SocialPeopleView() {
-  const mounted = useMounted()
-  const ranked: MatchedPerson[] = useMemo(() => (mounted ? getMatchedPeople() : []), [mounted])
-  const hasResult = !mounted || ranked.length > 0
-  // 팔로우 여부는 저장소가 원본이고, 이번 화면에서 누른 것만 덮어쓴다
-  const [toggled, setToggled] = useState<Record<string, boolean>>({})
-  const followingIds = useMemo(
-    () => ranked.map((m) => m.person.id).filter((id) => toggled[id] ?? isFollowing(id)),
-    [ranked, toggled],
-  )
+  const [ranked, setRanked] = useState<MatchedPerson[] | null>(null)
+  const [hasType, setHasType] = useState(true)
+  const [followingIds, setFollowingIds] = useState<string[]>([])
   const { showGate, closeGate, requireAuth } = useAuthGate()
+
+  useEffect(() => {
+    async function load() {
+      setHasType(!!loadResult()?.typeCode)
+      const [people, following] = await Promise.all([getMatchedPeople(), getFollowingIds()])
+      setRanked(people)
+      setFollowingIds(following)
+    }
+    void load()
+  }, [])
 
   function handleToggleFollow(id: string) {
     requireAuth(() => {
       void (async () => {
         const nowFollowing = await toggleFollow(id)
-        setToggled((prev) => ({ ...prev, [id]: nowFollowing }))
+        setFollowingIds((prev) => (nowFollowing ? [...prev, id] : prev.filter((i) => i !== id)))
       })()
     })
   }
@@ -42,7 +46,7 @@ export default function SocialPeopleView() {
       </header>
 
       <div className="bj-content--new">
-        {!hasResult ? (
+        {!hasType ? (
           <div className="bj-empty-card">
             <p className="bj-h1 bj-mb-10">취향 맞는 사람 찾기</p>
             <p className="bj-body bj-text-muted bj-mb-20">
@@ -52,6 +56,16 @@ export default function SocialPeopleView() {
               독서유형 테스트 하러 가기
             </Link>
           </div>
+        ) : ranked === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : ranked.length === 0 ? (
+          // 초기 런칭 — 유형 진단을 마친 다른 가입자가 아직 없을 때
+          <div className="bj-empty-card">
+            <p className="bj-h1 bj-mb-10">아직 보여드릴 사람이 없어요</p>
+            <p className="bj-body bj-text-muted">
+              독서유형 테스트를 마친 사람이 늘어나면<br />나와 취향 맞는 순서로 보여드려요
+            </p>
+          </div>
         ) : (
           <>
             <p className="bj-body bj-text-muted bj-text-sm">
@@ -60,7 +74,7 @@ export default function SocialPeopleView() {
 
             <div className="bj-col-10">
               {ranked.map(({ person, affinity, sharedTags }) => {
-                const type = READING_TYPES[person.typeCode]
+                const type = person.typeCode ? READING_TYPES[person.typeCode] : null
                 const following = followingIds.includes(person.id)
                 return (
                   <div key={person.id} className="bj-row bj-row--top">
@@ -69,12 +83,12 @@ export default function SocialPeopleView() {
                       className="bj-people-link--social"
                     >
                       <div className="bj-people-avatar">
-                        <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
+                        {type && <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />}
                       </div>
                       <div className="bj-flex-1">
                         <div className="bj-meta-row bj-mb-2">
                           <p className="bj-body bj-bold bj-discuss-text">{person.nickname}</p>
-                          <span className="bj-caption">· {type.name}</span>
+                          {type && <span className="bj-caption">· {type.name}</span>}
                         </div>
                         <p className="bj-caption bj-truncate">
                           {person.bio}

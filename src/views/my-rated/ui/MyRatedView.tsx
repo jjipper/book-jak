@@ -4,8 +4,6 @@
 
 import { useMemo } from 'react'
 import Link from 'next/link'
-import { getBook } from '@/entities/book/model/books'
-import { getAuthor } from '@/entities/author/model/authors'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Stars from '@/shared/ui/Stars'
@@ -37,19 +35,16 @@ export default function MyRatedView() {
           </div>
         ) : (
           ratings.map((r) => {
-            const book = getBook(r.bookId)
-            const title = book?.title ?? r.title ?? '제목 없음'
-            const authorName = book ? getAuthor(book.authorId)?.name : undefined
+            const title = r.title ?? '제목 없음'
             return (
               <Link key={r.bookId} href={`/rate/books/${r.bookId}`} className="bj-row bj-book-link">
                 <div className="bj-book-cover">
-                  <IllustPlaceholder code={book?.illustCode ?? r.bookId} alt={title} aspectRatio="3 / 4" />
+                  <IllustPlaceholder code={r.bookId} alt={title} aspectRatio="3 / 4" />
                 </div>
                 <div className="bj-book-info bj-flex-1">
                   <p className="bj-body bj-bold bj-truncate bj-body--sm">
                     {title}
                   </p>
-                  {authorName && <p className="bj-caption">{authorName}</p>}
                   <div className="bj-meta-row">
                     <Stars value={r.stars} size={12} />
                     <span className="bj-caption bj-bold bj-caption--action">{r.stars}점</span>

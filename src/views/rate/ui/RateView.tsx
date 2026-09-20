@@ -1,7 +1,5 @@
 'use client'
 
-// TODO: 평가 데이터 Supabase pushRating으로 전환 (현재 localStorage 병행)
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ALADDIN_CATEGORIES,
@@ -10,7 +8,9 @@ import {
   shuffle,
 } from '@/entities/external-book/model/aladdinBooks'
 import { loadBookRatings, saveBookRating } from '@/entities/book-rating/model/bookRatings'
-import { pushRating } from '@/entities/book-rating/api/ratingsRemote'
+import { pushRating, syncMyRatings } from '@/entities/book-rating/api/ratingsRemote'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import { useMounted } from '@/shared/lib/useMounted'
 
@@ -75,12 +75,22 @@ export default function RateView() {
   // 로컬 별점 — localStorage가 원본이고(마운트 후에만 읽는다), 이번 화면에서 준 별점만 덮어쓴다
   const mounted = useMounted()
   const [rated, setRated] = useState<Record<string, number>>({})
+  const [synced, setSynced] = useState(0)
+  const { showGate, closeGate, requireAuth } = useAuthGate()
+
+  // 서버의 내 평가를 먼저 내려받아 로컬 사본을 맞춘다 (기기 바뀌어도 별점 유지)
+  useEffect(() => {
+    void syncMyRatings().then(() => setSynced((n) => n + 1))
+  }, [])
+
   const myRatings: Record<string, number> = useMemo(() => {
     if (!mounted) return rated
     const map: Record<string, number> = {}
     for (const r of loadBookRatings()) map[r.bookId] = r.stars
     return { ...map, ...rated }
-  }, [mounted, rated])
+    // synced가 바뀌면 로컬 사본을 다시 읽는다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mounted, rated, synced])
 
   const loadMore = useCallback(async () => {
     if (loadingRef.current) return
@@ -150,12 +160,14 @@ export default function RateView() {
   }, [sentinelVisible, books, loading, loadMore])
 
   function handleRate(book: AladdinBook, stars: number) {
-    setRated((prev) => ({ ...prev, [book.id]: stars }))
-    saveBookRating({ bookId: book.id, title: book.title, categoryName: book.categoryName, stars, ts: Date.now() })
-    void pushRating(
-      { id: book.id, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover },
-      stars,
-    )
+    requireAuth(() => {
+      setRated((prev) => ({ ...prev, [book.id]: stars }))
+      saveBookRating({ bookId: book.id, title: book.title, categoryName: book.categoryName, stars, ts: Date.now() })
+      void pushRating(
+        { id: book.id, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover },
+        stars,
+      )
+    })
   }
 
   const ratedCount = Object.values(myRatings).filter(Boolean).length
@@ -225,6 +237,7 @@ export default function RateView() {
         {/* 무한스크롤 sentinel */}
         <div ref={sentinelRef} style={{ height: 1 }} />
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/rate" />
     </main>
   )
 }

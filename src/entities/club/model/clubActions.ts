@@ -1,18 +1,12 @@
+// 책 모임 — Supabase clubs/club_members가 유일한 소스. 쓰기는 로그인 필수.
+
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import { recordActivity } from '@/shared/lib/activity'
-import { getMyId } from '@/entities/user/model/profile'
-import { SEED_CLUBS, type BookClub, type ClubFormat, type ClubIllustCode } from '@/entities/club/model/clubs'
+import type { BookClub, ClubFormat, ClubIllustCode } from '@/entities/club/model/clubs'
 
-const LOCAL_CLUBS_KEY = 'book_local_clubs'
-const JOINED_KEY = 'book_joined_clubs'
-
-function loadLocalClubs(): BookClub[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = localStorage.getItem(LOCAL_CLUBS_KEY)
-    return raw ? (JSON.parse(raw) as BookClub[]) : []
-  } catch { return [] }
-}
+// 가입 여부는 화면이 렌더 시점에 동기로 물어보므로 메모리에 들고 있는다.
+// getJoinedIds()가 서버에서 다시 채운다.
+const joinedIds = new Set<string>()
 
 function mapClub(row: Record<string, unknown>): BookClub {
   return {
@@ -31,22 +25,11 @@ function mapClub(row: Record<string, unknown>): BookClub {
 
 export async function loadClubs(): Promise<BookClub[]> {
   const sb = createSupabaseBrowser()
-  const { data: { user } } = await sb.auth.getUser()
-  if (!user) {
-    return [...SEED_CLUBS, ...loadLocalClubs()]
-  }
   const { data } = await sb.from('clubs').select('*').order('created_at', { ascending: false })
-  if (data) {
-    return [...SEED_CLUBS, ...data.map(mapClub)]
-  }
-  return [...SEED_CLUBS, ...loadLocalClubs()]
+  return (data ?? []).map(mapClub)
 }
 
 export async function loadClub(id: string): Promise<BookClub | undefined> {
-  const seed = SEED_CLUBS.find((c) => c.id === id)
-  if (seed) return seed
-  const local = loadLocalClubs().find((c) => c.id === id)
-  if (local) return local
   const sb = createSupabaseBrowser()
   const { data } = await sb.from('clubs').select('*').eq('id', id).maybeSingle()
   return data ? mapClub(data) : undefined
@@ -62,100 +45,65 @@ export async function createClub(params: {
 }): Promise<BookClub> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  if (user) {
-    const { data, error } = await sb
-      .from('clubs')
-      .insert({
-        name: params.name,
-        description: params.description,
-        tags: params.tags,
-        capacity: params.capacity,
-        format: params.format,
-        illust: params.illust ?? null,
-        organizer_id: user.id,
-        member_count: 1,
-      })
-      .select()
-      .single()
-    if (!error && data) {
-      await sb.from('club_members').insert({ club_id: data.id, user_id: user.id })
-      const joined = readJoinedCache()
-      writeJoinedCache([...joined, data.id])
-      recordActivity('club_create')
-      return mapClub(data)
-    }
-  }
-  // Fallback: localStorage
-  const myId = getMyId()
-  const club: BookClub = {
-    id: `local-c-${Date.now()}`,
-    name: params.name,
-    description: params.description,
-    tags: params.tags,
-    capacity: params.capacity,
-    memberCount: 1,
-    format: params.format,
-    organizerId: myId,
-    illust: params.illust,
-  }
-  const stored = loadLocalClubs()
-  stored.push(club)
-  localStorage.setItem(LOCAL_CLUBS_KEY, JSON.stringify(stored))
-  const joined = readJoinedCache()
-  writeJoinedCache([...joined, club.id])
+  if (!user) throw new Error('로그인이 필요해요')
+
+  const { data, error } = await sb
+    .from('clubs')
+    .insert({
+      name: params.name,
+      description: params.description,
+      tags: params.tags,
+      capacity: params.capacity,
+      format: params.format,
+      illust: params.illust ?? null,
+      organizer_id: user.id,
+      member_count: 1,
+    })
+    .select()
+    .single()
+  if (error || !data) throw new Error(error?.message ?? '모임을 만들지 못했어요')
+
+  await sb.from('club_members').insert({ club_id: data.id, user_id: user.id })
+  joinedIds.add(data.id as string)
   recordActivity('club_create')
-  return club
-}
-
-function readJoinedCache(): string[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = localStorage.getItem(JOINED_KEY)
-    return raw ? (JSON.parse(raw) as string[]) : []
-  } catch { return [] }
-}
-
-function writeJoinedCache(ids: string[]): void {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(JOINED_KEY, JSON.stringify(ids))
+  return mapClub(data)
 }
 
 export function isJoined(id: string): boolean {
-  return readJoinedCache().includes(id)
+  return joinedIds.has(id)
 }
+
+// 모임 상세로 바로 들어오는 경로에서는 목록을 거치지 않으므로 모듈 로드 시 한 번 채워둔다.
+// ponytail: 상세 로딩보다 늦게 끝나면 첫 렌더가 '미참여'로 보인다.
+if (typeof window !== 'undefined') void getJoinedIds()
 
 export async function getJoinedIds(): Promise<string[]> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  if (!user) return readJoinedCache()
+  joinedIds.clear()
+  if (!user) return []
   const { data } = await sb.from('club_members').select('club_id').eq('user_id', user.id)
-  const ids = (data ?? []).map((r: { club_id: string }) => r.club_id)
-  writeJoinedCache(ids)
-  return ids
+  for (const r of (data ?? []) as { club_id: string }[]) joinedIds.add(r.club_id)
+  return [...joinedIds]
 }
 
 export async function joinClub(id: string, opts?: { silent?: boolean }): Promise<void> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  if (user) {
-    await sb.from('club_members').insert({ club_id: id, user_id: user.id })
-  }
-  const joined = readJoinedCache()
-  if (!joined.includes(id)) writeJoinedCache([...joined, id])
+  if (!user) throw new Error('로그인이 필요해요')
+  await sb.from('club_members').insert({ club_id: id, user_id: user.id })
+  joinedIds.add(id)
   if (!opts?.silent) recordActivity('club_join')
 }
 
 export async function leaveClub(id: string): Promise<void> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  if (user) {
-    await sb.from('club_members').delete().eq('club_id', id).eq('user_id', user.id)
-  }
-  writeJoinedCache(readJoinedCache().filter((c) => c !== id))
+  if (!user) throw new Error('로그인이 필요해요')
+  await sb.from('club_members').delete().eq('club_id', id).eq('user_id', user.id)
+  joinedIds.delete(id)
 }
 
 export function displayMemberCount(club: BookClub): number {
-  const myId = getMyId()
-  if (club.organizerId === myId) return club.memberCount
-  return club.memberCount + (isJoined(club.id) ? 1 : 0)
+  return club.memberCount
 }

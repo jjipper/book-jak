@@ -1,19 +1,10 @@
-// 이벤트 Supabase CRUD + localStorage fallback
-// clubActions.ts 패턴과 동일
+// 이벤트 — Supabase events/event_participants가 유일한 소스. 쓰기는 로그인 필수.
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
-import { SEED_EVENTS, type BookEvent, type LocationType } from '@/entities/event/model/events'
+import type { BookEvent, LocationType } from '@/entities/event/model/events'
 
-const LOCAL_EVENTS_KEY = 'book_local_events'
-const JOINED_EVENTS_KEY = 'book_joined_events'
-
-function loadLocalEvents(): BookEvent[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = localStorage.getItem(LOCAL_EVENTS_KEY)
-    return raw ? (JSON.parse(raw) as BookEvent[]) : []
-  } catch { return [] }
-}
+// 참가 여부는 화면이 렌더 시점에 동기로 물어보므로 메모리에 들고 있는다.
+const joinedEventIds = new Set<string>()
 
 function mapEvent(row: Record<string, unknown>): BookEvent {
   return {
@@ -31,25 +22,30 @@ function mapEvent(row: Record<string, unknown>): BookEvent {
   }
 }
 
+async function refreshJoined(sb: ReturnType<typeof createSupabaseBrowser>): Promise<void> {
+  const { data: { user } } = await sb.auth.getUser()
+  joinedEventIds.clear()
+  if (!user) return
+  const { data } = await sb.from('event_participants').select('event_id').eq('user_id', user.id)
+  for (const r of (data ?? []) as { event_id: string }[]) joinedEventIds.add(r.event_id)
+}
+
 export async function loadEvents(): Promise<BookEvent[]> {
   const sb = createSupabaseBrowser()
-  const { data } = await sb
-    .from('events')
-    .select('*')
-    .order('event_date', { ascending: true })
-  if (data?.length) return [...SEED_EVENTS, ...data.map(mapEvent)]
-  return [...SEED_EVENTS, ...loadLocalEvents()]
+  await refreshJoined(sb)
+  const { data } = await sb.from('events').select('*').order('event_date', { ascending: true })
+  return (data ?? []).map(mapEvent)
 }
 
 export async function loadOfficialEvents(): Promise<BookEvent[]> {
   const sb = createSupabaseBrowser()
+  await refreshJoined(sb)
   const { data } = await sb
     .from('events')
     .select('*')
     .eq('is_official', true)
     .order('event_date', { ascending: true })
-  if (data?.length) return data.map(mapEvent)
-  return SEED_EVENTS.filter((e) => e.isOfficial)
+  return (data ?? []).map(mapEvent)
 }
 
 export async function loadUserEvents(): Promise<BookEvent[]> {
@@ -59,42 +55,25 @@ export async function loadUserEvents(): Promise<BookEvent[]> {
     .select('*')
     .eq('is_official', false)
     .order('created_at', { ascending: false })
-  if (data?.length) return data.map(mapEvent)
-  return [...SEED_EVENTS.filter((e) => !e.isOfficial), ...loadLocalEvents()]
-}
-
-function readJoinedCache(): string[] {
-  if (typeof window === 'undefined') return []
-  try {
-    const raw = localStorage.getItem(JOINED_EVENTS_KEY)
-    return raw ? (JSON.parse(raw) as string[]) : []
-  } catch { return [] }
-}
-
-function writeJoinedCache(ids: string[]): void {
-  if (typeof window === 'undefined') return
-  localStorage.setItem(JOINED_EVENTS_KEY, JSON.stringify(ids))
+  return (data ?? []).map(mapEvent)
 }
 
 export function isJoinedEvent(id: string): boolean {
-  return readJoinedCache().includes(id)
+  return joinedEventIds.has(id)
 }
 
 export async function joinEvent(id: string): Promise<void> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  if (user) {
-    await sb.from('event_participants').insert({ event_id: id, user_id: user.id })
-  }
-  const joined = readJoinedCache()
-  if (!joined.includes(id)) writeJoinedCache([...joined, id])
+  if (!user) throw new Error('로그인이 필요해요')
+  await sb.from('event_participants').insert({ event_id: id, user_id: user.id })
+  joinedEventIds.add(id)
 }
 
 export async function leaveEvent(id: string): Promise<void> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  if (user) {
-    await sb.from('event_participants').delete().eq('event_id', id).eq('user_id', user.id)
-  }
-  writeJoinedCache(readJoinedCache().filter((i) => i !== id))
+  if (!user) throw new Error('로그인이 필요해요')
+  await sb.from('event_participants').delete().eq('event_id', id).eq('user_id', user.id)
+  joinedEventIds.delete(id)
 }

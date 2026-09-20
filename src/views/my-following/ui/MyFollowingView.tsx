@@ -2,22 +2,26 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { MOCK_PEOPLE } from '@/entities/person/model/people'
+import { loadPeopleByIds } from '@/entities/person/api/personRemote'
+import type { Person } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getFollowingIds, unfollowPerson } from '@/features/follow/model/follows'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowingView() {
-  const [followingIds, setFollowingIds] = useState<string[]>([])
+  const [people, setPeople] = useState<Person[]>([])
 
-  useEffect(() => { async function load() { setFollowingIds(await getFollowingIds()) }; void load() }, [])
-
-  const people = MOCK_PEOPLE.filter((p) => followingIds.includes(p.id))
+  useEffect(() => {
+    async function load() {
+      setPeople(await loadPeopleByIds(await getFollowingIds()))
+    }
+    void load()
+  }, [])
 
   async function handleUnfollow(id: string) {
     await unfollowPerson(id)
-    setFollowingIds((prev) => prev.filter((i) => i !== id))
+    setPeople((prev) => prev.filter((p) => p.id !== id))
   }
 
   return (
@@ -39,21 +43,21 @@ export default function MyFollowingView() {
           </div>
         ) : (
           people.map((person) => {
-            const type = READING_TYPES[person.typeCode]
+            const type = person.typeCode ? READING_TYPES[person.typeCode] : null
             return (
               <div key={person.id} className="bj-row">
                 <Link href={`/people/${person.id}`} className="bj-people-link">
                   <div className="bj-people-thumb">
-                    <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
+                    {type && <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />}
                   </div>
                   <div className="bj-flex-1">
                     <p className="bj-body bj-bold bj-body--sm">{person.nickname}</p>
-                    <p className="bj-caption">{type.name}</p>
+                    <p className="bj-caption">{type?.name ?? '유형 미진단'}</p>
                   </div>
                 </Link>
                 <button
                   type="button"
-                  onClick={() => handleUnfollow(person.id)}
+                  onClick={() => void handleUnfollow(person.id)}
                   className="bj-chip bj-chip--active bj-follow-chip--active"
                 >
                   팔로잉

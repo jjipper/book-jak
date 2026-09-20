@@ -1,39 +1,40 @@
 'use client'
 
-import { useMemo } from 'react'
-import { MOCK_PEOPLE } from '@/entities/person/model/people'
-import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
-import { loadResult } from '@/entities/reading-type/model/scoring'
-import { getActivityScore, getActivitySummary, ACTIVITY_LABELS, type ActivityType } from '@/shared/lib/activity'
-import { getNickname } from '@/entities/user/model/profile'
-import { ME_ID } from '@/features/resolve-author/model/author'
+import { useEffect, useState } from 'react'
+import { loadRanking, type RankingEntry } from '@/entities/person/api/personRemote'
+import { READING_TYPES, type TypeCode } from '@/entities/reading-type/model/readingTypes'
+import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
-import { useMounted } from '@/shared/lib/useMounted'
 import BackLink from '@/shared/ui/BackLink'
 
-// TODO: 랭킹 서버 연동
-//   - MOCK_PEOPLE 점수 → sb.from('profiles').select('id, nickname, activity_score, type_code') 로 교체
-//   - 내 점수는 activity_score 컬럼에 upsert (현재는 localStorage getActivityScore()만 사용)
-//   - 기간별 랭킹(주간/월간/전체) 필터 추가 고려
+// 점수 산식은 Postgres 뷰(reading_ranking, supabase/migrations/0002_track_b.sql)에 있다.
+// 여기서는 그 집계를 그대로 보여주기만 한다.
+const BREAKDOWN: { key: keyof RankingEntry; label: string }[] = [
+  { key: 'ratingsCount', label: '책 평가' },
+  { key: 'reviewsCount', label: '한 줄 리뷰' },
+  { key: 'postsCount', label: '글 작성' },
+  { key: 'questionsCount', label: '질문 작성' },
+  { key: 'answersCount', label: '답변 작성' },
+  { key: 'clubsCreated', label: '모임 개설' },
+  { key: 'clubsJoined', label: '모임 참여' },
+]
+
 export default function SocialRankingView() {
-  const mounted = useMounted()
-  const myScore = useMemo(() => (mounted ? getActivityScore() : 0), [mounted])
-  const mySummary: Record<ActivityType, number> | null = useMemo(
-    () => (mounted ? getActivitySummary() : null),
-    [mounted],
-  )
-  const myTypeCode: ReturnType<typeof loadResult> = useMemo(() => (mounted ? loadResult() : null), [mounted])
-  const myNickname = useMemo(() => (mounted ? getNickname() ?? '나' : '나'), [mounted])
+  const [ranked, setRanked] = useState<RankingEntry[]>([])
+  const [myId, setMyId] = useState<string | null>(null)
 
-  const ranked = useMemo(() => {
-    const others = MOCK_PEOPLE.map((p) => ({ id: p.id, nickname: p.nickname, typeCode: p.typeCode, score: p.score, isMe: false }))
-    const me = { id: ME_ID, nickname: myNickname, typeCode: myTypeCode?.typeCode ?? null, score: myScore, isMe: true }
-    return [...others, me].sort((a, b) => b.score - a.score)
-  }, [myScore, myTypeCode, myNickname])
+  useEffect(() => {
+    async function load() {
+      const sb = createSupabaseBrowser()
+      const [{ data: { user } }, rows] = await Promise.all([sb.auth.getUser(), loadRanking()])
+      setMyId(user?.id ?? null)
+      setRanked(rows)
+    }
+    void load()
+  }, [])
 
-  const summaryEntries = mySummary
-    ? (Object.entries(mySummary) as [ActivityType, number][]).filter(([, count]) => count > 0)
-    : []
+  const me = myId ? ranked.find((r) => r.userId === myId) : undefined
+  const summaryEntries = me ? BREAKDOWN.filter(({ key }) => (me[key] as number) > 0) : []
 
   return (
     <main className="bj-shell">
@@ -45,47 +46,55 @@ export default function SocialRankingView() {
 
       <div className="bj-content--lg">
         <div className="bj-card--flat">
-          <p className="bj-body bj-semibold bj-mb-6">내 활동 내역 · {myScore}점</p>
+          <p className="bj-body bj-semibold bj-mb-6">내 활동 내역 · {me?.score ?? 0}점</p>
           {summaryEntries.length > 0 ? (
             <p className="bj-caption">
-              {summaryEntries.map(([type, count]) => `${ACTIVITY_LABELS[type]} ${count}번`).join(' · ')}
+              {summaryEntries.map(({ key, label }) => `${label} ${me![key]}번`).join(' · ')}
             </p>
           ) : (
             <p className="bj-caption">책 읽고 평가하고 질문 남기면 점수가 쌓여요</p>
           )}
         </div>
 
-        <div className="bj-col-10">
-          {ranked.map((entry, i) => {
-            const type = entry.typeCode ? READING_TYPES[entry.typeCode] : null
-            return (
-              <div
-                key={entry.id}
-                className={`bj-row${entry.isMe ? ' bj-row--me' : ''}`}
-              >
-                <p className={`bj-display bj-display--lg bj-rank-num${i < 3 ? ' bj-rank-num--top' : ' bj-rank-num--rest'}`}>
-                  {i + 1}
-                </p>
-                {type ? (
-                  <div className="bj-rank-avatar">
-                    <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
-                  </div>
-                ) : (
-                  <div className="bj-rank-avatar bj-rank-avatar--empty" />
-                )}
-                <div className="bj-flex-1">
-                  <p className="bj-body bj-bold bj-discuss-text">
-                    {entry.nickname}{entry.isMe && ' (나)'}
+        {ranked.length === 0 ? (
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 랭킹이 없어요</p>
+            <p className="bj-caption">첫 활동을 남기면 여기에 이름이 올라가요</p>
+          </div>
+        ) : (
+          <div className="bj-col-10">
+            {ranked.map((entry, i) => {
+              const isMe = entry.userId === myId
+              const type = entry.typeCode ? READING_TYPES[entry.typeCode as TypeCode] : null
+              return (
+                <div
+                  key={entry.userId}
+                  className={`bj-row${isMe ? ' bj-row--me' : ''}`}
+                >
+                  <p className={`bj-display bj-display--lg bj-rank-num${i < 3 ? ' bj-rank-num--top' : ' bj-rank-num--rest'}`}>
+                    {i + 1}
                   </p>
-                  <p className="bj-caption">{type ? type.name : '유형 미진단'}</p>
+                  {type ? (
+                    <div className="bj-rank-avatar">
+                      <IllustPlaceholder code={type.code} alt={type.name} aspectRatio="1 / 1" />
+                    </div>
+                  ) : (
+                    <div className="bj-rank-avatar bj-rank-avatar--empty" />
+                  )}
+                  <div className="bj-flex-1">
+                    <p className="bj-body bj-bold bj-discuss-text">
+                      {entry.nickname}{isMe && ' (나)'}
+                    </p>
+                    <p className="bj-caption">{type ? type.name : '유형 미진단'}</p>
+                  </div>
+                  <p className={`bj-body bj-bold bj-rank-score${isMe ? ' bj-rank-score--me' : ''}`}>
+                    {entry.score}점
+                  </p>
                 </div>
-                <p className={`bj-body bj-bold bj-rank-score${entry.isMe ? ' bj-rank-score--me' : ''}`}>
-                  {entry.score}점
-                </p>
-              </div>
-            )
-          })}
-        </div>
+              )
+            })}
+          </div>
+        )}
       </div>
       </div>
     </main>
