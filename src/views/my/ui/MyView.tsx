@@ -12,6 +12,8 @@ import { getFollowingIds, getFollowerIds } from '@/features/follow/model/follows
 import { getLikedIds } from '@/features/like/model/likes'
 import { loadQuestions, loadAllAnswers } from '@/entities/discussion/model/discussionActions'
 import { loadClubs, getJoinedIds } from '@/entities/club/model/clubActions'
+import { loadMyComments } from '@/entities/comment/api/commentsRemote'
+import { deleteMyAccount } from '@/entities/user/api/accountRemote'
 import { loadBookRatings } from '@/entities/book-rating/model/bookRatings'
 import { getReactionCounts } from '@/entities/blind-book/model/blindReactions'
 import { loadWishlist } from '@/features/wishlist/model/wishlist'
@@ -55,6 +57,7 @@ export default function MyView() {
   const [showNicknameSheet, setShowNicknameSheet] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false)
   const [followingCount, setFollowingCount] = useState(0)
   const [followerCount, setFollowerCount] = useState(0)
   const [likedCount, setLikedCount] = useState(0)
@@ -88,7 +91,7 @@ export default function MyView() {
       }
 
       const myId = getMyId()
-      const [followingIds, followerIds, likedIds, allQuestions, allAnswers, joinedIds, allClubs] = await Promise.all([
+      const [followingIds, followerIds, likedIds, allQuestions, allAnswers, joinedIds, allClubs, feedComments] = await Promise.all([
         getFollowingIds(),
         getFollowerIds(),
         getLikedIds(),
@@ -96,12 +99,13 @@ export default function MyView() {
         loadAllAnswers(),
         getJoinedIds(),
         loadClubs(),
+        loadMyComments(),
       ])
       setFollowingCount(followingIds.length)
       setFollowerCount(followerIds.length)
       setLikedCount(likedIds.length)
       setMyPostCount(allQuestions.filter((q) => q.authorId === myId).length)
-      setMyCommentCount(allAnswers.filter((a) => a.authorId === myId).length)
+      setMyCommentCount(allAnswers.filter((a) => a.authorId === myId).length + feedComments.length)
       setMyClubCount(allClubs.filter((c) => c.organizerId === myId || joinedIds.includes(c.id)).length)
 
       const ratings = loadBookRatings()
@@ -124,7 +128,7 @@ export default function MyView() {
           .slice(0, 5),
       )
 
-      const { saved, passed } = getReactionCounts()
+      const { saved, passed } = await getReactionCounts()
       setDiscoverSaved(saved)
       setDiscoverPassed(passed)
     }
@@ -205,7 +209,7 @@ export default function MyView() {
 
         {/* 테스트 결과 */}
         {myType && savedResult ? (
-          <Link href={`/result/${savedResult.typeCode}?full=1`} className="bj-card bj-my-result-link">
+          <Link href={`/result/${savedResult.typeCode}`} className="bj-card bj-my-result-link">
             <div className="bj-my-result-thumb">
               <IllustPlaceholder code={myType.code} alt={myType.name} aspectRatio="1 / 1" />
             </div>
@@ -397,6 +401,15 @@ export default function MyView() {
                     로그인하기
                   </Link>
                 )}
+                {loggedIn && (
+                  <button
+                    type="button"
+                    onClick={() => setShowWithdrawConfirm(true)}
+                    className="bj-btn bj-btn--block bj-btn--tall bj-mt-8"
+                  >
+                    회원 탈퇴
+                  </button>
+                )}
               </div>
 
               <div>
@@ -413,6 +426,24 @@ export default function MyView() {
           </div>
         </div>
       )}
+
+      <ConfirmSheet
+        open={showWithdrawConfirm}
+        message="탈퇴하면 프로필, 글, 댓글, 평가 등 모든 데이터가 즉시 삭제되고 복구할 수 없어요. 탈퇴할까요?"
+        confirmLabel="탈퇴하기"
+        cancelLabel="취소"
+        onConfirm={async () => {
+          try {
+            await deleteMyAccount()
+          } catch {
+            toast.error('탈퇴 처리에 실패했어요')
+            return
+          }
+          localStorage.clear()
+          window.location.href = '/'
+        }}
+        onCancel={() => setShowWithdrawConfirm(false)}
+      />
 
       <ConfirmSheet
         open={showResetConfirm}
