@@ -1,14 +1,25 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { SITE_URL } from './site-url'
+
+const TITLE = '북작 — 나의 독서 유형은?'
+const DESCRIPTION = '12문항으로 알아보는 나의 독서 취향 유형. 16가지 중 나는? 취향으로 북적이는 독서 취향 소셜, 북작.'
 
 export const metadata: Metadata = {
-  title: '북작 — 나의 독서 유형은?',
-  description: '책을 통해 나의 취향과 생각이 연결되는 취향 기반 독서 소셜 플랫폼',
+  metadataBase: new URL(SITE_URL),
+  title: { default: TITLE, template: '%s · 북작' },
+  description: DESCRIPTION,
+  applicationName: '북작',
+  keywords: ['독서 유형 테스트', '북작', 'BOOKJAK', '독서 MBTI', '책 추천', '독서 취향'],
   openGraph: {
-    title: '북작 — 나의 독서 유형은?',
-    description: '12문항으로 알아보는 나의 독서 취향 유형. 16가지 중 나는?',
+    title: TITLE,
+    description: DESCRIPTION,
+    siteName: '북작',
+    locale: 'ko_KR',
     type: 'website',
+    url: '/',
   },
+  twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 }
 
 export default function RootLayout({
