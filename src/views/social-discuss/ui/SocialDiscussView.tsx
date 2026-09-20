@@ -28,7 +28,7 @@ function HeartIcon({ filled }: { filled: boolean }) {
 
 export default function SocialDiscussView() {
   const router = useRouter()
-  const [questions, setQuestions] = useState<DiscussionQuestion[]>([])
+  const [questions, setQuestions] = useState<DiscussionQuestion[] | null>(null)
   const [likedIds, setLikedIds] = useState<string[]>([])
   const [answerCounts, setAnswerCounts] = useState<Record<string, number>>({})
 
@@ -96,6 +96,14 @@ export default function SocialDiscussView() {
           질문 남기기
         </button>
 
+        {questions === null ? (
+          <p className="bj-caption bj-text-muted">불러오는 중…</p>
+        ) : questions.length === 0 ? (
+          <div className="bj-empty bj-card">
+            <p className="bj-body bj-bold bj-mb-6">아직 올라온 질문이 없어요</p>
+            <p className="bj-caption">첫 질문을 남기면 읽은 사람들이 답을 달아줘요</p>
+          </div>
+        ) : (
         <div className="bj-col-10">
           {questions.map((q) => {
             const author = resolveAuthor(q.authorId)
@@ -120,6 +128,7 @@ export default function SocialDiscussView() {
             )
           })}
         </div>
+        )}
       </div>
 
       {showComposer && (
