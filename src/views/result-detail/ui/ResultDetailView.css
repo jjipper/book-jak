@@ -1,0 +1,262 @@
+/* 결과 상세 — 풀 리포트 (ResultDetailView 전용) */
+
+.bj-report {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.bj-report__desc {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--color-text);
+}
+
+/* 독서 스탯 — 오각형 레이더 */
+.bj-radar {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  margin-inline: auto;
+  overflow: visible;
+}
+.bj-radar__grid {
+  fill: var(--color-bg);
+  stroke: var(--color-track);
+  stroke-width: 1;
+}
+.bj-radar__axis {
+  stroke: var(--color-track);
+  stroke-width: 1;
+}
+.bj-radar__area {
+  fill: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  stroke: var(--color-accent);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  transform-origin: 0 0;
+  animation: bj-radar-grow 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
+}
+@keyframes bj-radar-grow {
+  from { transform: scale(0); }
+}
+.bj-radar__label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  fill: var(--color-text-muted);
+}
+.bj-radar__value {
+  font-size: 15px;
+  font-weight: 800;
+  fill: var(--color-accent);
+}
+
+/* 독서 궁합 — 환상의 짝 / 상극 타일 */
+.bj-match {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.bj-match__tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  text-align: center;
+}
+.bj-match__tile--best {
+  background: var(--color-accent-faint);
+}
+.bj-match__label {
+  align-self: flex-start;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--color-track);
+  color: var(--color-text-muted);
+}
+.bj-match__tile--best .bj-match__label {
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+.bj-match__illust {
+  width: 100%;
+  max-width: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--illust-top) 55%, transparent 72%);
+}
+.bj-match__name {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+/* 한마디 — 위로 꼬리 달린 말풍선 */
+.bj-match__line {
+  position: relative;
+  width: 100%;
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  word-break: keep-all;
+}
+.bj-match__line::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+  border-radius: 2px;
+}
+
+/* 책 읽으며 하는 생각 — 생각 말풍선이 캐릭터 머리 위로 떠오른다 */
+.bj-thoughts {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.bj-thought {
+  position: relative;
+  align-self: flex-start;
+  max-width: 82%;
+  padding: 12px 18px;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.bj-thought:nth-child(even) {
+  align-self: flex-end;
+}
+.bj-thought::before,
+.bj-thought::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-bg);
+}
+.bj-thought::before {
+  width: 10px;
+  height: 10px;
+  bottom: -9px;
+  right: 30px;
+}
+.bj-thought::after {
+  width: 6px;
+  height: 6px;
+  bottom: -17px;
+  right: 22px;
+}
+.bj-thought:nth-child(even)::before {
+  right: auto;
+  left: 30px;
+}
+.bj-thought:nth-child(even)::after {
+  right: auto;
+  left: 22px;
+}
+.bj-thoughts__me {
+  align-self: center;
+  width: 96px;
+}
+
+/* 취급주의 — 경고 테이프 라벨 */
+.bj-caution__tape {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-accent) 0 12px,
+    var(--color-accent-weak) 12px 24px
+  );
+}
+.bj-caution__title {
+  padding: 4px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-accent);
+}
+.bj-caution__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+}
+.bj-caution__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.bj-caution__row dd {
+  margin: 0;
+}
+.bj-caution__tag {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-weak);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
+  color: var(--color-accent-hover);
+}
+
+/* 같은 유형이 좋아하는 책 — 가로 스크롤, 카드 패딩 밖까지 블리드 */
+.bj-book-picks {
+  margin: 0 -16px;
+  padding: 0 16px 4px;
+  scroll-padding-inline: 16px;
+  list-style: none;
+}
+.bj-book-pick {
+  flex: 0 0 132px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bj-book-pick__cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  margin-bottom: 6px;
+  border-radius: 4px var(--radius-md) var(--radius-md) 4px;
+  background: var(--color-accent-faint);
+  box-shadow: inset 8px 0 0 var(--color-accent-weak);
+  font-size: 44px;
+}
+.bj-book-pick__genre {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  word-break: keep-all;
+}
+.bj-book-pick__note {
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  word-break: keep-all;
+}

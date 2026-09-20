@@ -319,18 +319,6 @@ body.bj-body {
   background: var(--color-fill);
   border-radius: var(--radius-pill);
 }
-/* TypeCard 등장 애니메이션 — 인라인 width는 그대로 두고 가로로만 펴진다 */
-@keyframes bj-stat-grow {
-  from { transform: scaleX(0); }
-}
-.bj-typecard .bj-stat__fill {
-  transform-origin: left;
-  animation: bj-stat-grow 0.7s cubic-bezier(0.2, 0.7, 0.3, 1) both;
-}
-.bj-typecard .bj-stat:nth-child(2) .bj-stat__fill { animation-delay: 0.08s; }
-.bj-typecard .bj-stat:nth-child(3) .bj-stat__fill { animation-delay: 0.16s; }
-.bj-typecard .bj-stat:nth-child(4) .bj-stat__fill { animation-delay: 0.24s; }
-.bj-typecard .bj-stat:nth-child(5) .bj-stat__fill { animation-delay: 0.32s; }
 .bj-stat__value {
   width: 32px;
   text-align: right;
@@ -1433,11 +1421,25 @@ body.bj-body {
 .bj-typecard__illust-bg--TIGR { --illust-top: #FFE8C9; }
 .bj-typecard__illust-bg--TIGW { --illust-top: #FFF1C6; }
 
-/* TypeCard — 희소도 스티커 위치 (일러스트 오른쪽 위로 걸친다) */
-.bj-typecard__rarity-slot {
-  position: absolute;
-  top: -8px;
-  right: 8px;
+/* TypeCard — 희소도 박스 (태그 아래, 크림 면) */
+.bj-typecard__rarity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg);
+  text-align: center;
+}
+.bj-typecard__rarity-head {
+  font-size: 22px;
+  line-height: 1.2;
+  color: var(--color-accent);
+}
+.bj-typecard__rarity-sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
 }
 
 /* TypeCard — 배지/이름/태그라인 블록 */
@@ -1463,95 +1465,6 @@ body.bj-body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-}
-
-/* TypeCard — 스탯 / 뇌구조 섹션 */
-.bj-typecard__stats,
-.bj-typecard__brain {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.bj-typecard__stat-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* TypeCard — 뇌구조 도넛 + 범례 */
-.bj-typecard__brain-body {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.bj-brain-donut {
-  position: relative;
-  flex: none;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-}
-.bj-brain-donut__hole {
-  position: absolute;
-  inset: 22px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  border-radius: 50%;
-  background: var(--color-surface);
-}
-.bj-brain-donut__value {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-text);
-}
-.bj-brain-donut__label {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-text-caption);
-}
-
-/* TypeCard — 뇌구조 범례 */
-.bj-typecard__brain-legend {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-/* TypeCard — 뇌구조 범례 행 */
-.bj-typecard__brain-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* TypeCard — 뇌구조 색 점 (농도는 인라인) */
-.bj-typecard__brain-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-block;
-}
-.bj-typecard__brain-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px;
-  color: var(--color-text-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* TypeCard — 뇌구조 % 텍스트 */
-.bj-typecard__brain-pct {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-text);
 }
 
 /* TypeCard — 푸터 */
@@ -2044,13 +1957,6 @@ body.bj-body {
 /* 카드 내 섹션 태그 텍스트 (action 색 + 자간) */
 /* 카드 안 섹션 라벨 — Figma 02 Components > 카드 섹션 라벨 CardSectionLabel */
 .bj-section-tag {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-text-caption);
-}
-
-/* TypeCard 섹션 라벨 — uppercase + 10px */
-.bj-typecard__section-label {
   font-size: 11px;
   font-weight: 500;
   color: var(--color-text-caption);
@@ -2623,19 +2529,6 @@ body.bj-body {
   border-color: var(--color-accent);
 }
 
-/* ResultDetail — SectionLabel 인라인 */
-.bj-section-label--inline {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 /* 버튼 — 16px 세로 패딩 + 16px 폰트 */
 .bj-btn--action-lg {
   padding: 16px 0;
@@ -2652,33 +2545,6 @@ body.bj-body {
 .bj-btn--sm {
   padding: 8px 14px;
   font-size: 12px;
-}
-
-/* ResultDetail — bj-row col 방향 변형 */
-.bj-row--col {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-}
-
-/* ResultDetail — 취급주의 경고 행 */
-.bj-warning-row {
-  display: flex;
-  gap: 10px;
-}
-
-/* ResultDetail — 경고/부작용 라벨 */
-.bj-warning-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-accent);
-  flex-shrink: 0;
-}
-
-/* 칸막이 선 */
-.bj-divider {
-  height: 1px;
-  background: var(--color-border);
 }
 
 /* ResultCompare — 가운데 VS/% 블록 */
