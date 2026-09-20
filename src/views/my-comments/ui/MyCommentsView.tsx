@@ -3,9 +3,19 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
-import { loadAllAnswers, loadQuestion, type DiscussionAnswer, type DiscussionQuestion } from '@/entities/discussion/model/discussionActions'
+import { loadAllAnswers, loadQuestion } from '@/entities/discussion/model/discussionActions'
+import { loadMyComments } from '@/entities/comment/api/commentsRemote'
 import { getMyId } from '@/entities/user/model/profile'
 import BackLink from '@/shared/ui/BackLink'
+
+// 토론 답변과 피드 댓글을 한 줄 형태로 합쳐서 최신순 정렬
+interface CommentRow {
+  id: string
+  label: string
+  text: string
+  href: string
+  ts: number
+}
 
 function bookTitle(bookId: number | null): string {
   if (bookId === null) return '자유주제'
@@ -13,23 +23,35 @@ function bookTitle(bookId: number | null): string {
 }
 
 export default function MyCommentsView() {
-  const [answers, setAnswers] = useState<DiscussionAnswer[]>([])
-  const [questionsMap, setQuestionsMap] = useState<Record<string, DiscussionQuestion>>({})
+  const [rows, setRows] = useState<CommentRow[]>([])
 
   useEffect(() => {
     async function load() {
       const myId = getMyId()
-      const allAnswers = await loadAllAnswers()
+      const [allAnswers, feedComments] = await Promise.all([loadAllAnswers(), loadMyComments()])
       const myAnswers = allAnswers.filter((a) => a.authorId === myId || a.authorId === 'me')
-      setAnswers(myAnswers)
-      const map: Record<string, DiscussionQuestion> = {}
+
+      const answerRows: CommentRow[] = []
       for (const a of myAnswers) {
-        if (!map[a.questionId]) {
-          const q = await loadQuestion(a.questionId)
-          if (q) map[a.questionId] = q
-        }
+        const q = await loadQuestion(a.questionId)
+        answerRows.push({
+          id: a.id,
+          label: `의견 나누기 · ${bookTitle(q?.bookId ?? null)}`,
+          text: a.text,
+          href: `/social/discuss/${a.questionId}`,
+          ts: a.ts,
+        })
       }
-      setQuestionsMap(map)
+
+      const commentRows: CommentRow[] = feedComments.map((c) => ({
+        id: c.id,
+        label: '피드 댓글',
+        text: c.content,
+        href: `/post/${c.postId}`,
+        ts: c.ts,
+      }))
+
+      setRows([...answerRows, ...commentRows].sort((a, b) => b.ts - a.ts))
     }
     void load()
   }, [])
@@ -43,7 +65,7 @@ export default function MyCommentsView() {
       </header>
 
       <div className="bj-content">
-        {answers.length === 0 ? (
+        {rows.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 남긴 댓글이 없어요</p>
             <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--cta">
@@ -51,17 +73,14 @@ export default function MyCommentsView() {
             </Link>
           </div>
         ) : (
-          answers.map((a) => {
-            const question = questionsMap[a.questionId]
-            return (
-              <Link key={a.id} href={`/social/discuss/${a.questionId}`} className="bj-row bj-row--top bj-unstyled-link">
-                <div className="bj-flex-1">
-                  <p className="bj-caption bj-bold bj-mb-4">{bookTitle(question?.bookId ?? null)}</p>
-                  <p className="bj-body bj-body--sm">{a.text}</p>
-                </div>
-              </Link>
-            )
-          })
+          rows.map((r) => (
+            <Link key={r.id} href={r.href} className="bj-row bj-row--top bj-unstyled-link">
+              <div className="bj-flex-1">
+                <p className="bj-caption bj-bold bj-mb-4">{r.label}</p>
+                <p className="bj-body bj-body--sm">{r.text}</p>
+              </div>
+            </Link>
+          ))
         )}
       </div>
       </div>
