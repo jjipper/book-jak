@@ -5,24 +5,20 @@ import { loadResult } from '@/entities/reading-type/model/scoring'
 import type { TypeCode } from '@/entities/reading-type/model/readingTypes'
 import { loadPosts, loadPopularPosts } from '@/entities/post/api/postsRemote'
 import type { Post } from '@/entities/post/model/posts'
-import { getBlockedIds } from '@/entities/report/api/moderationRemote'
 import HomeTopbar from './HomeTopbar'
 import HomeHero from './HomeHero'
 import PostCard from './PostCard'
-import PostCreateSheet from './PostCreateSheet'
 import { useMounted } from '@/shared/lib/useMounted'
-import { useAuthGate } from '@/shared/lib/useAuthGate'
-import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import Icon from '@/shared/ui/Icon'
+import Link from 'next/link'
 
 export default function HomeView() {
   const [popularPosts, setPopularPosts] = useState<Post[]>([])
   const [feedPosts, setFeedPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
-  const [showCreate, setShowCreate] = useState(false)
-  const [blocked, setBlocked] = useState<string[]>([])
-  const { showGate, closeGate, requireAuth } = useAuthGate()
+  // 첫 로드 전에는 "글이 없어요"를 띄우면 안 된다 — 로딩과 빈 상태는 다르다
+  const [loadedOnce, setLoadedOnce] = useState(false)
   const sentinelRef = useRef<HTMLDivElement>(null)
   const loadingRef = useRef(false)
   const offsetRef = useRef(0)
@@ -34,18 +30,28 @@ export default function HomeView() {
   // 초기 로드
   useEffect(() => {
     async function init() {
-      const [popular, feed, blockedIds] = await Promise.all([
+      const [popular, feed] = await Promise.all([
         loadPopularPosts(3),
         loadPosts({ offset: 0, limit: 20 }),
-        getBlockedIds(),
       ])
-      setBlocked(blockedIds)
       setPopularPosts(popular)
       setFeedPosts(feed)
       offsetRef.current = feed.length
       setHasMore(feed.length >= 20)
+      setLoadedOnce(true)
     }
     void init()
+  }, [])
+
+  /** 삭제·차단으로 목록에서 빼기 */
+  const removePost = useCallback((postId: string) => {
+    setFeedPosts((prev) => prev.filter((p) => p.id !== postId))
+    setPopularPosts((prev) => prev.filter((p) => p.id !== postId))
+  }, [])
+
+  const removeAuthor = useCallback((authorId: string) => {
+    setFeedPosts((prev) => prev.filter((p) => p.authorId !== authorId))
+    setPopularPosts((prev) => prev.filter((p) => p.authorId !== authorId))
   }, [])
 
   const loadMore = useCallback(async () => {
@@ -83,22 +89,9 @@ export default function HomeView() {
     return () => obs.disconnect()
   }, [loadMore])
 
-  function handlePostCreated(post: Post) {
-    setFeedPosts((prev) => [post, ...prev])
-    offsetRef.current += 1
-  }
-
-  function handleRemoved(postId: string) {
-    setFeedPosts((prev) => prev.filter((p) => p.id !== postId))
-    setPopularPosts((prev) => prev.filter((p) => p.id !== postId))
-  }
-
   // 인기글과 피드에서 중복 제거 (인기글은 피드에서 빼지 않고 그냥 보여줌)
-  // ponytail: 차단 필터는 클라이언트에서. 쿼리 레벨로 옮기려면 postsRemote.loadPosts 수정 필요.
-  const blockedSet = new Set(blocked)
-  const visiblePopular = popularPosts.filter((p) => !blockedSet.has(p.authorId))
-  const popularIds = new Set(visiblePopular.map((p) => p.id))
-  const mainFeed = feedPosts.filter((p) => !popularIds.has(p.id) && !blockedSet.has(p.authorId))
+  const popularIds = new Set(popularPosts.map((p) => p.id))
+  const mainFeed = feedPosts.filter((p) => !popularIds.has(p.id))
 
   return (
     <main className="bj-shell">
@@ -107,19 +100,14 @@ export default function HomeView() {
         <HomeHero typeCode={typeCode} />
 
         {/* 인기글 */}
-        {visiblePopular.length > 0 && (
+        {popularPosts.length > 0 && (
           <section className="bj-section">
             <div className="bj-section__head">
               <p className="bj-h2">인기글</p>
             </div>
             <div className="bj-col-10">
-              {visiblePopular.map((p) => (
-                <PostCard
-                  key={p.id}
-                  post={p}
-                  onRemoved={handleRemoved}
-                  onBlocked={(id) => setBlocked((prev) => [...prev, id])}
-                />
+              {popularPosts.map((p) => (
+                <PostCard key={p.id} post={p} onRemoved={removePost} onBlocked={removeAuthor} />
               ))}
             </div>
           </section>
@@ -129,23 +117,25 @@ export default function HomeView() {
         <section className="bj-section">
           <div className="bj-section__head">
             <p className="bj-h2">모든 글</p>
-            <button
-              type="button"
-              className="bj-section__action"
-              onClick={() => setShowCreate(true)}
-            >
+            <Link href="/posts/new" className="bj-section__action">
               + 만들기
-            </button>
+            </Link>
           </div>
           <div className="bj-col-10">
             {mainFeed.map((p) => (
-              <PostCard
-                key={p.id}
-                post={p}
-                onRemoved={handleRemoved}
-                onBlocked={(id) => setBlocked((prev) => [...prev, id])}
-              />
+              <PostCard key={p.id} post={p} onRemoved={removePost} onBlocked={removeAuthor} />
             ))}
+            {loadedOnce && mainFeed.length === 0 && (
+              <div className="bj-card bj-text-center">
+                <p className="bj-h2 bj-mb-10">아직 올라온 글이 없어요</p>
+                <p className="bj-body bj-text-muted bj-mb-20">
+                  첫 글을 남기면 취향이 비슷한 사람들이 찾아와요
+                </p>
+                <Link href="/posts/new" className="bj-btn bj-btn--primary">
+                  첫 글 쓰기
+                </Link>
+              </div>
+            )}
           </div>
           {loading && (
             <p className="bj-caption bj-text-muted bj-search-loading">글 불러오는 중…</p>
@@ -155,22 +145,9 @@ export default function HomeView() {
       </div>
 
       {/* 글쓰기 FAB */}
-      <button
-        type="button"
-        className="bj-fab"
-        onClick={() => void requireAuth(() => setShowCreate(true))}
-        aria-label="글 쓰기"
-      >
+      <Link href="/posts/new" className="bj-fab" aria-label="글 쓰기">
         <Icon name="edit" size={22} />
-      </button>
-
-      <PostCreateSheet
-        open={showCreate}
-        onClose={() => setShowCreate(false)}
-        onCreated={handlePostCreated}
-      />
-
-      <LoginGateSheet open={showGate} onClose={closeGate} next="/home" />
+      </Link>
     </main>
   )
 }

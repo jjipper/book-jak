@@ -33,7 +33,8 @@ const SELECT = 'id, nickname, type_code, bio, favorite_tags'
 export async function loadPeople(limit = 50): Promise<Person[]> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
-  let query = sb.from('profiles').select(SELECT).limit(limit)
+  // 탈퇴자는 profiles 행이 '탈퇴한 사용자'로 남으므로 목록에서 빼야 한다
+  let query = sb.from('profiles').select(SELECT).is('withdrawn_at', null).limit(limit)
   if (user) query = query.neq('id', user.id)
   const { data } = await query
   return (data ?? []).map((row) => mapPerson(row as ProfileRow))

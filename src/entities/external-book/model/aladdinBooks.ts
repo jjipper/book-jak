@@ -53,3 +53,25 @@ export async function fetchAladdinBooks(params: {
   if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
   return data.books ?? []
 }
+
+/** 키워드 검색 (글쓰기 책 첨부용) */
+export async function searchAladdinBooks(q: string, maxResults = 10): Promise<AladdinBook[]> {
+  const sp = new URLSearchParams({ q, maxResults: String(maxResults) })
+  const res = await fetch(`/api/aladdin/search?${sp}`)
+  const data = (await res.json()) as { books?: AladdinBook[]; error?: string }
+  if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
+  return data.books ?? []
+}
+
+/**
+ * ISBN13 → 알라딘 상품 페이지 URL.
+ * 알라딘 TTB 이용 조건상 상품 페이지로 나가는 링크를 제공해야 한다.
+ */
+export function aladdinProductHref(isbn13: string): string {
+  return `https://www.aladin.co.kr/shop/wproduct.aspx?ISBN=${encodeURIComponent(isbn13)}`
+}
+
+/** ISBN13 → 책 상세 경로. /rate/books/[id]가 'isbn-' 접두 id를 받는다 */
+export function bookDetailHref(isbn13: string): string {
+  return `/rate/books/isbn-${isbn13}`
+}

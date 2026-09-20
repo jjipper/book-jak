@@ -3,24 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { Post } from '@/entities/post/model/posts'
-import { togglePostLike, isPostLiked } from '@/entities/post/api/postsRemote'
-import { deletePost } from '@/entities/post/api/postDetailRemote'
+import { formatRelTime } from '@/entities/post/model/relTime'
+import { togglePostLike, isPostLiked, markBlocked, deletePost } from '@/entities/post/api/postsRemote'
 import ModerationSheet from '@/entities/report/ui/ModerationSheet'
 import { getMyId } from '@/entities/user/model/profile'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import Icon from '@/shared/ui/Icon'
 import TypeBadge from '@/shared/ui/TypeBadge'
-
-export function formatRelTime(ts: number): string {
-  const diff = Date.now() - ts
-  const m = Math.floor(diff / 60000)
-  if (m < 1) return '방금'
-  if (m < 60) return `${m}분 전`
-  const h = Math.floor(m / 60)
-  if (h < 24) return `${h}시간 전`
-  const d = Math.floor(h / 24)
-  return `${d}일 전`
-}
 
 interface PostCardProps {
   post: Post
@@ -46,42 +36,54 @@ export default function PostCard({ post, onRemoved, onBlocked }: PostCardProps) 
 
   return (
     <article className="bj-post-card">
-      <div className="bj-post-card__header">
-        <TypeBadge code={post.authorTypeCode} />
-        <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
-        <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
-        <button
-          type="button"
-          className="bj-icon-btn bj-icon-btn--sm"
-          aria-label="더보기"
-          onClick={() => setShowMore(true)}
-        >
-          ⋯
-        </button>
-      </div>
+      {/* 본문 영역만 링크 — 푸터 버튼은 링크 밖에 둬야 클릭이 겹치지 않는다 */}
+      <Link href={`/posts/${post.id}`} className="bj-post-card__link">
+        <div className="bj-post-card__header">
+          <TypeBadge code={post.authorTypeCode} />
+          <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
+          <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
+        </div>
 
-      <Link href={`/post/${post.id}`} className="bj-unstyled-link">
-        <p className="bj-post-card__content bj-body">{post.content}</p>
+        <div className="bj-post-card__body">
+          <p className="bj-post-card__content bj-body bj-clamp-3">{post.content}</p>
+          {post.bookCover ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={post.bookCover}
+              alt={post.bookTitle ?? ''}
+              className="bj-post-card__cover"
+            />
+          ) : post.bookTitle ? (
+            /* 표지가 없는 책(직접 입력·구간 절판 등)은 제목으로 대신 표시한다 */
+            <span className="bj-post-book bj-post-book--aside">
+              <span className="bj-post-book__title">{post.bookTitle}</span>
+            </span>
+          ) : null}
+        </div>
       </Link>
-
-      {post.bookTitle && (
-        <span className="bj-post-card__book-tag bj-caption">
-          {post.bookTitle}
-        </span>
-      )}
 
       <div className="bj-post-card__footer">
         <button
           type="button"
           onClick={handleLike}
           className={`bj-post-card__like-btn${liked ? ' bj-post-card__like-btn--active' : ''}`}
+          aria-label={liked ? '좋아요 취소' : '좋아요'}
         >
-          <HeartIcon filled={liked} />
+          <Icon name={liked ? 'heart-fill' : 'heart'} size={16} />
           {likeCount > 0 && <span>{likeCount}</span>}
         </button>
-        <Link href={`/post/${post.id}`} className="bj-post-card__comment-count bj-caption bj-unstyled-link">
-          댓글 {post.commentCount}
+        <Link href={`/posts/${post.id}`} className="bj-post-card__comment-count bj-caption">
+          <Icon name="comment" size={16} />
+          {post.commentCount}
         </Link>
+        <button
+          type="button"
+          className="bj-post-card__more-btn"
+          aria-label="더보기"
+          onClick={() => setShowMore(true)}
+        >
+          <Icon name="more-horizontal" size={16} />
+        </button>
       </div>
 
       <ModerationSheet
@@ -96,6 +98,7 @@ export default function PostCard({ post, onRemoved, onBlocked }: PostCardProps) 
           onRemoved?.(post.id)
         }}
         onBlocked={(id) => {
+          markBlocked(id)
           onBlocked?.(id)
           onRemoved?.(post.id)
         }}
@@ -103,13 +106,5 @@ export default function PostCard({ post, onRemoved, onBlocked }: PostCardProps) 
 
       <LoginGateSheet open={showGate} onClose={closeGate} next="/home" />
     </article>
-  )
-}
-
-function HeartIcon({ filled }: { filled: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-    </svg>
   )
 }

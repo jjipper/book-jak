@@ -139,6 +139,11 @@
   --space-lg: var(--p-space-16);
   --space-xl: var(--p-space-24);
 
+  /* 앱 기둥 폭 — 시안이 375 모바일 한 장이므로 데스크톱에서도 이 폭을 넘지 않는다.
+     프레임·하단탭·바텀시트·토스트·FAB이 전부 이 값을 기준으로 줄을 맞춘다.
+     폭 기준을 여기 말고 다른 데서 새로 만들지 않는다. */
+  --app-width: 430px;
+
   /* radius */
   --radius-sm: var(--p-radius-8);
   --radius-md: var(--p-radius-12);

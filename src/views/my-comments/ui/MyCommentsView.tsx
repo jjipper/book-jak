@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
 import { loadAllAnswers, loadQuestion } from '@/entities/discussion/model/discussionActions'
-import { loadMyComments } from '@/entities/comment/api/commentsRemote'
+import { loadMyComments } from '@/entities/post/api/commentsRemote'
 import { getMyId } from '@/entities/user/model/profile'
 import BackLink from '@/shared/ui/BackLink'
 
