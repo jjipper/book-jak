@@ -6,6 +6,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { lookupExternalBook, type ExternalBook } from '@/entities/external-book/model/externalBooks'
+import { aladdinProductHref } from '@/entities/external-book/model/aladdinBooks'
 import { getBookRating, saveBookRating, removeBookRating, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 import { pushRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
 import { getNickname } from '@/entities/user/model/profile'
@@ -60,18 +61,28 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
 
   if (loading) {
     return (
-      <main className="bj-ext-shell--loading">
-        <BackLink href="/rate" />
-        <p className="bj-caption bj-text-center" style={{ marginTop: 60 }}>책 정보를 불러오는 중…</p>
+      <main className="bj-shell">
+        <div className="bj-frame">
+          <header className="bj-subpage-head">
+            <BackLink href="/rate" />
+            <span className="bj-h2">책 정보</span>
+          </header>
+          <p className="bj-caption bj-text-muted">책 정보를 불러오는 중…</p>
+        </div>
       </main>
     )
   }
 
   if (!book) {
     return (
-      <main className="bj-ext-shell--loading">
-        <BackLink href="/rate" />
-        <p className="bj-body bj-text-muted" style={{ marginTop: 24 }}>책 정보를 불러올 수 없어요.</p>
+      <main className="bj-shell">
+        <div className="bj-frame">
+          <header className="bj-subpage-head">
+            <BackLink href="/rate" />
+            <span className="bj-h2">책 정보</span>
+          </header>
+          <p className="bj-body bj-text-muted">책 정보를 불러올 수 없어요.</p>
+        </div>
       </main>
     )
   }
@@ -120,13 +131,14 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   }
 
   return (
-    <main className="bj-ext-shell">
-      <header className="bj-ext-shell__header">
+    <main className="bj-shell">
+      <div className="bj-frame">
+      <header className="bj-subpage-head">
         <BackLink href="/rate" />
-        <span className="bj-display bj-display--lg">책 정보</span>
+        <span className="bj-h2">책 정보</span>
       </header>
 
-      <div className="bj-ext-shell__body">
+      <div className="bj-content--24">
         {/* 책 기본 정보 */}
         <div className="bj-book-head">
           <div className="bj-book-cover--lg">
@@ -139,6 +151,14 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
             <p className="bj-h1 bj-book-title">{book.title}</p>
             <p className="bj-body bj-book-author">{book.authors.join(', ') || '작자 미상'}</p>
             <p className="bj-caption bj-book-meta-hint">{book.publisher}{book.year ? ` · ${book.year}` : ''} · ISBN {book.isbn}</p>
+            <a
+              href={aladdinProductHref(book.isbn)}
+              target="_blank"
+              rel="noreferrer"
+              className="bj-btn bj-btn--sm bj-book-info-link"
+            >
+              책 정보보기
+            </a>
           </div>
         </div>
 
@@ -256,6 +276,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
           </section>
         )}
       <LoginGateSheet open={showGate} onClose={closeGate} next={`/rate/books/${bookId}`} />
+      </div>
       </div>
     </main>
   )

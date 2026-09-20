@@ -12,7 +12,7 @@ import { getFollowingIds, getFollowerIds } from '@/features/follow/model/follows
 import { getLikedIds } from '@/features/like/model/likes'
 import { loadQuestions, loadAllAnswers } from '@/entities/discussion/model/discussionActions'
 import { loadClubs, getJoinedIds } from '@/entities/club/model/clubActions'
-import { loadMyComments } from '@/entities/comment/api/commentsRemote'
+import { loadMyComments } from '@/entities/post/api/commentsRemote'
 import { deleteMyAccount } from '@/entities/user/api/accountRemote'
 import { loadBookRatings } from '@/entities/book-rating/model/bookRatings'
 import { getReactionCounts } from '@/entities/blind-book/model/blindReactions'
@@ -429,7 +429,7 @@ export default function MyView() {
 
       <ConfirmSheet
         open={showWithdrawConfirm}
-        message="탈퇴하면 프로필, 글, 댓글, 평가 등 모든 데이터가 즉시 삭제되고 복구할 수 없어요. 탈퇴할까요?"
+        message="탈퇴하면 계정과 프로필 정보(닉네임·사진·소개)가 삭제되고 복구할 수 없어요. 대화 흐름을 위해 작성한 글과 댓글은 '탈퇴한 사용자'로 남습니다. 탈퇴할까요?"
         confirmLabel="탈퇴하기"
         cancelLabel="취소"
         onConfirm={async () => {

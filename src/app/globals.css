@@ -18,19 +18,11 @@ body {
   background: var(--color-bg);
 }
 
+/* 셸은 폭을 정하지 않는다 — 폭은 .bj-frame 한 곳에서만 정한다 */
 .bj-shell {
   width: 100%;
-  max-width: 1920px;
-  margin: 0 auto;
   min-height: 100dvh;
   background: var(--color-bg);
-}
-
-/* 웹: 콘텐츠는 1920px에서 멈추고 중앙 정렬 */
-@media (min-width: 1280px) {
-  .bj-shell {
-    padding-inline: calc(var(--space-xl) * 2);
-  }
 }
 
 /* 모션 최소화 환경 존중 (UI_PROMPT §4) */
@@ -51,7 +43,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
-  max-width: 430px;
+  max-width: var(--app-width);
   padding: 0 var(--space-sm) calc(var(--space-sm) + env(safe-area-inset-bottom));
   z-index: 40;
 }

@@ -5,8 +5,11 @@ export interface PostComment {
   postId: string
   authorId: string
   authorNickname: string
+  authorTypeCode: string | null
   content: string
   ts: number
+  /** 수정된 적 없으면 null */
+  editedTs: number | null
 }
 
 export const COMMENT_MIN = 2

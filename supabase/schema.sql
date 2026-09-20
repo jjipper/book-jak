@@ -161,25 +161,23 @@ create table if not exists public.posts (
   author_id uuid not null references auth.users (id) on delete cascade,
   content text not null,
   book_title text,
+  book_isbn text,
+  book_cover text,
   like_count int not null default 0,
   comment_count int not null default 0,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  updated_at timestamptz
 );
+-- 기존 배포본에 컬럼 추가 (재실행 안전)
+alter table public.posts add column if not exists book_isbn text;
+alter table public.posts add column if not exists book_cover text;
+alter table public.posts add column if not exists updated_at timestamptz;
+
 alter table public.posts enable row level security;
 create policy "posts: 누구나 조회" on public.posts for select using (true);
 create policy "posts: 본인만 등록" on public.posts for insert to authenticated with check (auth.uid() = author_id);
+create policy "posts: 본인만 수정" on public.posts for update to authenticated using (auth.uid() = author_id) with check (auth.uid() = author_id);
 create policy "posts: 본인만 삭제" on public.posts for delete to authenticated using (auth.uid() = author_id);
-
--- 포스트 좋아요 카운트 증감 RPC (likes 테이블과 연동)
-create or replace function public.increment_post_like(post_id uuid)
-returns void language sql security definer as $$
-  update public.posts set like_count = like_count + 1 where id = post_id;
-$$;
-
-create or replace function public.decrement_post_like(post_id uuid)
-returns void language sql security definer as $$
-  update public.posts set like_count = greatest(0, like_count - 1) where id = post_id;
-$$;
 
 -- 이벤트 (공식 이벤트 + 사용자 모임)
 create table if not exists public.events (

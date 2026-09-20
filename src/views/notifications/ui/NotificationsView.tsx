@@ -5,7 +5,7 @@ import Link from 'next/link'
 import BackLink from '@/shared/ui/BackLink'
 import { loadNotifications, markAllRead } from '@/entities/notification/api/notificationsRemote'
 import { describeNotification, type AppNotification } from '@/entities/notification/model/notifications'
-import { formatRelTime } from '@/views/home/ui/PostCard'
+import { formatRelTime } from '@/entities/post/model/relTime'
 
 export default function NotificationsView() {
   const [items, setItems] = useState<AppNotification[] | null>(null)
