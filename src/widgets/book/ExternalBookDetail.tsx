@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { lookupExternalBook, type ExternalBook } from '@/entities/external-book/model/externalBooks'
 import { aladdinProductHref } from '@/entities/external-book/model/aladdinBooks'
 import { getBookRating, saveBookRating, removeBookRating, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
-import { pushRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
+import { pushRating, deleteRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
 import { getNickname } from '@/entities/user/model/profile'
 import { toast } from '@/shared/lib/toast'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
@@ -93,6 +93,8 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       setStarsEdit(n)
       if (n === 0) {
         removeBookRating(bookId)
+        // 서버에서도 지워야 다음 동기화 때 되살아나지 않는다
+        deleteRating(bookId).catch(() => {})
         setRatingEdit(undefined)
         return
       }

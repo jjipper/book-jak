@@ -6,7 +6,10 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { ExternalBook } from '@/entities/external-book/model/externalBooks'
-import { saveBookRating, removeBookRating } from '@/entities/book-rating/model/bookRatings'
+import { getBookRating, saveBookRating, removeBookRating } from '@/entities/book-rating/model/bookRatings'
+import { pushRating, deleteRating } from '@/entities/book-rating/api/ratingsRemote'
+import { useAuthGate } from '@/shared/lib/useAuthGate'
+import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 
 interface ExternalBookRowProps {
@@ -19,11 +22,24 @@ export default function ExternalBookRow({ book, myStars }: ExternalBookRowProps)
   // 이 행에서 직접 누른 값만 덮어쓴다 (effect로 동기화하면 렌더가 한 번 더 돈다)
   const [rated, setRated] = useState<number | null>(null)
   const stars = rated ?? myStars ?? 0
+  const { showGate, closeGate, requireAuth } = useAuthGate()
 
+  // 평가 탭(RateView.handleRate)과 같은 흐름 — 로그인 확인 후 로컬 저장 + 서버 push
   function handleRate(n: number) {
-    setRated(n)
-    if (n === 0) removeBookRating(book.id)
-    else saveBookRating({ bookId: book.id, title: book.title, stars: n, ts: Date.now() })
+    requireAuth(() => {
+      setRated(n)
+      if (n === 0) {
+        removeBookRating(book.id)
+        deleteRating(book.id).catch(() => {})
+        return
+      }
+      saveBookRating({ bookId: book.id, title: book.title, stars: n, review: getBookRating(book.id)?.review, ts: Date.now() })
+      // 실패해도 로컬엔 남아 있고, 다음 syncMyRatings 때 다시 올라간다
+      pushRating(
+        { id: book.id, title: book.title, authors: book.authors, publisher: book.publisher, year: book.year, thumbnail: book.thumbnail },
+        n,
+      ).catch(() => {})
+    })
   }
 
   return (
@@ -49,6 +65,7 @@ export default function ExternalBookRow({ book, myStars }: ExternalBookRowProps)
           {stars > 0 && <span className="bj-caption bj-bold bj-caption--action">내 별점 {stars}점</span>}
         </div>
       </div>
+      <LoginGateSheet open={showGate} onClose={closeGate} next="/search" />
     </div>
   )
 }
