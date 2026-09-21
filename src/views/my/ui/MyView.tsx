@@ -389,8 +389,10 @@ export default function MyView() {
                         toast.error('로그아웃에 실패했어요')
                         return
                       }
+                      // 기기에 아무것도 남기지 않는다 — 유형은 계정에 백업돼 다음 로그인 때 복원된다.
+                      // 남겨두면 공용 기기에서 다음 사람 계정에 섞인다.
                       localStorage.clear()
-                      router.push('/login')
+                      router.push('/home')
                     }}
                     className="bj-btn bj-btn--block bj-btn--tall"
                   >
@@ -447,7 +449,9 @@ export default function MyView() {
 
       <ConfirmSheet
         open={showResetConfirm}
-        message="평가, 글, 팔로우 등 모든 활동 데이터가 삭제됩니다. 계속할까요?"
+        message={loggedIn
+          ? '이 기기에 저장된 독서 유형 결과와 활동 데이터가 삭제됩니다. 계정에 백업된 독서 유형은 다시 불러와져요. 계속할까요?'
+          : '독서 유형 테스트 결과와 평가, 글, 팔로우 등 이 기기에 저장된 모든 데이터가 삭제되고 복구할 수 없어요. 계속할까요?'}
         confirmLabel="초기화"
         cancelLabel="취소"
         onConfirm={() => {

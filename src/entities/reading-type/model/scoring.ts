@@ -186,8 +186,26 @@ const STORAGE_KEY = 'book_test_result'
 
 export function saveResult(result: TestResult): void {
   if (typeof window === 'undefined') return
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(result))
+  writeResult(result)
   recordActivity('test')
+}
+
+// 활동 기록 없이 저장만 (로그아웃 시 보존, 서버 복원용)
+export function writeResult(result: TestResult): void {
+  if (typeof window === 'undefined') return
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(result))
+}
+
+// 서버엔 type_code만 있으므로 기본 스탯으로 복원 (축 점수·배지는 복원 불가)
+export function restoreResult(typeCode: string): void {
+  const type = READING_TYPES[typeCode as TypeCode]
+  if (!type) return
+  writeResult({
+    typeCode: type.code,
+    axisScores: { FT: { F: 0, T: 0 }, IC: { I: 0, C: 0 }, EG: { E: 0, G: 0 }, RW: { R: 0, W: 0 } },
+    variantStats: { ...type.baseStats },
+    badgeCandidates: [],
+  })
 }
 
 export function loadResult(): TestResult | null {
