@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createSupabaseBrowser } from "@/shared/api/supabase-browser";
 import Logo from "@/shared/ui/Logo";
 import Icon from "@/shared/ui/Icon";
@@ -51,6 +52,9 @@ export default function LoginView() {
           >
             카카오로 3초 만에 시작하기
           </button>
+          <Link href="/home" className="bj-btn bj-btn--ghost bj-btn--block">
+            로그인 없이 둘러보기
+          </Link>
           <p className="bj-caption bj-login-tagline">
             로그인하면 평가 기록과 뱃지가 저장돼요
           </p>
