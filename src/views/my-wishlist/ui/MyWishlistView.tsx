@@ -2,9 +2,9 @@
 
 // 마이 > 보관함 — 읽고 싶어요 한 책
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
-import { loadWishlist, removeFromWishlist, type WishlistRecord } from '@/features/wishlist/model/wishlist'
+import { loadWishlist, removeFromWishlist, syncWishlist, type WishlistRecord } from '@/features/wishlist/model/wishlist'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { useMounted } from '@/shared/lib/useMounted'
 import BackLink from '@/shared/ui/BackLink'
@@ -12,9 +12,16 @@ import BackLink from '@/shared/ui/BackLink'
 export default function MyWishlistView() {
   const mounted = useMounted()
   const [removed, setRemoved] = useState<string[]>([])
+  const [synced, setSynced] = useState(0)
+  // 서버의 찜을 내려받아 로컬 사본을 맞춘다 (기기 바뀌어도 유지, 기존 로컬 찜은 첫 sync 때 이관)
+  useEffect(() => {
+    void syncWishlist().then(() => setSynced((n) => n + 1))
+  }, [])
   const items: WishlistRecord[] = useMemo(
     () => (mounted ? loadWishlist().filter((r) => !removed.includes(r.bookId)) : []),
-    [mounted, removed],
+    // synced가 바뀌면 로컬 사본을 다시 읽는다
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [mounted, removed, synced],
   )
 
   function handleRemove(bookId: string) {
@@ -42,19 +49,30 @@ export default function MyWishlistView() {
             </Link>
           </div>
         ) : (
-          items.map((r) => (
+          items.map((r) => {
+            const body = (
+              <>
+                <div className="bj-book-cover">
+                  <IllustPlaceholder code={r.illustCode ?? r.bookId} alt={r.title} aspectRatio="3 / 4" />
+                </div>
+                <div className="bj-book-info bj-flex-1">
+                  <p className="bj-body bj-bold bj-truncate bj-body--sm">
+                    {r.title}
+                  </p>
+                  <p className="bj-caption">
+                    {r.author ?? '작자 미상'}{r.publisher ? ` · ${r.publisher}` : ''}
+                  </p>
+                </div>
+              </>
+            )
+            return (
             <div key={r.bookId} className="bj-row bj-wishlist-row">
-              <div className="bj-book-cover">
-                <IllustPlaceholder code={r.illustCode ?? r.bookId} alt={r.title} aspectRatio="3 / 4" />
-              </div>
-              <div className="bj-book-info bj-flex-1">
-                <p className="bj-body bj-bold bj-truncate bj-body--sm">
-                  {r.title}
-                </p>
-                <p className="bj-caption">
-                  {r.author ?? '작자 미상'}{r.publisher ? ` · ${r.publisher}` : ''}
-                </p>
-              </div>
+              {/* 'blind-{id}'는 상세 페이지가 없는 블라인드 책이라 링크 없음 — Phase 2에서 실제 책으로 교체 예정 */}
+              {r.bookId.startsWith('isbn-') ? (
+                <Link href={`/rate/books/${r.bookId}`} className="bj-unstyled-link bj-wishlist-row bj-flex-1">
+                  {body}
+                </Link>
+              ) : body}
               <button
                 type="button"
                 onClick={() => handleRemove(r.bookId)}
@@ -63,7 +81,8 @@ export default function MyWishlistView() {
                 빼기
               </button>
             </div>
-          ))
+            )
+          })
         )}
       </div>
       </div>

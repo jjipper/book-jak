@@ -1,9 +1,9 @@
 // 평가·리뷰 (Supabase ratings/books) — 원본 데이터는 여기에 있다.
-// 화면이 동기로 읽는 localStorage 사본은 syncMyRatings()가 서버 기준으로 맞춘다.
+// 화면이 동기로 읽는 localStorage 사본은 syncMyRatings()가 서버와 병합한다.
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import { getNickname } from '@/entities/user/model/profile'
-import { replaceBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
+import { loadBookRatings, replaceBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
 
 export interface RemoteBookInput {
   id: string // 'b01' 또는 'isbn-{ISBN13}'
@@ -12,6 +12,7 @@ export interface RemoteBookInput {
   publisher?: string
   year?: number | null
   thumbnail?: string
+  categoryName?: string // 알라딘 장르 — 기기가 바뀌어도 장르 분석이 유지되도록 ratings에 함께 저장
 }
 
 interface RemoteReview {
@@ -53,7 +54,10 @@ export async function pushRating(book: RemoteBookInput, stars: number, review?: 
       book_id: book.id,
       nickname: getNickname(),
       stars,
-      review: review?.trim() || null,
+      // 리뷰 입력이 없는 호출부(목록 별점)는 키를 빼서 기존 리뷰를 지우지 않는다
+      ...(review !== undefined ? { review: review.trim() || null } : {}),
+      // 카테고리를 모르는 호출부는 키를 빼서 서버의 기존 값을 덮지 않는다
+      ...(book.categoryName ? { category_name: book.categoryName } : {}),
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'user_id,book_id' },
@@ -102,23 +106,72 @@ export async function fetchBookStats(bookId: string): Promise<RemoteBookStats | 
   }
 }
 
-// 서버의 내 평가를 로컬 사본에 반영 — 평가 화면 진입 시 한 번 호출한다.
-// 기기를 바꾸거나 저장소를 비워도 내 평가가 그대로 보이게 하는 게 목적.
+// 별점 취소 — 서버의 내 평가도 지운다 (안 지우면 다음 sync 때 되살아난다)
+export async function deleteRating(bookId: string): Promise<void> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) return
+  const { error } = await sb.from('ratings').delete().eq('user_id', user.id).eq('book_id', bookId)
+  if (error) throw new Error(error.message)
+}
+
+// 서버의 내 평가와 로컬 사본을 병합 — 평가 화면 진입 시 한 번 호출한다.
+// 같은 책은 더 최근 것이 이기고, 서버에 없거나 로컬이 더 새로운 항목은 서버로 올린다.
+// (로그인 전·오프라인·push 실패로 로컬에만 남은 별점이 사라지지 않게)
 export async function syncMyRatings(): Promise<void> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return
-  const { data } = await sb
+  const { data, error } = await sb
     .from('ratings')
-    .select('book_id, stars, review, updated_at, books(title)')
+    .select('book_id, stars, review, category_name, updated_at, books(title)')
     .eq('user_id', user.id)
-  if (!data) return
-  const records: BookRatingRecord[] = data.map((r: Record<string, unknown>) => ({
-    bookId: r.book_id as string,
-    title: (r.books as { title: string } | null)?.title,
-    stars: r.stars as number,
-    review: (r.review as string | null) ?? undefined,
-    ts: new Date(r.updated_at as string).getTime(),
-  }))
-  replaceBookRatings(records)
+  if (error || !data) return
+
+  // 예전 버그로 남은 0점 기록은 버린다 (서버 check 제약에 걸려 push 묶음 전체가 실패한다)
+  const local = new Map(loadBookRatings().filter((r) => r.stars > 0).map((r) => [r.bookId, r]))
+  const merged = new Map<string, BookRatingRecord>()
+  for (const r of data as Record<string, unknown>[]) {
+    const bookId = r.book_id as string
+    const mine = local.get(bookId)
+    merged.set(bookId, {
+      bookId,
+      title: (r.books as { title: string } | null)?.title ?? mine?.title,
+      categoryName: (r.category_name as string | null) ?? mine?.categoryName,
+      stars: r.stars as number,
+      review: (r.review as string | null) ?? undefined,
+      ts: new Date(r.updated_at as string).getTime(),
+    })
+  }
+
+  const toPush: BookRatingRecord[] = []
+  for (const mine of local.values()) {
+    const server = merged.get(mine.bookId)
+    if (server && server.ts >= mine.ts) continue
+    const record = { ...mine, categoryName: mine.categoryName ?? server?.categoryName }
+    merged.set(mine.bookId, record)
+    toPush.push(record)
+  }
+
+  // 로컬은 병합본을 먼저 저장 — push가 실패해도 별점은 남고 다음 sync 때 다시 올라간다
+  replaceBookRatings([...merged.values()])
+  if (toPush.length === 0) return
+
+  // 책 메타는 제목만 알 수 있으니, 이미 있는 책 행은 건드리지 않는다
+  await sb.from('books').upsert(
+    toPush.map((r) => ({ id: r.bookId, title: r.title ?? '제목 없음' })),
+    { onConflict: 'id', ignoreDuplicates: true },
+  )
+  await sb.from('ratings').upsert(
+    toPush.map((r) => ({
+      user_id: user.id,
+      book_id: r.bookId,
+      nickname: getNickname(),
+      stars: r.stars,
+      review: r.review?.trim() || null,
+      category_name: r.categoryName ?? null,
+      updated_at: new Date(r.ts).toISOString(),
+    })),
+    { onConflict: 'user_id,book_id' },
+  )
 }

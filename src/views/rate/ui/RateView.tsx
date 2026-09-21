@@ -8,8 +8,8 @@ import {
   fetchAladdinBooks,
   shuffle,
 } from '@/entities/external-book/model/aladdinBooks'
-import { loadBookRatings, saveBookRating } from '@/entities/book-rating/model/bookRatings'
-import { pushRating, syncMyRatings } from '@/entities/book-rating/api/ratingsRemote'
+import { getBookRating, loadBookRatings, removeBookRating, saveBookRating } from '@/entities/book-rating/model/bookRatings'
+import { deleteRating, pushRating, syncMyRatings } from '@/entities/book-rating/api/ratingsRemote'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
@@ -166,11 +166,18 @@ export default function RateView() {
   function handleRate(book: AladdinBook, stars: number) {
     requireAuth(() => {
       setRated((prev) => ({ ...prev, [book.id]: stars }))
-      saveBookRating({ bookId: book.id, title: book.title, categoryName: book.categoryName, stars, ts: Date.now() })
-      void pushRating(
-        { id: book.id, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover },
+      // 같은 별을 다시 누르면 0 — 평가 취소 (0점으로 저장하면 서버 check 제약에 걸린다)
+      if (stars === 0) {
+        removeBookRating(book.id)
+        deleteRating(book.id).catch(() => {})
+        return
+      }
+      saveBookRating({ bookId: book.id, title: book.title, categoryName: book.categoryName, stars, review: getBookRating(book.id)?.review, ts: Date.now() })
+      // 실패해도 로컬엔 남아 있고, 다음 syncMyRatings 때 다시 올라간다
+      pushRating(
+        { id: book.id, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover, categoryName: book.categoryName },
         stars,
-      )
+      ).catch(() => {})
     })
   }
 

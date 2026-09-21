@@ -1,6 +1,6 @@
 // 평가 탭 — 책 별점·리뷰
 // 원본은 Supabase ratings 테이블이고(api/ratingsRemote.ts), 여기 localStorage는
-// 동기로 읽어야 하는 화면들을 위한 내 평가 사본이다. syncMyRatings()가 서버 기준으로 덮어쓴다.
+// 동기로 읽어야 하는 화면들을 위한 내 평가 사본이다. syncMyRatings()가 서버와 병합한다.
 // 같은 책을 다시 평가하면 덮어쓴다(업서트). 활동 점수는 최초 평가 때만 적립.
 
 import { recordActivity } from '@/shared/lib/activity'
@@ -26,7 +26,7 @@ export function loadBookRatings(): BookRatingRecord[] {
   }
 }
 
-/** 서버에서 받아온 내 평가로 로컬 사본을 통째로 교체 (ratingsRemote.syncMyRatings 전용) */
+/** 서버와 병합한 결과로 로컬 사본을 교체 (ratingsRemote.syncMyRatings 전용) */
 export function replaceBookRatings(records: BookRatingRecord[]): void {
   if (typeof window === 'undefined') return
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records))
@@ -44,7 +44,8 @@ export function saveBookRating(record: BookRatingRecord): void {
   const hadReview = !isFirstRating && !!stored[existing].review?.trim()
 
   if (isFirstRating) stored.push(record)
-  else stored[existing] = record
+  // 카테고리를 모르는 화면(카카오 상세 등)에서 다시 평가해도 기존 장르 정보는 남긴다
+  else stored[existing] = { ...record, categoryName: record.categoryName ?? stored[existing].categoryName }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored))
 
   if (isFirstRating) recordActivity('book_rating')
