@@ -47,7 +47,7 @@ export default function MyCommentsView() {
         id: c.id,
         label: '피드 댓글',
         text: c.content,
-        href: `/post/${c.postId}`,
+        href: `/posts/${c.postId}`,
         ts: c.ts,
       }))
 

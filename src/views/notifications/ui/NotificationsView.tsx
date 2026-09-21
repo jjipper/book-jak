@@ -42,7 +42,7 @@ export default function NotificationsView() {
               const { text, href } = describeNotification(n)
               const body = (
                 <div className="bj-flex-1">
-                  <p className="bj-body bj-body--sm">{text}</p>
+                  <p className={`bj-body bj-body--sm${n.read ? '' : ' bj-bold'}`}>{text}</p>
                   <p className="bj-caption">{formatRelTime(n.ts)}</p>
                 </div>
               )

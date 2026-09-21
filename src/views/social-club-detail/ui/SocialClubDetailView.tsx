@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { loadClub, displayMemberCount, isJoined, joinClub, leaveClub } from '@/entities/club/model/clubActions'
+import { loadClub, displayMemberCount, getJoinedIds, joinClub, leaveClub } from '@/entities/club/model/clubActions'
+import { toast } from '@/shared/lib/toast'
 import { resolveAuthor } from '@/features/resolve-author/model/author'
 import { getMyId } from '@/entities/user/model/profile'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
@@ -18,9 +19,9 @@ export default function SocialClubDetailView() {
 
   useEffect(() => {
     async function load() {
-      const c = (await loadClub(params.id)) ?? null
-      setClub(c)
-      setJoined(isJoined(params.id))
+      const [c, joinedIds] = await Promise.all([loadClub(params.id), getJoinedIds()])
+      setClub(c ?? null)
+      setJoined(joinedIds.includes(params.id))
     }
     void load()
   }, [params.id])
@@ -45,13 +46,19 @@ export default function SocialClubDetailView() {
   function handleToggleJoin() {
     requireAuth(() => {
       void (async () => {
-        if (joined) {
-          await leaveClub(club!.id)
-          setJoined(false)
-        } else {
-          await joinClub(club!.id)
-          setJoined(true)
+        try {
+          if (joined) {
+            await leaveClub(club!.id)
+            setJoined(false)
+          } else {
+            await joinClub(club!.id)
+            setJoined(true)
+          }
+        } catch (e) {
+          toast.error((e as Error).message)
         }
+        // 인원·정원 마감 상태를 서버 값으로 다시 맞춘다
+        setClub((await loadClub(club!.id)) ?? null)
       })()
     })
   }
@@ -108,7 +115,7 @@ export default function SocialClubDetailView() {
             className={`bj-btn ${joined ? '' : 'bj-btn--primary'} bj-btn--block bj-btn--tall`}
             style={{ opacity: !joined && isFull ? 0.4 : 1 }}
           >
-            {joined ? '참여 취소하기' : isFull ? '정원이 찼어요' : '참여하기'}
+            {joined ? '참여 취소하기' : isFull ? '정원 마감' : '참여하기'}
           </button>
         )}
       </div>
