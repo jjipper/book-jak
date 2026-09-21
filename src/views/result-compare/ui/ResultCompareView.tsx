@@ -133,10 +133,21 @@ function CompareContent() {
         {/* 링크 공유 유도 */}
         <div className="bj-card--flat bj-text-center">
           <p className="bj-body bj-text-muted bj-mb-12">
-            친구한테 테스트 링크를 보내고<br />결과를 직접 넣어보세요
+            친구한테 내 결과 링크를 보내면<br />친구가 테스트한 뒤 바로 궁합을 볼 수 있어요
           </p>
-          <button onClick={async () => { await navigator.clipboard.writeText(`${window.location.origin}/test`); toast.show('테스트 링크 복사됐어요!') }} className="bj-btn bj-btn--ghost">
-            테스트 링크 복사하기
+          <button
+            onClick={async () => {
+              const path = myTypeCode ? `/result/${myTypeCode}` : '/test'
+              try {
+                await navigator.clipboard.writeText(`${window.location.origin}${path}`)
+                toast.show('링크 복사됐어요!')
+              } catch {
+                toast.error('링크 복사에 실패했어요')
+              }
+            }}
+            className="bj-btn bj-btn--ghost"
+          >
+            {myTypeCode ? '내 결과 링크 복사하기' : '테스트 링크 복사하기'}
           </button>
         </div>
       </div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { QUESTIONS } from '@/entities/reading-type/model/questions'
@@ -20,16 +20,10 @@ const AXIS_LABELS: Record<string, string> = {
 
 export default function TestView() {
   const router = useRouter()
-  const { currentStep, answers, isComplete, selectAnswer, goBack, resetTest } = useTestStore()
+  const { currentStep, answers, selectAnswer, goBack, resetTest } = useTestStore()
   const [started, setStarted] = useState(false)
 
   const question = QUESTIONS[currentStep]
-
-  useEffect(() => {
-    if (isComplete) {
-      router.push('/test/loading')
-    }
-  }, [isComplete, router])
 
   const currentAnswer = answers.find((a) => a.questionId === question.id)
 
@@ -41,6 +35,8 @@ export default function TestView() {
       badgeKey,
     }
     selectAnswer(answer)
+    // ?from=친구유형 을 결과 화면까지 넘겨 궁합 비교로 잇는다
+    if (useTestStore.getState().isComplete) router.push(`/test/loading${window.location.search}`)
   }
 
   const progressPct = ((currentStep + 1) / QUESTIONS.length) * 100
@@ -73,7 +69,7 @@ export default function TestView() {
           <IllustPlaceholder code="intro_test" alt="독서유형 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" />
 
           <div className="bj-col-10">
-            <button onClick={() => setStarted(true)} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">
+            <button onClick={() => { resetTest(); setStarted(true) }} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">
               테스트 시작
             </button>
             <p className="bj-caption bj-text-center">
@@ -133,6 +129,10 @@ export default function TestView() {
             <div className="bj-progress__fill" style={{ width: `${progressPct}%` }} />
           </div>
         </div>
+
+        <Link href="/home" className="bj-btn bj-btn--ghost bj-btn--sm" onClick={resetTest}>
+          그만두기
+        </Link>
       </header>
 
       {/* 축 인디케이터 */}

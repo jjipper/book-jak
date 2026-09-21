@@ -86,6 +86,11 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
   // 스토어에 없으면 localStorage 폴백 — 마운트 후에만 읽는다
   const mounted = useMounted()
   const result = useMemo(() => storeResult ?? (mounted ? loadResult() : null), [storeResult, mounted])
+  // 친구 공유 링크로 들어와 테스트를 마친 경우 ?from=친구유형 이 붙어 온다
+  const fromType = useMemo(() => {
+    const from = mounted ? new URLSearchParams(window.location.search).get('from') : null
+    return from && READING_TYPES[from as TypeCode] ? (from as TypeCode) : null
+  }, [mounted])
   const [saving, setSaving] = useState(false)
   const [showShareMenu, setShowShareMenu] = useState(false)
   const captureRef = useRef<HTMLDivElement>(null)
@@ -101,7 +106,8 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
   const type = READING_TYPES[typeCode]
   const { compatibility } = type
   // 남의 결과 링크를 볼 땐 내 스탯이 아니라 그 유형 기본 스탯
-  const stats = result?.typeCode === typeCode ? result.variantStats : type.baseStats
+  const isMine = result?.typeCode === typeCode
+  const stats = isMine ? result.variantStats : type.baseStats
 
   async function handleSaveImage() {
     if (!captureRef.current) return
@@ -121,17 +127,18 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
   }
 
   async function handleCopyLink() {
-    const url = `${window.location.origin}/test`
+    const url = shareUrl()
     try {
       await navigator.clipboard.writeText(url)
-      toast.show('테스트 링크 복사됐어요! 친구에게 공유해보세요')
+      toast.show('결과 링크 복사됐어요! 친구에게 공유해보세요')
     } catch {
       toast.error('링크 복사에 실패했어요')
     }
     setShowShareMenu(false)
   }
 
-  const showTestPrompt = !result
+  // 내 결과 URL — 받은 친구는 이 카드를 보고 테스트 후 궁합으로 이어진다
+  const shareUrl = () => `${window.location.origin}/result/${typeCode}`
 
   return (
     <main className="bj-shell">
@@ -149,13 +156,40 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
       <div className="bj-content--center-20">
 
         {/* 공유 링크 유입 안내 */}
-        {showTestPrompt && (
+        {!result && (
           <div className="bj-card--flat bj-text-center bj-w-full">
             <p className="bj-body bj-text-muted bj-mb-12">
-              친구가 공유한 카드예요.<br />나의 유형은 뭘까요?
+              친구가 공유한 카드예요.<br />나의 유형은 뭘까요? 테스트하고 궁합도 확인해보세요
             </p>
-            <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">
+            <Link href={`/test?from=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--cta">
               나도 테스트해보기 →
+            </Link>
+          </div>
+        )}
+
+        {/* 남의 결과 — 내 결과가 있을 때 */}
+        {result && !isMine && (
+          <div className="bj-card--flat bj-text-center bj-w-full">
+            <p className="bj-body bj-text-muted bj-mb-12">친구의 결과예요</p>
+            <div className="bj-col-10">
+              <Link href={`/result/compare?type=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--block">
+                나와 궁합 보기 →
+              </Link>
+              <Link href={`/result/${result.typeCode}`} className="bj-btn bj-btn--secondary bj-btn--block">
+                내 결과 보기
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* 친구 링크로 테스트를 마친 직후 */}
+        {isMine && fromType && (
+          <div className="bj-card--flat bj-text-center bj-w-full">
+            <p className="bj-body bj-text-muted bj-mb-12">
+              링크를 보낸 친구의 유형은<br />{READING_TYPES[fromType].emoji} {READING_TYPES[fromType].name}
+            </p>
+            <Link href={`/result/compare?type=${fromType}`} className="bj-btn bj-btn--primary bj-btn--cta">
+              친구와 궁합 보기 →
             </Link>
           </div>
         )}
@@ -247,7 +281,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
             onClick={() => setShowShareMenu(!showShareMenu)}
             className="bj-btn bj-btn--secondary bj-btn--block bj-btn--action-lg"
           >
-            테스트 링크 공유하기
+            결과 링크 공유하기
           </button>
 
           {showShareMenu && (
@@ -255,7 +289,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
               <button onClick={handleCopyLink} className="bj-row bj-share-btn bj-share-btn--border-bottom">
                 <span className="bj-body bj-semibold">링크 복사</span>
               </button>
-              <button onClick={() => { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`나의 독서 유형은 "${type.name}"이래! 너도 해봐`)}&url=${encodeURIComponent(window.location.origin + '/test')}`, '_blank'); setShowShareMenu(false) }}
+              <button onClick={() => { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`나는 "${type.name}" 유형, 너는?`)}&url=${encodeURIComponent(shareUrl())}`, '_blank'); setShowShareMenu(false) }}
                 className="bj-row bj-share-btn">
                 <span className="bj-body bj-semibold">트위터에 공유</span>
               </button>

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useTestStore } from '@/features/quiz-test/model/testStore'
+import { loadResult } from '@/entities/reading-type/model/scoring'
 
 const LOADING_STEPS = [
   { text: '답변을 분석하는 중...', duration: 900 },
@@ -14,11 +15,13 @@ const LOADING_STEPS = [
 
 export default function TestLoadingView() {
   const router = useRouter()
-  const { result } = useTestStore()
+  const { result: storeResult } = useTestStore()
   const [stepIndex, setStepIndex] = useState(0)
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    // 새로고침으로 스토어가 비면 저장된 결과로 폴백
+    const result = storeResult ?? loadResult()
     if (!result) { router.replace('/test'); return }
 
     let currentStep = 0
@@ -27,7 +30,7 @@ export default function TestLoadingView() {
 
     function tick() {
       if (currentStep >= LOADING_STEPS.length) {
-        router.push(`/result/${result!.typeCode}`)
+        router.push(`/result/${result!.typeCode}${window.location.search}`)
         return
       }
       setStepIndex(currentStep)
@@ -47,7 +50,7 @@ export default function TestLoadingView() {
       }, 16)
     }
     tick()
-  }, [result, router])
+  }, [storeResult, router])
 
   return (
     <main className="bj-shell bj-shell--center">
