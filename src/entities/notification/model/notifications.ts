@@ -20,11 +20,11 @@ export function describeNotification(n: AppNotification): { text: string; href: 
       return { text: `${who}님이 나를 팔로우했어요`, href: n.targetId ? `/people/${n.targetId}` : null }
     case 'like': {
       if (!n.targetId) return { text: `${who}님이 내 글을 좋아해요`, href: null }
-      const href = n.targetType === 'question' ? `/social/discuss/${n.targetId}` : `/post/${n.targetId}`
+      const href = n.targetType === 'question' ? `/social/discuss/${n.targetId}` : `/posts/${n.targetId}`
       return { text: `${who}님이 내 글을 좋아해요`, href }
     }
     case 'comment':
-      return { text: `${who}님이 내 글에 댓글을 남겼어요`, href: n.targetId ? `/post/${n.targetId}` : null }
+      return { text: `${who}님이 내 글에 댓글을 남겼어요`, href: n.targetId ? `/posts/${n.targetId}` : null }
     case 'answer':
       return { text: `${who}님이 내 질문에 답변했어요`, href: n.targetId ? `/social/discuss/${n.targetId}` : null }
     case 'club':

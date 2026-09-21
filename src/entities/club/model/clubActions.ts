@@ -57,7 +57,6 @@ export async function createClub(params: {
       format: params.format,
       illust: params.illust ?? null,
       organizer_id: user.id,
-      member_count: 1,
     })
     .select()
     .single()
@@ -91,7 +90,9 @@ export async function joinClub(id: string, opts?: { silent?: boolean }): Promise
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
   if (!user) throw new Error('로그인이 필요해요')
-  await sb.from('club_members').insert({ club_id: id, user_id: user.id })
+  const { error } = await sb.from('club_members').insert({ club_id: id, user_id: user.id })
+  // club_full: 0010 트리거가 정원 초과 insert를 막는다
+  if (error) throw new Error(error.message.includes('club_full') ? '정원이 마감됐어요' : '참여하지 못했어요')
   joinedIds.add(id)
   if (!opts?.silent) recordActivity('club_join')
 }
