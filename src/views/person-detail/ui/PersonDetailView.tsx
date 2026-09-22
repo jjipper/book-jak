@@ -124,8 +124,8 @@ export default function PersonDetailView() {
             <div className="bj-text-center bj-pad-v-sm">
               <p className="bj-caption bj-caption--mb12">
                 {person.typeCode
-                  ? '내 독서유형을 알아야 궁합을 볼 수 있어요'
-                  : '이 사람이 아직 독서유형 테스트를 하지 않았어요'}
+                  ? '내 BOOKBTI를 알아야 궁합을 볼 수 있어요'
+                  : '이 사람이 아직 BOOKBTI 테스트를 하지 않았어요'}
               </p>
               {!person.typeCode ? null : (
                 <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta-sm">

@@ -70,7 +70,7 @@ export default function TypeCard({ typeCode }: TypeCardProps) {
           북작
         </span>
         <span className="bj-caption bj-typecard__footer-caption">
-          나의 독서유형
+          나의 BOOKBTI
         </span>
       </div>
     </div>
