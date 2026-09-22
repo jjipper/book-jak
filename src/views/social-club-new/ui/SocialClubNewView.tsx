@@ -44,7 +44,7 @@ export default function SocialClubNewView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <BackLink href="/social/clubs" />
+        <BackLink href="/social" />
         <span className="bj-h2">모임 만들기</span>
       </header>
 

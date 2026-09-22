@@ -24,7 +24,7 @@ export default function MyClubsView() {
       <div className="bj-frame">
       <header className="bj-subpage-head">
         <BackLink href="/my" />
-        <span className="bj-h2">신청한 모임</span>
+        <span className="bj-h2">참여한 모임</span>
       </header>
 
       <div className="bj-content">
@@ -32,8 +32,8 @@ export default function MyClubsView() {
           <p className="bj-caption bj-text-muted">불러오는 중…</p>
         ) : clubs.length === 0 ? (
           <div className="bj-empty bj-card">
-            <p className="bj-body bj-bold bj-mb-6">아직 신청한 모임이 없어요</p>
-            <Link href="/social/clubs" className="bj-btn bj-btn--primary bj-btn--cta">
+            <p className="bj-body bj-bold bj-mb-6">아직 참여한 모임이 없어요</p>
+            <Link href="/social" className="bj-btn bj-btn--primary bj-btn--cta">
               책 모임 보러가기
             </Link>
           </div>
@@ -47,6 +47,7 @@ export default function MyClubsView() {
                   <div className="bj-meta-row bj-mb-4">
                     <p className="bj-body bj-bold bj-body--sm">{club.name}</p>
                     <span className="bj-chip">{club.format}</span>
+                    {club.isOfficial && <span className="bj-chip bj-chip--active">공식</span>}
                     {isMine && <span className="bj-chip bj-chip--active">내가 만든 모임</span>}
                   </div>
                   <p className="bj-caption">{club.description}</p>

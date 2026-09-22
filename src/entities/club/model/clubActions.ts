@@ -2,6 +2,7 @@
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import { recordActivity } from '@/shared/lib/activity'
+import { cachePerson } from '@/entities/person/model/people'
 import type { BookClub, ClubFormat, ClubIllustCode } from '@/entities/club/model/clubs'
 
 // 가입 여부는 화면이 렌더 시점에 동기로 물어보므로 메모리에 들고 있는다.
@@ -18,15 +19,28 @@ function mapClub(row: Record<string, unknown>): BookClub {
     memberCount: row.member_count as number,
     format: row.format as ClubFormat,
     region: (row.region as string | null) ?? undefined,
-    organizerId: row.organizer_id as string,
+    organizerId: (row.organizer_id as string | null) ?? null,
     illust: (row.illust as ClubIllustCode | null) ?? undefined,
+    isOfficial: (row.is_official as boolean) ?? false,
+    startsAt: (row.starts_at as string | null) ?? undefined,
   }
 }
 
 export async function loadClubs(): Promise<BookClub[]> {
   const sb = createSupabaseBrowser()
-  const { data } = await sb.from('clubs').select('*').order('created_at', { ascending: false })
-  return (data ?? []).map(mapClub)
+  const { data } = await sb
+    .from('clubs')
+    .select('*')
+    .order('is_official', { ascending: false })
+    .order('created_at', { ascending: false })
+  const clubs = (data ?? []).map(mapClub)
+  // clubs.organizer_id는 profiles FK가 없어 조인 대신 한 번 더 묻고, resolveAuthor용 캐시에 넣는다
+  const ids = [...new Set(clubs.map((c) => c.organizerId).filter((id): id is string => id !== null))]
+  if (ids.length > 0) {
+    const { data: profiles } = await sb.from('profiles').select('id, nickname, type_code').in('id', ids)
+    for (const p of profiles ?? []) cachePerson(p.id as string, p.nickname as string, p.type_code as string | null)
+  }
+  return clubs
 }
 
 export async function loadClub(id: string): Promise<BookClub | undefined> {

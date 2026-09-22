@@ -29,8 +29,28 @@ export interface BookClub {
   format: ClubFormat
   /** 오프라인 모임의 활동 지역 (온라인은 생략) */
   region?: string
-  organizerId: string
+  /** 운영팀 공식 모임은 주최자가 없을 수 있다 */
+  organizerId: string | null
   illust?: ClubIllustCode
+  /** 북작 공식 모임 — DB에서만 설정 */
+  isOfficial: boolean
+  /** 모임 일시 (ISO, 선택) */
+  startsAt?: string
+}
+
+export interface ClubMember {
+  id: string
+  nickname: string
+  avatarUrl: string | null
+}
+
+export interface ClubPost {
+  id: string
+  authorId: string
+  authorNickname: string
+  authorTypeCode: string | null
+  content: string
+  ts: number
 }
 
 export const CLUB_TAGS = ['소설', '에세이', '판타지·SF', '스릴러', '자기계발', '시', '고전', '토론'] as const
