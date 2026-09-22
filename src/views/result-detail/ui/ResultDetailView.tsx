@@ -92,7 +92,6 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     return from && READING_TYPES[from as TypeCode] ? (from as TypeCode) : null
   }, [mounted])
   const [saving, setSaving] = useState(false)
-  const [showShareMenu, setShowShareMenu] = useState(false)
   const captureRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -126,19 +125,25 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     } finally { setSaving(false) }
   }
 
-  async function handleCopyLink() {
-    const url = shareUrl()
+  // 궁합 초대 링크 — 받은 친구는 /match 랜딩에서 테스트 후 궁합으로 이어진다.
+  // 공유 시트가 있으면(모바일 → 카카오톡 등) 그걸로, 없으면 링크 복사
+  async function handleShare() {
+    const url = `${window.location.origin}/match/${typeCode}`
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: '북작 독서 궁합', text: `나는 ${type.name}! 나랑 독서 궁합 볼래?`, url })
+        return
+      } catch (e) {
+        if (e instanceof DOMException && e.name === 'AbortError') return
+      }
+    }
     try {
       await navigator.clipboard.writeText(url)
-      toast.show('결과 링크 복사됐어요! 친구에게 공유해보세요')
+      toast.show('궁합 링크를 복사했어요! 친구에게 보내보세요')
     } catch {
       toast.error('링크 복사에 실패했어요')
     }
-    setShowShareMenu(false)
   }
-
-  // 내 결과 URL — 받은 친구는 이 카드를 보고 테스트 후 궁합으로 이어진다
-  const shareUrl = () => `${window.location.origin}/result/${typeCode}`
 
   return (
     <main className="bj-shell">
@@ -218,7 +223,8 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
               <MatchTile label="상극" code={compatibility.opposite} name={compatibility.oppName} line={compatibility.oppLine} />
             </div>
             <Link href="/result/compare" data-no-capture className="bj-btn bj-btn--secondary bj-btn--block">
-              친구와 궁합 비교하기
+              {/* 아래 '친구와 궁합 보기'(공유)와 헷갈리지 않게 — 이쪽은 친구 유형을 직접 고른다 */}
+              친구 유형 골라서 궁합 보기
             </Link>
           </section>
 
@@ -267,35 +273,20 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
           </section>
         </div>
 
-        {/* 버튼들 */}
-        <div className="bj-col-10 bj-w-full">
-          <button
-            onClick={handleSaveImage} disabled={saving}
-            className="bj-btn bj-btn--primary bj-btn--block bj-btn--action-lg"
-            style={{ opacity: saving ? 0.7 : 1 }}
-          >
-            {saving ? '이미지 저장 중...' : '이미지로 저장하기'}
-          </button>
-
-          <button
-            onClick={() => setShowShareMenu(!showShareMenu)}
-            className="bj-btn bj-btn--secondary bj-btn--block bj-btn--action-lg"
-          >
-            결과 링크 공유하기
-          </button>
-
-          {showShareMenu && (
-            <div className="bj-card--flat bj-card--no-pad">
-              <button onClick={handleCopyLink} className="bj-row bj-share-btn bj-share-btn--border-bottom">
-                <span className="bj-body bj-semibold">링크 복사</span>
-              </button>
-              <button onClick={() => { window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(`나는 "${type.name}" 유형, 너는?`)}&url=${encodeURIComponent(shareUrl())}`, '_blank'); setShowShareMenu(false) }}
-                className="bj-row bj-share-btn">
-                <span className="bj-body bj-semibold">트위터에 공유</span>
-              </button>
-            </div>
-          )}
-        </div>
+        {/* 버튼들 — 내 결과일 때만 */}
+        {isMine && (
+          <div className="bj-col-10 bj-w-full">
+            <button
+              onClick={handleSaveImage} disabled={saving}
+              className="bj-btn bj-btn--primary bj-btn--block bj-btn--action-lg"
+            >
+              {saving ? '저장 중...' : '내 결과 저장하기'}
+            </button>
+            <button onClick={() => void handleShare()} className="bj-btn bj-btn--secondary bj-btn--block bj-btn--action-lg">
+              친구와 궁합 보기
+            </button>
+          </div>
+        )}
       </div>
       </div>
     </main>

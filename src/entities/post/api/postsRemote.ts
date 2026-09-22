@@ -16,7 +16,7 @@ export interface PostBook {
 const likedIds = new Set<string>()
 let blockedIds: string[] = []
 
-function mapPost(row: Record<string, unknown>): Post {
+export function mapPost(row: Record<string, unknown>): Post {
   const profile = row.profiles as { nickname: string; type_code: string | null } | null
   if (profile) cachePerson(row.author_id as string, profile.nickname, profile.type_code)
   const editedAt = row.updated_at as string | null
@@ -36,7 +36,8 @@ function mapPost(row: Record<string, unknown>): Post {
   }
 }
 
-const SELECT = '*, profiles!author_id(nickname, type_code)'
+export const POST_SELECT = '*, profiles!author_id(nickname, type_code)'
+const SELECT = POST_SELECT
 
 async function refreshViewerState(sb: ReturnType<typeof createSupabaseBrowser>): Promise<void> {
   const { data: { user } } = await sb.auth.getUser()
@@ -61,18 +62,27 @@ function blockedFilter(): string | null {
   return blockedIds.length > 0 ? `(${blockedIds.join(',')})` : null
 }
 
-/** 피드 포스트 로드 (최신순, 페이지네이션). 글이 없으면 빈 배열. */
-export async function loadPosts(params?: { offset?: number; limit?: number }): Promise<Post[]> {
+/**
+ * 피드 포스트 로드 (페이지네이션). 글이 없으면 빈 배열.
+ * sort: 'latest'(기본) | 'popular'(좋아요 많은 순 → 최신순)
+ * authorIds: 주면 그 사람들 글만(팔로잉 피드). 빈 배열이면 빈 결과.
+ */
+export async function loadPosts(params?: {
+  offset?: number
+  limit?: number
+  sort?: 'latest' | 'popular'
+  authorIds?: string[]
+}): Promise<Post[]> {
   const offset = params?.offset ?? 0
   const limit = params?.limit ?? 20
+  if (params?.authorIds?.length === 0) return []
   const sb = createSupabaseBrowser()
   if (offset === 0) await refreshViewerState(sb)
 
-  let query = sb
-    .from('posts')
-    .select(SELECT)
-    .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
+  let query = sb.from('posts').select(SELECT)
+  if (params?.sort === 'popular') query = query.order('like_count', { ascending: false })
+  query = query.order('created_at', { ascending: false }).range(offset, offset + limit - 1)
+  if (params?.authorIds) query = query.in('author_id', params.authorIds)
 
   const blocked = blockedFilter()
   if (blocked) query = query.not('author_id', 'in', blocked)
