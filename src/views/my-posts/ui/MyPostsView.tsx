@@ -2,30 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { BLIND_BOOKS } from '@/entities/blind-book/model/blindBooks'
-import { loadQuestions, loadAnswers, type DiscussionQuestion } from '@/entities/discussion/model/discussionActions'
-import { getMyId } from '@/entities/user/model/profile'
+import { loadMyPosts } from '@/entities/post/api/myPostsRemote'
+import type { Post } from '@/entities/post/model/posts'
 import BackLink from '@/shared/ui/BackLink'
 
-function bookTitle(bookId: number | null): string {
-  if (bookId === null) return '자유주제'
-  return BLIND_BOOKS.find((b) => b.id === bookId)?.title ?? '자유주제'
-}
-
 export default function MyPostsView() {
-  const [questions, setQuestions] = useState<DiscussionQuestion[] | null>(null)
-  const [answerCounts, setAnswerCounts] = useState<Record<string, number>>({})
+  const [posts, setPosts] = useState<Post[] | null>(null)
 
   useEffect(() => {
-    async function load() {
-      const myId = getMyId()
-      const qs = (await loadQuestions()).filter((q) => q.authorId === myId || q.authorId === 'me')
-      setQuestions(qs)
-      const counts: Record<string, number> = {}
-      for (const q of qs) { counts[q.id] = (await loadAnswers(q.id)).length }
-      setAnswerCounts(counts)
-    }
-    void load()
+    void loadMyPosts().then(setPosts)
   }, [])
 
   return (
@@ -37,27 +22,25 @@ export default function MyPostsView() {
       </header>
 
       <div className="bj-content">
-        {questions === null ? (
+        {posts === null ? (
           <p className="bj-caption bj-text-muted">불러오는 중…</p>
-        ) : questions.length === 0 ? (
+        ) : posts.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 남긴 글이 없어요</p>
-            <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--cta">
-              질문 남기러 가기
+            <Link href="/posts/new" className="bj-btn bj-btn--primary bj-btn--cta">
+              글 쓰러 가기
             </Link>
           </div>
         ) : (
-          questions.map((q) => {
-            return (
-              <Link key={q.id} href={`/social/discuss/${q.id}`} className="bj-row bj-row--top bj-unstyled-link">
-                <div className="bj-flex-1">
-                  <p className="bj-caption bj-bold bj-mb-4">{bookTitle(q.bookId)}</p>
-                  <p className="bj-body bj-body--sm bj-mb-6">{q.text}</p>
-                  <p className="bj-caption">답변 {answerCounts[q.id] ?? 0}개</p>
-                </div>
-              </Link>
-            )
-          })
+          posts.map((p) => (
+            <Link key={p.id} href={`/posts/${p.id}`} className="bj-row bj-row--top bj-unstyled-link">
+              <div className="bj-flex-1">
+                {p.bookTitle && <p className="bj-caption bj-bold bj-mb-4">{p.bookTitle}</p>}
+                <p className="bj-body bj-body--sm bj-mb-6">{p.content}</p>
+                <p className="bj-caption">좋아요 {p.likeCount} · 댓글 {p.commentCount}</p>
+              </div>
+            </Link>
+          ))
         )}
       </div>
       </div>

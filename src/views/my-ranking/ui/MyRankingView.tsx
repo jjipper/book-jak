@@ -8,19 +8,17 @@ import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import BackLink from '@/shared/ui/BackLink'
 
-// 점수 산식은 Postgres 뷰(reading_ranking, supabase/migrations/0002_track_b.sql)에 있다.
+// 점수 산식은 Postgres 뷰(reading_ranking_weekly, supabase/migrations/0011_drop_discussion_weekly_ranking.sql)에 있다.
 // 여기서는 그 집계를 그대로 보여주기만 한다.
 const BREAKDOWN: { key: keyof RankingEntry; label: string }[] = [
   { key: 'ratingsCount', label: '책 평가' },
   { key: 'reviewsCount', label: '한 줄 리뷰' },
   { key: 'postsCount', label: '글 작성' },
-  { key: 'questionsCount', label: '질문 작성' },
-  { key: 'answersCount', label: '답변 작성' },
   { key: 'clubsCreated', label: '모임 개설' },
   { key: 'clubsJoined', label: '모임 참여' },
 ]
 
-export default function SocialRankingView() {
+export default function MyRankingView() {
   const [ranked, setRanked] = useState<RankingEntry[] | null>(null)
   const [myId, setMyId] = useState<string | null>(null)
 
@@ -43,20 +41,20 @@ export default function SocialRankingView() {
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <BackLink href="/social" />
-        <span className="bj-h2">독서 랭킹</span>
+        <BackLink href="/my" />
+        <span className="bj-h2">이번 주 독서 랭킹</span>
       </header>
 
       <div className="bj-content--lg">
         {ranked !== null && (
           <div className="bj-card--flat">
-            <p className="bj-body bj-semibold bj-mb-6">내 활동 내역 · {me?.score ?? 0}점</p>
+            <p className="bj-body bj-semibold bj-mb-6">이번 주 내 활동 · {me?.score ?? 0}점</p>
             {summaryEntries.length > 0 ? (
               <p className="bj-caption">
                 {summaryEntries.map(({ key, label }) => `${label} ${me![key]}번`).join(' · ')}
               </p>
             ) : (
-              <p className="bj-caption">책 읽고 평가하고 질문 남기면 점수가 쌓여요</p>
+              <p className="bj-caption">월요일마다 새로 시작해요. 책을 평가하고 글을 쓰면 점수가 쌓여요</p>
             )}
           </div>
         )}
@@ -65,7 +63,7 @@ export default function SocialRankingView() {
           <p className="bj-caption bj-text-muted">불러오는 중…</p>
         ) : ranked.length === 0 || onlyMe ? (
           <div className="bj-empty bj-card">
-            <p className="bj-body bj-bold bj-mb-6">순위를 겨룰 사람이 아직 없어요</p>
+            <p className="bj-body bj-bold bj-mb-6">이번 주 순위를 겨룰 사람이 아직 없어요</p>
             <p className="bj-caption bj-mb-16">먼저 점수를 쌓아두면<br />사람들이 들어올 때 위에서 기다릴 수 있어요</p>
             <Link href="/rate" className="bj-btn bj-btn--primary bj-btn--cta">
               읽은 책 평가하러 가기
@@ -92,9 +90,9 @@ export default function SocialRankingView() {
                     <div className="bj-rank-avatar bj-rank-avatar--empty" />
                   )}
                   <div className="bj-flex-1">
-                    <p className="bj-body bj-bold bj-discuss-text">
+                    <Link href={`/people/${entry.userId}`} className="bj-body bj-bold bj-discuss-text bj-unstyled-link">
                       {entry.nickname}{isMe && ' (나)'}
-                    </p>
+                    </Link>
                     <p className="bj-caption">{type ? type.name : '유형 미진단'}</p>
                   </div>
                   <p className={`bj-body bj-bold bj-rank-score${isMe ? ' bj-rank-score--me' : ''}`}>

@@ -6,8 +6,6 @@ export type ActivityType =
   | 'blind_rating'
   | 'book_rating'
   | 'review'
-  | 'question'
-  | 'answer'
   | 'club_create'
   | 'club_join'
 
@@ -23,19 +21,15 @@ const POINTS: Record<ActivityType, number> = {
   blind_rating: 5,
   book_rating: 5,
   review: 5,
-  question: 8,
-  answer: 4,
   club_create: 10,
   club_join: 5,
 }
 
 export const ACTIVITY_LABELS: Record<ActivityType, string> = {
-  test: '독서유형 테스트',
+  test: 'BOOKBTI 테스트',
   blind_rating: '블라인드 북 평가',
   book_rating: '책 평가',
   review: '한 줄 리뷰',
-  question: '질문 작성',
-  answer: '답변 작성',
   club_create: '모임 개설',
   club_join: '모임 참여',
 }
@@ -63,7 +57,7 @@ export function getActivityScore(): number {
 
 export function getActivitySummary(): Record<ActivityType, number> {
   const summary = {
-    test: 0, blind_rating: 0, book_rating: 0, review: 0, question: 0, answer: 0, club_create: 0, club_join: 0,
+    test: 0, blind_rating: 0, book_rating: 0, review: 0, club_create: 0, club_join: 0,
   } as Record<ActivityType, number>
   for (const e of loadLog()) summary[e.type]++
   return summary
