@@ -35,13 +35,14 @@ export default function SocialClubsView() {
         ) : (
         <div className="bj-col-10">
           {clubs.map((club) => {
-            const organizer = resolveAuthor(club.organizerId)
+            const organizer = club.organizerId ? resolveAuthor(club.organizerId).nickname : '북작'
             const memberCount = displayMemberCount(club)
             const isFull = memberCount >= club.capacity
             return (
               <Link key={club.id} href={`/social/clubs/${club.id}`} className="bj-row bj-row--top bj-unstyled-link">
                 <div className="bj-flex-1">
                   <div className="bj-meta-row bj-mb-4">
+                    {club.isOfficial && <span className="bj-chip bj-chip--active">공식</span>}
                     <p className="bj-body bj-bold bj-discuss-text">{club.name}</p>
                     <span className="bj-chip">{club.format}</span>
                   </div>
@@ -54,7 +55,7 @@ export default function SocialClubsView() {
                   <p className={`bj-caption bj-bold${isFull ? ' bj-club-count--full' : ' bj-club-count--open'}`}>
                     {memberCount}/{club.capacity}
                   </p>
-                  <p className="bj-caption bj-caption--xs">{organizer.nickname}</p>
+                  <p className="bj-caption bj-caption--xs">{organizer}</p>
                 </div>
               </Link>
             )
