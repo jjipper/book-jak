@@ -3,8 +3,8 @@ import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { SITE_URL } from './site-url'
 
 const STATIC_PATHS = [
-  '/', '/home', '/test', '/discover', '/rate', '/search',
-  '/social', '/social/clubs', '/social/discuss', '/social/people', '/social/ranking',
+  '/', '/home', '/test', '/discover', '/rate',
+  '/social', '/social/clubs', '/social/people',
   '/about', '/notice', '/contact', '/terms', '/privacy',
 ]
 

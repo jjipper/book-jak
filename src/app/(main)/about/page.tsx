@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const MENUS: { name: string; desc: string }[] = [
-  { name: '홈', desc: '독서 유형 테스트로 시작해서, 책 좋아하는 사람들과 자유롭게 머무는 피드' },
+  { name: '홈', desc: 'BOOKBTI 테스트로 시작해서, 책 좋아하는 사람들과 자유롭게 머무는 피드' },
   { name: '발견', desc: '제목과 표지를 가린 블라인드 북. 편견 없이 요약과 핵심만 보고 고르기' },
   { name: '평가', desc: '읽은 책에 별점과 한줄평을 남기고, 그 기록으로 취향이 쌓이는 곳' },
   { name: '모임', desc: '가볍게 참여하는 모임부터 직접 여는 모임까지' },
@@ -34,7 +34,7 @@ export default function AboutPage() {
           </div>
 
           <div className="bj-card">
-            <p className="bj-h2 bj-mb-12">16가지 독서 유형</p>
+            <p className="bj-h2 bj-mb-12">16가지 BOOKBTI</p>
             <div className="bj-col-10">
               <p className="bj-caption">감정형(F) / 사유형(T) — 느끼려 읽는지, 생각하려 읽는지</p>
               <p className="bj-caption">몰입형(I) / 사색형(C) — 빠져드는지, 곱씹는지</p>
@@ -61,7 +61,7 @@ export default function AboutPage() {
           <div className="bj-card">
             <p className="bj-h2 bj-mb-12">데이터 출처</p>
             <div className="bj-col-10">
-              <p className="bj-caption">도서 DB 제공: 알라딘 인터넷서점(www.aladin.co.kr), 카카오 책 검색</p>
+              <p className="bj-caption">도서 DB 제공: 알라딘 인터넷서점(www.aladin.co.kr)</p>
               <p className="bj-caption">
                 유형 희소도는 2025년 국민독서실태조사(문화체육관광부)의 응답 비율 방향성을 참고하되, 세부 수치는
                 재미를 위해 설계한 값이에요.
