@@ -16,15 +16,15 @@ export default function HomeHero({ typeCode }: HomeHeroProps) {
       <div className="bj-hero__illust">
         <IllustPlaceholder
           code="intro_test"
-          alt="독서 유형 테스트"
+          alt="BOOKBTI 테스트"
           aspectRatio="1 / 1"
           fit="contain"
           background="transparent"
         />
       </div>
       <div className="bj-hero__body">
-        <h1 className="bj-hero__title">나의 독서 유형은 무엇일까?</h1>
-        <p className="bj-hero__sub">12문항으로 16가지 독서 유형을 진단해보세요</p>
+        <h1 className="bj-hero__title">나의 BOOKBTI는 무엇일까?</h1>
+        <p className="bj-hero__sub">12문항으로 16가지 독서 유형 중 나를 찾아보세요</p>
         <Link href={cta.href} className="bj-btn bj-btn--primary bj-hero__cta">
           {cta.label}
         </Link>

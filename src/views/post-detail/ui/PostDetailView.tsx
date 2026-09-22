@@ -139,8 +139,10 @@ export default function PostDetailView() {
             <>
               <article className="bj-card bj-col-12">
                 <div className="bj-post-card__header">
-                  <TypeBadge code={post.authorTypeCode} />
-                  <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
+                  <Link href={mine ? '/my' : `/people/${post.authorId}`} className="bj-post-card__author-link">
+                    <TypeBadge code={post.authorTypeCode} />
+                    <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
+                  </Link>
                   <span className="bj-post-card__time bj-caption">
                     {formatRelTime(post.ts)}{post.editedTs ? ' · 수정됨' : ''}
                   </span>
@@ -181,15 +183,20 @@ export default function PostDetailView() {
                 </div>
               </article>
 
-              <section>
-                <p className="bj-section-tag bj-mb-8">댓글 {comments.length}</p>
+              <section className="bj-post-detail__comments" aria-label="댓글">
+                <p className="bj-h2 bj-mb-10">댓글 {comments.length}</p>
 
-                <div className="bj-col-8">
+                <div className="bj-col-10">
                   {comments.map((c) => (
                     <div key={c.id} className="bj-comment">
                       <div className="bj-post-card__header">
-                        <TypeBadge code={c.authorTypeCode} />
-                        <span className="bj-post-card__author bj-bold">{c.authorNickname}</span>
+                        <Link
+                          href={myIds.has(c.authorId) ? '/my' : `/people/${c.authorId}`}
+                          className="bj-post-card__author-link"
+                        >
+                          <TypeBadge code={c.authorTypeCode} />
+                          <span className="bj-post-card__author bj-bold">{c.authorNickname}</span>
+                        </Link>
                         <span className="bj-post-card__time bj-caption">
                           {formatRelTime(c.ts)}{c.editedTs ? ' · 수정됨' : ''}
                         </span>

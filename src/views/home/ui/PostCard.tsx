@@ -37,12 +37,17 @@ export default function PostCard({ post, onRemoved, onBlocked }: PostCardProps) 
   return (
     <article className="bj-post-card">
       {/* 본문 영역만 링크 — 푸터 버튼은 링크 밖에 둬야 클릭이 겹치지 않는다 */}
-      <Link href={`/posts/${post.id}`} className="bj-post-card__link">
-        <div className="bj-post-card__header">
+      <div className="bj-post-card__header">
+        <Link
+          href={post.authorId === getMyId() ? '/my' : `/people/${post.authorId}`}
+          className="bj-post-card__author-link"
+        >
           <TypeBadge code={post.authorTypeCode} />
           <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
-          <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
-        </div>
+        </Link>
+        <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
+      </div>
+      <Link href={`/posts/${post.id}`} className="bj-post-card__link">
 
         <div className="bj-post-card__body">
           <p className="bj-post-card__content bj-body bj-clamp-3">{post.content}</p>
