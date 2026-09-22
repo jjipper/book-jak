@@ -64,18 +64,16 @@ export interface RankingEntry {
   score: number
   ratingsCount: number
   reviewsCount: number
-  questionsCount: number
-  answersCount: number
   clubsCreated: number
   clubsJoined: number
   postsCount: number
 }
 
-/** 활동 랭킹 — 점수 집계는 Postgres 뷰(reading_ranking)에서 한다. */
+/** 이번 주(월 0시 KST~) 활동 랭킹 — 점수 집계는 Postgres 뷰(reading_ranking_weekly, 0011)에서 한다. */
 export async function loadRanking(limit = 50): Promise<RankingEntry[]> {
   const sb = createSupabaseBrowser()
   const { data } = await sb
-    .from('reading_ranking')
+    .from('reading_ranking_weekly')
     .select('*')
     .order('score', { ascending: false })
     .limit(limit)
@@ -86,8 +84,6 @@ export async function loadRanking(limit = 50): Promise<RankingEntry[]> {
     score: (r.score as number) ?? 0,
     ratingsCount: (r.ratings_count as number) ?? 0,
     reviewsCount: (r.reviews_count as number) ?? 0,
-    questionsCount: (r.questions_count as number) ?? 0,
-    answersCount: (r.answers_count as number) ?? 0,
     clubsCreated: (r.clubs_created as number) ?? 0,
     clubsJoined: (r.clubs_joined as number) ?? 0,
     postsCount: (r.posts_count as number) ?? 0,

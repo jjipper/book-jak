@@ -48,9 +48,9 @@ export default function MyFollowersView() {
         ) : people.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 나를 팔로우한 사람이 없어요</p>
-            <p className="bj-caption bj-mb-16">질문을 남기면 취향이 닿는 사람이 찾아와요</p>
-            <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--cta">
-              질문 남기러 가기
+            <p className="bj-caption bj-mb-16">글을 남기면 취향이 닿는 사람이 찾아와요</p>
+            <Link href="/posts/new" className="bj-btn bj-btn--primary bj-btn--cta">
+              글 남기러 가기
             </Link>
           </div>
         ) : (
