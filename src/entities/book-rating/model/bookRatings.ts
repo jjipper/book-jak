@@ -6,7 +6,7 @@
 import { recordActivity } from '@/shared/lib/activity'
 
 export interface BookRatingRecord {
-  bookId: string // 카탈로그 책은 'b01', 카카오 검색 책은 'isbn-{ISBN13}'
+  bookId: string // 카탈로그 책은 'b01', 알라딘 책은 'isbn-{ISBN13}'
   title?: string // 마이페이지 등에서 카탈로그 조회 없이 표시하기 위한 스냅샷
   categoryName?: string // 알라딘 장르 분석용
   stars: number
@@ -44,7 +44,7 @@ export function saveBookRating(record: BookRatingRecord): void {
   const hadReview = !isFirstRating && !!stored[existing].review?.trim()
 
   if (isFirstRating) stored.push(record)
-  // 카테고리를 모르는 화면(카카오 상세 등)에서 다시 평가해도 기존 장르 정보는 남긴다
+  // 카테고리를 모르는 화면에서 다시 평가해도 기존 장르 정보는 남긴다
   else stored[existing] = { ...record, categoryName: record.categoryName ?? stored[existing].categoryName }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stored))
 

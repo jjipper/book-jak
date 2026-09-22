@@ -1,14 +1,24 @@
 'use client'
 
-// 카카오 검색으로 찾은 책의 상세 화면 (bookId = 'isbn-{ISBN13}')
-// 메타데이터는 카카오에서 실시간 조회, 평가·리뷰는 localStorage(내 것)만 존재.
-// 별점 분포·예상 점수·연관 책은 서비스 평가 데이터가 쌓여야 가능해서 안내만 표시.
+// 책 상세 화면 (bookId = 'isbn-{ISBN13}')
+// 메타데이터는 알라딘 ItemLookUp에서 실시간 조회, 별점·리뷰·서재 통계는 Supabase.
 
 import { useEffect, useMemo, useState } from 'react'
-import { lookupExternalBook, type ExternalBook } from '@/entities/external-book/model/externalBooks'
-import { aladdinProductHref } from '@/entities/external-book/model/aladdinBooks'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { aladdinProductHref, lookupAladdinBook, type AladdinBook } from '@/entities/external-book/model/aladdinBooks'
 import { getBookRating, saveBookRating, removeBookRating, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
-import { pushRating, deleteRating, fetchBookStats, type RemoteBookStats } from '@/entities/book-rating/api/ratingsRemote'
+import {
+  pushRating,
+  deleteRating,
+  fetchBookStats,
+  fetchBookDetailStats,
+  type BookDetailExtraStats,
+  type RemoteBookStats,
+} from '@/entities/book-rating/api/ratingsRemote'
+import { addToWishlist, loadWishlist, removeFromWishlist } from '@/features/wishlist/model/wishlist'
+import { loadResult } from '@/entities/reading-type/model/scoring'
+import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getNickname } from '@/entities/user/model/profile'
 import { toast } from '@/shared/lib/toast'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
@@ -16,7 +26,8 @@ import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
 import { useMounted } from '@/shared/lib/useMounted'
-import BackLink from '@/shared/ui/BackLink'
+import Icon from '@/shared/ui/Icon'
+import AladinLogo from './AladinLogo'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -26,6 +37,23 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   )
 }
 
+// 들어온 화면으로 돌아간다 — 링크로 바로 열린 탭(히스토리 없음)이면 평가 탭으로
+function BackButton() {
+  const router = useRouter()
+  return (
+    <button
+      type="button"
+      className="bj-icon-btn"
+      aria-label="뒤로"
+      onClick={() => (window.history.length > 1 ? router.back() : router.push('/rate'))}
+    >
+      <Icon name="chevron-left" size={24} />
+    </button>
+  )
+}
+
+const DESC_FOLD_AT = 120 // 이보다 긴 책 소개는 접어서 보여준다
+
 interface ExternalBookDetailProps {
   bookId: string // 'isbn-{ISBN13}'
 }
@@ -33,7 +61,7 @@ interface ExternalBookDetailProps {
 export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) {
   const isbn = bookId.replace(/^isbn-/, '')
   const { showGate, closeGate, requireAuth } = useAuthGate()
-  const [book, setBook] = useState<ExternalBook | null>(null)
+  const [book, setBook] = useState<AladdinBook | null>(null)
   const [loading, setLoading] = useState(true)
   // 내 평가는 localStorage라 마운트 후에만 읽고, 이 화면에서 고친 것만 덮어쓴다 (null = 아직 안 고침)
   const mounted = useMounted()
@@ -46,16 +74,29 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   const review = reviewEdit ?? stored?.review ?? ''
   const [justSaved, setJustSaved] = useState(false)
   const [stats, setStats] = useState<RemoteBookStats | null>(null)
+  const [extra, setExtra] = useState<BookDetailExtraStats | null>(null)
+  const [typeCode, setTypeCode] = useState<string | null>(null)
+  const [descOpen, setDescOpen] = useState(false)
+  // 서재 — 로컬 사본이 원본, 이 화면에서 누른 것만 덮어쓴다 (null = 아직 안 누름)
+  const storedWished = useMemo(() => mounted && loadWishlist().some((r) => r.bookId === bookId), [mounted, bookId])
+  const [wishEdit, setWishEdit] = useState<boolean | null>(null)
+  const wished = wishEdit ?? storedWished
 
   // bookId가 바뀌면 호출부에서 key로 새로 마운트하므로 여기서 loading을 되돌릴 필요가 없다
   useEffect(() => {
     let cancelled = false
-    lookupExternalBook(isbn)
+    lookupAladdinBook(isbn)
       .then((b) => { if (!cancelled) setBook(b) })
       .catch(() => { if (!cancelled) setBook(null) })
       .finally(() => { if (!cancelled) setLoading(false) })
 
     fetchBookStats(bookId).then((s) => { if (!cancelled) setStats(s) })
+    const code = loadResult()?.typeCode ?? null
+    fetchBookDetailStats(bookId, code).then((s) => {
+      if (cancelled) return
+      setExtra(s)
+      setTypeCode(code)
+    })
     return () => { cancelled = true }
   }, [isbn, bookId])
 
@@ -64,7 +105,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       <main className="bj-shell">
         <div className="bj-frame">
           <header className="bj-subpage-head">
-            <BackLink href="/rate" />
+            <BackButton />
             <span className="bj-h2">책 정보</span>
           </header>
           <p className="bj-caption bj-text-muted">책 정보를 불러오는 중…</p>
@@ -78,7 +119,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       <main className="bj-shell">
         <div className="bj-frame">
           <header className="bj-subpage-head">
-            <BackLink href="/rate" />
+            <BackButton />
             <span className="bj-h2">책 정보</span>
           </header>
           <p className="bj-body bj-text-muted">책 정보를 불러올 수 없어요.</p>
@@ -107,6 +148,20 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
     persist(stars, review)
   }
 
+  function handleWish() {
+    requireAuth(() => {
+      if (!book) return
+      if (wished) {
+        removeFromWishlist(bookId)
+        setWishEdit(false)
+        return
+      }
+      addToWishlist({ bookId, title: book.title, author: book.author, publisher: book.publisher, cover: book.cover, ts: Date.now() })
+      setWishEdit(true)
+      toast.show('내 서재에 담았어요')
+    })
+  }
+
   function persist(n: number, reviewText: string) {
     if (!book) return
     const record: BookRatingRecord = {
@@ -116,14 +171,14 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       review: reviewText.trim() || undefined,
       ts: Date.now(),
     }
-    saveBookRating(record)
+    saveBookRating({ ...record, categoryName: book.categoryName })
     setRatingEdit(record)
     setJustSaved(true)
     setTimeout(() => setJustSaved(false), 2000)
 
     // 서버에도 동기화 후 커뮤니티 통계 갱신 (Supabase 미설정이면 no-op)
     pushRating(
-      { id: bookId, title: book.title, authors: book.authors, publisher: book.publisher, year: book.year, thumbnail: book.thumbnail },
+      { id: bookId, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover, categoryName: book.categoryName },
       n,
       reviewText,
     )
@@ -132,35 +187,58 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       .catch(() => toast.error('서버 동기화에 실패했어요. 로컬에는 저장됐어요'))
   }
 
+  const category = book.categoryName.split('>').slice(1).join(' › ')
+  const descLong = book.description.length > DESC_FOLD_AT
+  const typeName = typeCode ? READING_TYPES[typeCode as keyof typeof READING_TYPES]?.name : undefined
+  // 서버 집계에 이 화면에서 누른 것만 반영
+  const wishCount = (extra?.wishCount ?? 0) + (wishEdit === null ? 0 : Number(wishEdit) - Number(storedWished))
+
   return (
     <main className="bj-shell">
       <div className="bj-frame">
       <header className="bj-subpage-head">
-        <BackLink href="/rate" />
+        <BackButton />
         <span className="bj-h2">책 정보</span>
       </header>
 
       <div className="bj-content--24">
         {/* 책 기본 정보 */}
         <div className="bj-book-head">
-          <div className="bj-book-cover--lg">
-            {book.thumbnail && (
+          <div className="bj-book-cover--lg bj-book-cover--xl">
+            {book.cover && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={book.thumbnail} alt={book.title} className="bj-cover-img" />
+              <img src={book.cover} alt={book.title} className="bj-cover-img" />
             )}
           </div>
           <div className="bj-book-head__body">
             <p className="bj-h1 bj-book-title">{book.title}</p>
-            <p className="bj-body bj-book-author">{book.authors.join(', ') || '작자 미상'}</p>
-            <p className="bj-caption bj-book-meta-hint">{book.publisher}{book.year ? ` · ${book.year}` : ''} · ISBN {book.isbn}</p>
-            <a
-              href={aladdinProductHref(book.isbn)}
-              target="_blank"
-              rel="noreferrer"
-              className="bj-btn bj-btn--sm bj-book-info-link"
-            >
-              책 정보보기
-            </a>
+            {book.subTitle && !book.title.includes(book.subTitle) && (
+              <p className="bj-caption bj-book-meta-hint">{book.subTitle}</p>
+            )}
+            <p className="bj-body bj-book-author">{book.author || '작자 미상'}</p>
+            <p className="bj-caption bj-book-meta-hint">
+              {[book.publisher, book.pubDate?.replace(/-/g, '.'), book.itemPage ? `${book.itemPage}쪽` : null].filter(Boolean).join(' · ')}
+            </p>
+            {category && <p className="bj-caption bj-book-meta-hint">{category}</p>}
+            {wishCount > 0 && <p className="bj-caption bj-book-meta-hint">{wishCount}명이 서재에 담았어요</p>}
+            <div className="bj-book-actions">
+              <button
+                type="button"
+                onClick={handleWish}
+                className={`bj-btn bj-btn--sm ${wished ? 'bj-btn--secondary' : 'bj-btn--primary'}`}
+                aria-pressed={wished}
+              >
+                {wished ? '서재에 담김 ✓' : '서재에 담기'}
+              </button>
+              <a
+                href={aladdinProductHref(book.isbn13)}
+                target="_blank"
+                rel="noreferrer"
+                className="bj-btn bj-btn--sm bj-book-info-link"
+              >
+                책 정보보기 <AladinLogo />
+              </a>
+            </div>
           </div>
         </div>
 
@@ -171,6 +249,11 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
               ? <>평균 별점 <span className="bj-stat-star">★ {stats.avg.toFixed(1)}</span> (북작 {stats.count}명)</>
               : '아직 이 책을 평가한 북작 사용자가 없어요'}
           </span>
+          {typeName && extra?.typeAvg != null && (
+            <span className="bj-caption">
+              {typeName} 유형 평균 <span className="bj-stat-star">★ {extra.typeAvg.toFixed(1)}</span> ({extra.typeCount}명)
+            </span>
+          )}
           <StarRating value={stars} onChange={handleRate} size={32} />
           <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-accent)' : undefined }}>
             {stars > 0
@@ -200,12 +283,14 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
         {book.description && (
           <section>
             <SectionLabel>책 소개</SectionLabel>
-            <p className="bj-body bj-book-desc">
+            <p className={`bj-body bj-book-desc${descLong && !descOpen ? ' bj-clamp-4' : ''}`}>
               {book.description}
             </p>
-            <a href={book.url} target="_blank" rel="noreferrer" className="bj-caption bj-unstyled-link bj-book-more-link">
-              다음 책 정보에서 전체 소개 보기 →
-            </a>
+            {descLong && (
+              <button type="button" onClick={() => setDescOpen((v) => !v)} className="bj-caption bj-unstyled-link bj-book-more-link bj-btn-reset">
+                {descOpen ? '접기' : '더보기'}
+              </button>
+            )}
           </section>
         )}
 
@@ -274,6 +359,25 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
                   )
                 })}
               </div>
+            </div>
+          </section>
+        )}
+        {/* 이 책을 좋아한 사람들이 좋아한 책 — 4점 이상 준 사람들이 4점 이상 준 다른 책 */}
+        {extra && extra.alsoLiked.length > 0 && (
+          <section>
+            <SectionLabel>이 책을 좋아한 사람들이 좋아한 책</SectionLabel>
+            <div className="bj-rail bj-also-liked">
+              {extra.alsoLiked.map((b) => (
+                <Link key={b.id} href={`/rate/books/${b.id}`} className="bj-unstyled-link bj-also-liked__item">
+                  <div className="bj-ext-book-cover bj-also-liked__cover">
+                    {b.thumbnail && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={b.thumbnail} alt={b.title} className="bj-cover-img" />
+                    )}
+                  </div>
+                  <p className="bj-caption bj-also-liked__title">{b.title}</p>
+                </Link>
+              ))}
             </div>
           </section>
         )}

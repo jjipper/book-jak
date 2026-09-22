@@ -1,4 +1,4 @@
-// 읽고싶어요 (Supabase wishlist) — 원본 데이터는 여기에 있다. 로그인 필수.
+// 내 서재 (Supabase wishlist) — 원본 데이터는 여기에 있다. 로그인 필수.
 // 화면이 동기로 읽는 localStorage 사본은 model/wishlist.ts의 syncWishlist()가 맞춘다.
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
@@ -9,7 +9,7 @@ async function myUserId(): Promise<string | null> {
   return user?.id ?? null
 }
 
-// 내 찜 목록 — 로그인 안 했거나 실패하면 null (로컬 사본을 건드리지 않게)
+// 내 서재 목록 — 로그인 안 했거나 실패하면 null (로컬 사본을 건드리지 않게)
 export async function fetchWishlist(): Promise<WishlistRecord[] | null> {
   const userId = await myUserId()
   if (!userId) return null

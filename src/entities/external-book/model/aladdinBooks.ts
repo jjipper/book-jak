@@ -1,5 +1,6 @@
 // 알라딘 Open API 책 타입 + 클라이언트 fetch 헬퍼
-// 서버 프록시(/api/aladdin/list)를 통해서만 호출 — TTBKey는 클라이언트에 노출되지 않는다.
+// 서버 프록시(/api/aladdin/list·search·lookup)를 통해서만 호출 — TTBKey는 클라이언트에 노출되지 않는다.
+// 앱의 책 데이터(평가·검색·상세·글쓰기 첨부)는 전부 알라딘 하나로 통일한다.
 
 export interface AladdinBook {
   id: string // 'isbn-{isbn13}'
@@ -11,6 +12,8 @@ export interface AladdinBook {
   categoryName: string
   publisher: string
   pubDate: string
+  subTitle?: string // lookup에서만
+  itemPage?: number // 쪽수, lookup에서만
 }
 
 export const ALADDIN_CATEGORIES = [
@@ -54,13 +57,21 @@ export async function fetchAladdinBooks(params: {
   return data.books ?? []
 }
 
-/** 키워드 검색 (글쓰기 책 첨부용) */
+/** 키워드 검색 (평가 탭 검색, 글쓰기 책 첨부) */
 export async function searchAladdinBooks(q: string, maxResults = 10): Promise<AladdinBook[]> {
   const sp = new URLSearchParams({ q, maxResults: String(maxResults) })
   const res = await fetch(`/api/aladdin/search?${sp}`)
   const data = (await res.json()) as { books?: AladdinBook[]; error?: string }
   if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
   return data.books ?? []
+}
+
+/** ISBN13 한 권 상세 — 없는 책이면 null */
+export async function lookupAladdinBook(isbn13: string): Promise<AladdinBook | null> {
+  const res = await fetch(`/api/aladdin/lookup?isbn13=${encodeURIComponent(isbn13)}`)
+  const data = (await res.json()) as { books?: AladdinBook[]; error?: string }
+  if (!res.ok || data.error) throw new Error(data.error ?? `알라딘 API 요청 실패 (${res.status})`)
+  return data.books?.[0] ?? null
 }
 
 /**

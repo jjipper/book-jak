@@ -1,6 +1,6 @@
-// 읽고싶어요 보관함 — 원본은 Supabase wishlist 테이블(api/wishlistRemote.ts)이고,
+// 내 서재(서재에 담기) — 원본은 Supabase wishlist 테이블(api/wishlistRemote.ts)이고,
 // localStorage는 동기로 읽는 화면(마이 카운트 등)을 위한 사본이다. syncWishlist()가 서버와 맞춘다.
-// 발견 탭(블라인드 카드)에서 담고, 마이 > 보관함에서 본다.
+// 발견 탭·책 상세에서 담고, 마이 > 내 서재에서 본다.
 
 import { deleteWishlist, fetchWishlist, pushWishlist } from '@/features/wishlist/api/wishlistRemote'
 
@@ -49,7 +49,7 @@ export function removeFromWishlist(bookId: string): void {
 }
 
 // 서버 기준으로 로컬 사본을 맞춘다. 서버에 없는 로컬 항목은
-// - 마지막 sync 이후에 담은 것(첫 sync면 전부 — 기존 로컬 찜 이관)이면 서버로 올리고 유지,
+// - 마지막 sync 이후에 담은 것(첫 sync면 전부 — 기존 로컬 항목 이관)이면 서버로 올리고 유지,
 // - 그 전에 담은 것이면 다른 기기에서 뺀 것이므로 버린다.
 export async function syncWishlist(): Promise<WishlistRecord[]> {
   const server = await fetchWishlist()
