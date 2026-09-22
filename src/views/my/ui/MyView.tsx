@@ -9,8 +9,8 @@ import { BADGE_LIST } from '@/entities/reading-type/model/badges'
 import { setAvatar, setNickname } from '@/entities/user/model/profile'
 import { fetchProfile, upsertProfile, signOut } from '@/entities/user/api/profileRemote'
 import { getFollowingIds, getFollowerIds } from '@/features/follow/model/follows'
-import { getLikedIds } from '@/features/like/model/likes'
-import { loadQuestions, loadAllAnswers } from '@/entities/discussion/model/discussionActions'
+import { loadMyPosts, loadLikedPosts } from '@/entities/post/api/myPostsRemote'
+import { loadRanking } from '@/entities/person/api/personRemote'
 import { loadClubs, getJoinedIds } from '@/entities/club/model/clubActions'
 import { loadMyComments } from '@/entities/post/api/commentsRemote'
 import { deleteMyAccount } from '@/entities/user/api/accountRemote'
@@ -64,6 +64,7 @@ export default function MyView() {
   const [myPostCount, setMyPostCount] = useState(0)
   const [myCommentCount, setMyCommentCount] = useState(0)
   const [myClubCount, setMyClubCount] = useState(0)
+  const [myRank, setMyRank] = useState<number | null>(null)
   const [ratedCount, setRatedCount] = useState(0)
   const [wishCount, setWishCount] = useState(0)
   const [discoverSaved, setDiscoverSaved] = useState(0)
@@ -91,21 +92,24 @@ export default function MyView() {
       }
 
       const myId = getMyId()
-      const [followingIds, followerIds, likedIds, allQuestions, allAnswers, joinedIds, allClubs, feedComments] = await Promise.all([
+      const [followingIds, followerIds, likedPosts, myPosts, joinedIds, allClubs, feedComments, ranking] = await Promise.all([
         getFollowingIds(),
         getFollowerIds(),
-        getLikedIds(),
-        loadQuestions(),
-        loadAllAnswers(),
+        loadLikedPosts(),
+        loadMyPosts(),
         getJoinedIds(),
         loadClubs(),
         loadMyComments(),
+        loadRanking(),
       ])
       setFollowingCount(followingIds.length)
       setFollowerCount(followerIds.length)
-      setLikedCount(likedIds.length)
-      setMyPostCount(allQuestions.filter((q) => q.authorId === myId).length)
-      setMyCommentCount(allAnswers.filter((a) => a.authorId === myId).length + feedComments.length)
+      setLikedCount(likedPosts.length)
+      setMyPostCount(myPosts.length)
+      setMyCommentCount(feedComments.length)
+      // ponytail: 상위 50명 안에서만 찾는다 — 밖이면 '순위 없음'. 사람이 늘면 뷰에 rank 컬럼을 두고 내 행만 조회
+      const rankIdx = ranking.findIndex((r) => r.userId === profile.id)
+      setMyRank(rankIdx >= 0 ? rankIdx + 1 : null)
       setMyClubCount(allClubs.filter((c) => c.organizerId === myId || joinedIds.includes(c.id)).length)
 
       const ratings = loadBookRatings()
@@ -161,7 +165,7 @@ export default function MyView() {
           </button>
         </div>
         <p className="bj-caption">
-          {nickname ? `${nickname} · ` : ''}취향 리포트와 보관함
+          {nickname ? `${nickname} · ` : ''}취향 리포트와 내 서재
         </p>
       </header>
 
@@ -222,11 +226,20 @@ export default function MyView() {
         ) : (
           <div className="bj-card bj-card--empty-lg">
             <p className="bj-body bj-bold bj-mb-6">아직 테스트 전이에요</p>
-            <p className="bj-caption bj-mb-16">나의 독서 유형을 먼저 알아보세요</p>
+            <p className="bj-caption bj-mb-16">나의 BOOKBTI를 먼저 알아보세요</p>
             <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">
               테스트 시작하기 →
             </Link>
           </div>
+        )}
+
+        {/* 이번 주 랭킹 */}
+        {loggedIn && (
+          <Link href="/my/ranking" className="bj-row bj-row--compact bj-unstyled-link">
+            <p className="bj-activity-label">이번 주 독서 랭킹</p>
+            <span className="bj-caption bj-bold">{myRank ? `내 순위 ${myRank}위` : '순위 없음'}</span>
+            <span className="bj-icon-hint"><Icon name="chevron-right" size={16} /></span>
+          </Link>
         )}
 
         {/* 스타일 분석 + 배지 — 데스크톱(≥900px)에서 2열 */}
@@ -309,12 +322,12 @@ export default function MyView() {
         {/* 보관함 */}
         <div>
           <div className="bj-card-section-head--mb10">
-            <span className="bj-section-tag">보관함</span>
+            <span className="bj-section-tag">내 서재</span>
           </div>
           {loggedIn ? (
             <div className="bj-col-8">
               <ActivityRow href="/my/rated" label="내가 읽고 별점 준 책" count={ratedCount} />
-              <ActivityRow href="/my/wishlist" label="읽고 싶어요 한 책" count={wishCount} />
+              <ActivityRow href="/my/wishlist" label="서재에 담은 책" count={wishCount} />
             </div>
           ) : (
             <LoginRequiredNote />
@@ -450,8 +463,8 @@ export default function MyView() {
       <ConfirmSheet
         open={showResetConfirm}
         message={loggedIn
-          ? '이 기기에 저장된 독서 유형 결과와 활동 데이터가 삭제됩니다. 계정에 백업된 독서 유형은 다시 불러와져요. 계속할까요?'
-          : '독서 유형 테스트 결과와 평가, 글, 팔로우 등 이 기기에 저장된 모든 데이터가 삭제되고 복구할 수 없어요. 계속할까요?'}
+          ? '이 기기에 저장된 BOOKBTI 결과와 활동 데이터가 삭제됩니다. 계정에 백업된 BOOKBTI는 다시 불러와져요. 계속할까요?'
+          : 'BOOKBTI 테스트 결과와 평가, 글, 팔로우 등 이 기기에 저장된 모든 데이터가 삭제되고 복구할 수 없어요. 계속할까요?'}
         confirmLabel="초기화"
         cancelLabel="취소"
         onConfirm={() => {
