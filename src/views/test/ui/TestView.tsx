@@ -58,7 +58,7 @@ export default function TestView() {
               독서 취향 소셜
             </p>
             <h1 className="bj-display bj-display--xl bj-display--intro">
-              나의<br />독서 유형은<br />뭘까
+              나의<br />BOOKBTI는<br />뭘까
             </h1>
             <p className="bj-body bj-intro-sub">
               12문항으로 알아보는 나의 독서 취향.<br />
@@ -66,7 +66,7 @@ export default function TestView() {
             </p>
           </div>
 
-          <IllustPlaceholder code="intro_test" alt="독서유형 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" />
+          <IllustPlaceholder code="intro_test" alt="BOOKBTI 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" />
 
           <div className="bj-col-10">
             <button onClick={() => { resetTest(); setStarted(true) }} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">
@@ -79,7 +79,7 @@ export default function TestView() {
 
           <div className="bj-card--flat bj-stat-spread">
             {[
-              { value: '16가지', label: '독서 유형' },
+              { value: '16가지', label: 'BOOKBTI 유형' },
               { value: '12문항', label: '정확한 진단' },
               { value: '100%', label: '무료' },
             ].map((stat) => (

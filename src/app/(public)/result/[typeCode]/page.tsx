@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const type = READING_TYPES[typeCode.toUpperCase() as TypeCode]
 
   if (!type) {
-    return { title: '독서 유형 결과', description: '12문항으로 알아보는 나의 독서 취향 유형' }
+    return { title: 'BOOKBTI 결과', description: '12문항으로 알아보는 나의 독서 유형 BOOKBTI' }
   }
 
   const title = `${type.emoji} ${type.name}`
@@ -22,8 +22,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: url },
-    openGraph: { title: `${title} — 나의 독서 유형`, description, url, type: 'article' },
-    twitter: { card: 'summary_large_image', title: `${title} — 나의 독서 유형`, description },
+    openGraph: { title: `${title} — 나의 BOOKBTI`, description, url, type: 'article' },
+    twitter: { card: 'summary_large_image', title: `${title} — 나의 BOOKBTI`, description },
   }
 }
 

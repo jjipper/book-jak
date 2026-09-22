@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import { SITE_URL } from './site-url'
 
-const TITLE = '북작 — 나의 독서 유형은?'
+const TITLE = '북작 — 나의 독서 유형 BOOKBTI는?'
 const DESCRIPTION = '12문항으로 알아보는 나의 독서 취향 유형. 16가지 중 나는? 취향으로 북적이는 독서 취향 소셜, 북작.'
 
 export const metadata: Metadata = {
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: { default: TITLE, template: '%s · 북작' },
   description: DESCRIPTION,
   applicationName: '북작',
-  keywords: ['독서 유형 테스트', '북작', 'BOOKJAK', '독서 MBTI', '책 추천', '독서 취향'],
+  keywords: ['독서 유형 테스트', 'BOOKBTI', '북작', 'BOOKJAK', '독서 MBTI', '책 추천', '독서 취향'],
   openGraph: {
     title: TITLE,
     description: DESCRIPTION,

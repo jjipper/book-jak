@@ -50,10 +50,10 @@ export default function SocialPeopleView() {
           <div className="bj-empty-card">
             <p className="bj-h1 bj-mb-10">취향 맞는 사람 찾기</p>
             <p className="bj-body bj-text-muted bj-mb-20">
-              독서유형 테스트를 먼저 하면<br />나와 취향 맞는 사람을 보여드려요
+              BOOKBTI 테스트를 먼저 하면<br />나와 취향 맞는 사람을 보여드려요
             </p>
             <Link href="/test" className="bj-btn bj-btn--primary bj-btn--block">
-              독서유형 테스트 하러 가기
+              BOOKBTI 테스트 하러 가기
             </Link>
           </div>
         ) : ranked === null ? (
@@ -63,16 +63,16 @@ export default function SocialPeopleView() {
           <div className="bj-empty-card">
             <p className="bj-h1 bj-mb-10">아직 취향 매칭 유저가 없어요</p>
             <p className="bj-body bj-text-muted bj-mb-20">
-              대신 의견 나누기에서<br />다른 사람 질문을 둘러볼까요?
+              대신 홈 피드에서<br />다른 사람 글을 둘러볼까요?
             </p>
-            <Link href="/social/discuss" className="bj-btn bj-btn--primary bj-btn--block">
-              의견 나누기 둘러보기
+            <Link href="/home" className="bj-btn bj-btn--primary bj-btn--block">
+              피드 둘러보기
             </Link>
           </div>
         ) : (
           <>
             <p className="bj-body bj-text-muted bj-text-sm">
-              내 독서유형과 얼마나 잘 맞는지 순서대로 보여드려요
+              내 BOOKBTI와 얼마나 잘 맞는지 순서대로 보여드려요
             </p>
 
             <div className="bj-col-10">
