@@ -6,6 +6,9 @@ import { fetchProfile, upsertProfile, saveTypeCode } from '@/entities/user/api/p
 import { setNickname, setAvatar, setMyId } from '@/entities/user/model/profile'
 import { loadResult, restoreResult } from '@/entities/reading-type/model/scoring'
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
+import { claimAttendance } from '@/entities/token/api/tokenRemote'
+import { TOKENS_CHANGED } from '@/entities/token/model/token'
+import { toast } from '@/shared/lib/toast'
 
 // 서버 우선 — 계정에 유형이 있으면 그걸로 맞추고, 없을 때만 로컬 결과를 올린다(비로그인 테스트 후 첫 로그인).
 // 로컬 우선으로 하면 공용 기기에서 앞사람 결과가 다음 사람 계정을 덮는다.
@@ -27,6 +30,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     sb.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return  // 비로그인 방문자 — 닉네임 게이트 없음
       setMyId(user.id)
+      // 출석 토큰 — 하루 한 번은 DB가 보장한다. 새로 받았을 때만 알린다
+      claimAttendance().then((got) => {
+        if (!got) return
+        toast.show('출석 토큰 +1')
+        window.dispatchEvent(new Event(TOKENS_CHANGED))
+      })
       const profile = await fetchProfile()
       if (!profile) {
         setNeedsNickname(true)
@@ -50,6 +59,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           }}
           onSubmit={async (name) => {
             await upsertProfile(name)
+            window.dispatchEvent(new Event(TOKENS_CHANGED)) // 가입 환영 토큰(DB 트리거)
             setNickname(name)
             syncTypeCode(null)
             setNeedsNickname(false)

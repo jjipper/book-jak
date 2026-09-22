@@ -1,0 +1,59 @@
+/* 발견 — 카드가 하단 탭 위까지 화면을 꽉 채운다 (.pb-nav 88px만큼 뺀 높이) */
+.bj-shell.bj-discover {
+  min-height: 0;
+  height: calc(100dvh - 88px - env(safe-area-inset-bottom));
+}
+.bj-discover .bj-frame--col {
+  width: 100%;
+  min-height: 0;
+}
+.bj-discover__stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--space-md);
+}
+
+/* 상단 내 토큰 수 */
+.bj-discover__tokens {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-weak);
+  color: var(--color-accent-hover);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* 공개 시트 — 표지 + 제목·저자 */
+.bj-reveal {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+.bj-reveal__cover {
+  width: 72px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+.bj-reveal__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: var(--space-lg);
+}
+/* 줄거리 최대 5줄 (평점 줄이 있으면 줄거리 4줄) */
+.bj-reveal__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  overflow: hidden;
+  color: var(--color-text-muted);
+}
+.bj-reveal__desc--short {
+  -webkit-line-clamp: 4;
+}

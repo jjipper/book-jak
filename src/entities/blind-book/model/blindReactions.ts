@@ -1,5 +1,5 @@
-// 발견 탭 — 블라인드 책 저장/패스 반응. Supabase blind_reactions가 유일한 소스.
-// 비로그인이면 기록하지 않는다 (반응은 개인 데이터라 익명으로 쌓아둘 곳이 없다).
+// 발견 탭 — 블라인드 북 넘어가기/서재 담기 반응. Supabase blind_reactions가 유일한 소스.
+// 기록은 서버 라우트(app/api/blind/today POST)가 한다 — 책 isbn이 클라이언트에 없어서.
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 
@@ -7,19 +7,6 @@ export interface BlindReaction {
   bookId: number
   action: 'save' | 'pass'
   ts: number
-}
-
-/** 화면 흐름을 막지 않도록 fire-and-forget. 실패해도 카드 넘김은 그대로 진행된다. */
-export function recordBlindReaction(bookId: number, action: 'save' | 'pass'): void {
-  void (async () => {
-    const sb = createSupabaseBrowser()
-    const { data: { user } } = await sb.auth.getUser()
-    if (!user) return
-    await sb.from('blind_reactions').upsert(
-      { user_id: user.id, blind_book_id: bookId, action },
-      { onConflict: 'user_id,blind_book_id' },
-    )
-  })()
 }
 
 export async function loadBlindReactions(): Promise<BlindReaction[]> {

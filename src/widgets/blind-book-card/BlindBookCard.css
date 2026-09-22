@@ -1,0 +1,40 @@
+/* 발견 — 화면을 꽉 채우는 블라인드 카드 (기본 .bj-blind-card는 components.css) */
+.bj-blind-card--fill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  touch-action: pan-y;
+  user-select: none;
+  cursor: grab;
+  transition: transform 0.34s cubic-bezier(0.4, 0, 0.6, 1), opacity 0.34s;
+}
+.bj-blind-card--exit {
+  transform: translateX(-140%) rotate(-14deg);
+  opacity: 0;
+  cursor: default;
+}
+
+/* 흐린 일러스트가 남는 높이를 전부 채운다 */
+.bj-blind-card__hero--fill {
+  flex: 1;
+  min-height: 72px;
+}
+.bj-blind-card__hero--fill .bj-illust-wrap {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+/* 핵심 문장 — 크게, Pretendard */
+.bj-blind-card__line {
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--color-text);
+  word-break: keep-all;
+}
+
+.bj-blind-card__actions > .bj-btn {
+  flex: 1;
+}
