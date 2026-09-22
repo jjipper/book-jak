@@ -1,5 +1,5 @@
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
-import type { AppNotification, NotificationType } from '@/entities/notification/model/notifications'
+import type { AppNotification, FollowingActivity, NotificationType } from '@/entities/notification/model/notifications'
 
 /** 내 알림 목록 (최신순) */
 export async function loadNotifications(limit = 50): Promise<AppNotification[]> {
@@ -45,4 +45,19 @@ export async function markAllRead(): Promise<void> {
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return
   await sb.from('notifications').update({ read: true }).eq('user_id', user.id).eq('read', false)
+}
+
+/** 내가 팔로우한 사람들의 최근 새 글·별점 (최신순) */
+export async function loadFollowingActivity(limit = 50): Promise<FollowingActivity[]> {
+  const sb = createSupabaseBrowser()
+  const { data } = await sb.rpc('following_activity', { p_limit: limit })
+  return ((data ?? []) as Record<string, unknown>[]).map((r) => ({
+    kind: r.kind as FollowingActivity['kind'],
+    actorId: r.actor_id as string,
+    actorNickname: (r.actor_nickname as string | null) ?? '누군가',
+    targetId: r.target_id as string,
+    title: (r.title as string | null) ?? '',
+    stars: r.stars == null ? null : Number(r.stars),
+    ts: new Date(r.ts as string).getTime(),
+  }))
 }
