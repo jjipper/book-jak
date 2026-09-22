@@ -1,18 +1,16 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import Link from 'next/link'
 import {
   ALADDIN_CATEGORIES,
   type AladdinBook,
   fetchAladdinBooks,
+  searchAladdinBooks,
   shuffle,
 } from '@/entities/external-book/model/aladdinBooks'
-import { getBookRating, loadBookRatings, removeBookRating, saveBookRating } from '@/entities/book-rating/model/bookRatings'
-import { deleteRating, pushRating, syncMyRatings } from '@/entities/book-rating/api/ratingsRemote'
-import { useAuthGate } from '@/shared/lib/useAuthGate'
-import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import StarRating from '@/shared/ui/StarRating'
+import { loadBookRatings } from '@/entities/book-rating/model/bookRatings'
+import { syncMyRatings } from '@/entities/book-rating/api/ratingsRemote'
+import ExternalBookRow from '@/widgets/book/ExternalBookRow'
 import { useMounted } from '@/shared/lib/useMounted'
 
 const QUERY_TYPES = ['Bestseller', 'ItemNewAll', 'BlogBest'] as const
@@ -29,41 +27,34 @@ function pickQueryType() {
   return QUERY_TYPES[Math.floor(Math.random() * QUERY_TYPES.length)]
 }
 
-interface RateCardProps {
-  book: AladdinBook
-  myStars: number
-  onRate: (book: AladdinBook, stars: number) => void
+interface RateViewProps {
+  initialQuery?: string // /rate?q= — /search에서 넘어오면 빈 문자열이라 검색창에 바로 포커스
 }
 
-function RateCard({ book, myStars, onRate }: RateCardProps) {
-  return (
-    <div className="bj-row">
-      {/* 표지·제목만 링크 — 별점은 링크 밖에 둬야 별을 눌렀을 때 상세로 튀지 않는다 */}
-      <Link href={`/rate/books/${book.id}`} className="bj-ext-book-cover bj-unstyled-link">
-        {book.cover && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={book.cover} alt={book.title} className="bj-cover-img" />
-        )}
-      </Link>
-      <div className="bj-book-row__body">
-        <Link href={`/rate/books/${book.id}`} className="bj-unstyled-link">
-          <p className="bj-body bj-book-title-sm">{book.title}</p>
-          <p className="bj-caption bj-truncate bj-caption--hint">
-            {[book.author, book.publisher].filter(Boolean).join(' · ')}
-          </p>
-        </Link>
-        <div className="bj-book-row__meta-row">
-          <StarRating value={myStars} onChange={(stars) => onRate(book, stars)} size={20} />
-          {myStars > 0 && (
-            <span className="bj-caption bj-bold bj-caption--action">{myStars}점 평가함</span>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
+export default function RateView({ initialQuery }: RateViewProps) {
+  const [query, setQuery] = useState(initialQuery ?? '')
+  const q = query.trim()
+  // 검색 결과는 그 결과를 낳은 질의와 함께 담아둔다 — 질의가 바뀌면 낡은 결과이므로 그 자체가 "검색 중"
+  const [outcome, setOutcome] = useState<{ q: string; books: AladdinBook[]; error: boolean } | null>(null)
+  const fresh = outcome !== null && outcome.q === q
+  const results: AladdinBook[] = fresh ? outcome.books : []
+  const searchError = fresh ? outcome.error : false
+  const searching = q !== '' && !fresh
 
-export default function RateView() {
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      // 상세에서 뒤로 왔을 때 검색 결과가 그대로 보이도록 주소에 남긴다
+      window.history.replaceState(null, '', q ? `/rate?q=${encodeURIComponent(q)}` : '/rate')
+      if (!q) return
+      try {
+        setOutcome({ q, books: await searchAladdinBooks(q, 20), error: false })
+      } catch {
+        setOutcome({ q, books: [], error: true })
+      }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [q])
+
   const [selectedCat, setSelectedCat] = useState('0')
   // 목록은 어느 카테고리의 것인지와 함께 담는다 — 카테고리가 바뀌면 그 자체로 빈 목록이 된다
   const [loaded, setLoaded] = useState<{ cat: string; items: AladdinBook[] }>({ cat: '0', items: [] })
@@ -80,7 +71,6 @@ export default function RateView() {
   const mounted = useMounted()
   const [rated, setRated] = useState<Record<string, number>>({})
   const [synced, setSynced] = useState(0)
-  const { showGate, closeGate, requireAuth } = useAuthGate()
 
   // 서버의 내 평가를 먼저 내려받아 로컬 사본을 맞춘다 (기기 바뀌어도 별점 유지)
   useEffect(() => {
@@ -158,28 +148,14 @@ export default function RateView() {
   // (짧은 페이지에서는 sentinel이 계속 보이는 상태로 고정돼 IntersectionObserver가
   //  재발동하지 않으므로, books 변화를 감지해 직접 이어서 로드한다)
   useEffect(() => {
-    if (!sentinelVisible || loading) return
+    if (q || !sentinelVisible || loading) return
     if (noGrowthRef.current >= MAX_NO_GROWTH_RETRIES) return
     void loadMore()
-  }, [sentinelVisible, books, loading, loadMore])
+  }, [q, sentinelVisible, books, loading, loadMore])
 
-  function handleRate(book: AladdinBook, stars: number) {
-    requireAuth(() => {
-      setRated((prev) => ({ ...prev, [book.id]: stars }))
-      // 같은 별을 다시 누르면 0 — 평가 취소 (0점으로 저장하면 서버 check 제약에 걸린다)
-      if (stars === 0) {
-        removeBookRating(book.id)
-        deleteRating(book.id).catch(() => {})
-        return
-      }
-      saveBookRating({ bookId: book.id, title: book.title, categoryName: book.categoryName, stars, review: getBookRating(book.id)?.review, ts: Date.now() })
-      // 실패해도 로컬엔 남아 있고, 다음 syncMyRatings 때 다시 올라간다
-      pushRating(
-        { id: book.id, title: book.title, authors: [book.author], publisher: book.publisher, thumbnail: book.cover, categoryName: book.categoryName },
-        stars,
-      ).catch(() => {})
-    })
-  }
+  const handleRated = useCallback((bookId: string, stars: number) => {
+    setRated((prev) => ({ ...prev, [bookId]: stars }))
+  }, [])
 
   const ratedCount = Object.values(myRatings).filter(Boolean).length
 
@@ -196,6 +172,37 @@ export default function RateView() {
           </p>
         </header>
 
+        <input
+          className="bj-input bj-rate-search"
+          type="search"
+          placeholder="책 제목이나 작가로 검색해서 평가하기"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          autoFocus={initialQuery === ''}
+        />
+
+        {q ? (
+          <>
+            {searching && <p className="bj-caption bj-text-muted bj-search-loading">검색 중...</p>}
+            {searchError && (
+              <p className="bj-caption bj-text-muted bj-search-loading">검색에 실패했어요. 다시 시도해주세요</p>
+            )}
+            {fresh && !searchError && results.length === 0 && (
+              <div className="bj-empty bj-card">
+                <p className="bj-body bj-bold bj-mb-6">검색 결과가 없어요</p>
+                <p className="bj-caption">다른 제목이나 작가 이름으로 찾아보세요</p>
+              </div>
+            )}
+            {results.length > 0 && (
+              <div className="bj-rate-list">
+                {results.map((book) => (
+                  <ExternalBookRow key={book.id} book={book} myStars={myRatings[book.id] ?? 0} onRated={handleRated} />
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+        <>
         {/* 카테고리 필터 */}
         <div className="bj-rail bj-rail--lg-wrap bj-genre-rail">
           {ALADDIN_CATEGORIES.map((c) => (
@@ -214,11 +221,11 @@ export default function RateView() {
         {books.length > 0 && (
           <div className="bj-rate-list">
             {books.map((book) => (
-              <RateCard
+              <ExternalBookRow
                 key={book.id}
                 book={book}
                 myStars={myRatings[book.id] ?? 0}
-                onRate={handleRate}
+                onRated={handleRated}
               />
             ))}
           </div>
@@ -244,11 +251,12 @@ export default function RateView() {
         ) : books.length > 0 && (
           <p className="bj-caption bj-text-muted bj-search-loading">스크롤하면 새 책이 계속 나와요</p>
         )}
+        </>
+        )}
 
         {/* 무한스크롤 sentinel */}
         <div ref={sentinelRef} style={{ height: 1 }} />
       </div>
-      <LoginGateSheet open={showGate} onClose={closeGate} next="/rate" />
     </main>
   )
 }

@@ -175,3 +175,17 @@ export async function syncMyRatings(): Promise<void> {
     { onConflict: 'user_id,book_id' },
   )
 }
+
+export interface BookDetailExtraStats {
+  wishCount: number
+  typeAvg: number | null // 같은 BOOKBTI 유형 평균 — 3명 이상일 때만
+  typeCount: number
+  alsoLiked: { id: string; title: string; thumbnail: string | null; likes: number }[]
+}
+
+// 서재에 담은 사람 수·같은 유형 평균·"이 책을 좋아한 사람들이 좋아한 책" (0012 book_detail_stats RPC)
+export async function fetchBookDetailStats(bookId: string, typeCode: string | null): Promise<BookDetailExtraStats | null> {
+  const { data, error } = await createSupabaseBrowser().rpc('book_detail_stats', { p_book_id: bookId, p_type_code: typeCode })
+  if (error || !data) return null
+  return data as BookDetailExtraStats
+}

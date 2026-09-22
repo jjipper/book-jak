@@ -1,6 +1,6 @@
 'use client'
 
-// 마이 > 보관함 — 읽고 싶어요 한 책
+// 마이 > 내 서재 — 서재에 담은 책
 
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
@@ -13,7 +13,7 @@ export default function MyWishlistView() {
   const mounted = useMounted()
   const [removed, setRemoved] = useState<string[]>([])
   const [synced, setSynced] = useState(0)
-  // 서버의 찜을 내려받아 로컬 사본을 맞춘다 (기기 바뀌어도 유지, 기존 로컬 찜은 첫 sync 때 이관)
+  // 서버의 서재를 내려받아 로컬 사본을 맞춘다 (기기 바뀌어도 유지, 기존 로컬 항목은 첫 sync 때 이관)
   useEffect(() => {
     void syncWishlist().then(() => setSynced((n) => n + 1))
   }, [])
@@ -34,7 +34,7 @@ export default function MyWishlistView() {
       <div className="bj-frame">
       <header className="bj-subpage-head">
         <BackLink href="/my" />
-        <span className="bj-h2">읽고 싶어요</span>
+        <span className="bj-h2">내 서재</span>
       </header>
 
       <div className="bj-content">
@@ -43,7 +43,7 @@ export default function MyWishlistView() {
         ) : items.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 담아둔 책이 없어요</p>
-            <p className="bj-caption bj-mb-16">발견 탭에서 궁금한 책을 읽고싶어요로 담아보세요</p>
+            <p className="bj-caption bj-mb-16">책 상세나 발견 탭에서 궁금한 책을 서재에 담아보세요</p>
             <Link href="/discover" className="bj-btn bj-btn--primary bj-btn--cta">
               발견하러 가기
             </Link>
