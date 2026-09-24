@@ -1,8 +1,8 @@
-// 책 추천 Supabase CRUD. 규칙(본인 요청 추천 불가·닫힌 요청 불가·1인 10권)은 DB 트리거가 강제한다 (0016).
+// 책 추천 Supabase CRUD. 규칙(kind별 추천 자격·닫힌 요청 불가·1인 10권)은 DB 트리거가 강제한다 (0016, 0019).
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import type { PostBook } from '@/entities/post/api/postsRemote'
-import { REC_LIMIT_PER_USER, type RecRequest, type RecSort, type Recommendation } from '@/entities/recommendation/model/recommendations'
+import { REC_LIMIT_PER_USER, type RecKind, type RecRequest, type RecSort, type Recommendation } from '@/entities/recommendation/model/recommendations'
 
 type Profile = { nickname: string; type_code?: string | null } | null
 
@@ -10,17 +10,16 @@ function mapRequest(row: Record<string, unknown>): RecRequest {
   const profile = row.profiles as Profile
   return {
     id: row.id as string,
+    kind: (row.kind as RecKind) ?? 'ask',
     authorId: row.author_id as string,
     authorNickname: profile?.nickname ?? '알 수 없음',
     typeCode: (row.type_code as string | null) ?? null,
     title: row.title as string,
     mood: (row.mood as string | null) ?? null,
-    bookTitle: (row.book_title as string | null) ?? null,
-    bookIsbn: (row.book_isbn as string | null) ?? null,
-    bookCover: (row.book_cover as string | null) ?? null,
     isOpen: row.is_open as boolean,
     recCount: (row.rec_count as number) ?? 0,
     readerCount: (row.reader_count as number) ?? 0,
+    savedCount: (row.saved_count as number) ?? 0,
     ts: new Date(row.created_at as string).getTime(),
   }
 }
@@ -43,15 +42,16 @@ function mapRecommendation(row: Record<string, unknown>): Recommendation {
       rating: r.rating == null ? null : Number(r.rating),
       review: (r.review as string | null) ?? null,
     })),
+    savedBy: ((row.rec_saves as { user_id: string }[] | null) ?? []).map((s) => s.user_id),
     ts: new Date(row.created_at as string).getTime(),
   }
 }
 
 const REQUEST_SELECT = '*, profiles!author_id(nickname)'
 
-export async function loadRecRequests(sort: RecSort): Promise<RecRequest[]> {
+export async function loadRecRequests(sort: RecSort, kind: RecKind): Promise<RecRequest[]> {
   const sb = createSupabaseBrowser()
-  let q = sb.from('rec_requests').select(REQUEST_SELECT)
+  let q = sb.from('rec_requests').select(REQUEST_SELECT).eq('kind', kind)
   // 인기 = rec_count + reader_count × 2 (DB generated column)
   if (sort === 'popular') q = q.order('popularity', { ascending: false })
   const { data } = await q.order('created_at', { ascending: false }).limit(50)
@@ -68,7 +68,7 @@ export async function loadRecommendations(requestId: string): Promise<Recommenda
   const sb = createSupabaseBrowser()
   const { data } = await sb
     .from('recommendations')
-    .select('*, profiles!author_id(nickname, type_code), rec_reads(*, profiles!user_id(nickname))')
+    .select('*, profiles!author_id(nickname, type_code), rec_reads(*, profiles!user_id(nickname)), rec_saves(user_id)')
     .eq('request_id', requestId)
     .order('created_at', { ascending: true })
   return (data ?? []).map(mapRecommendation)
@@ -80,19 +80,12 @@ async function requireUserId(sb: ReturnType<typeof createSupabaseBrowser>): Prom
   return user.id
 }
 
-export async function createRecRequest(title: string, mood: string, book: PostBook | null): Promise<string> {
+export async function createRecRequest(kind: RecKind, title: string, mood: string): Promise<string> {
   const sb = createSupabaseBrowser()
   const uid = await requireUserId(sb)
   const { data, error } = await sb
     .from('rec_requests')
-    .insert({
-      author_id: uid,
-      title,
-      mood: mood || null,
-      book_title: book?.title ?? null,
-      book_isbn: book?.isbn ?? null,
-      book_cover: book?.cover ?? null,
-    })
+    .insert({ author_id: uid, kind, title, mood: mood || null })
     .select('id')
     .single()
   if (error || !data) throw new Error(error?.message.includes('너무 빠르게') ? error.message : '요청을 올리지 못했어요')
@@ -107,6 +100,7 @@ export async function setRecRequestOpen(id: string, isOpen: boolean): Promise<vo
 
 const REC_ERRORS: Record<string, string> = {
   rec_self: '내 요청에는 추천할 수 없어요',
+  rec_share_only: '이 목록은 만든 사람만 책을 담을 수 있어요',
   rec_closed: '추천이 닫힌 요청이에요',
   rec_limit: `한 요청에 ${REC_LIMIT_PER_USER}권까지 추천할 수 있어요`,
 }
@@ -136,6 +130,13 @@ export async function setReading(recommendationId: string, reading: boolean): Pr
     ? await sb.from('rec_reads').insert({ recommendation_id: recommendationId, user_id: uid })
     : await sb.from('rec_reads').delete().eq('recommendation_id', recommendationId).eq('user_id', uid)
   if (error) throw new Error('반영하지 못했어요')
+}
+
+/** 서재에 담기 — 담은 수 집계용 기록 (서재 본체는 features/wishlist). 이미 담겼으면 조용히 넘어간다. */
+export async function markRecSaved(recommendationId: string): Promise<void> {
+  const sb = createSupabaseBrowser()
+  const uid = await requireUserId(sb)
+  await sb.from('rec_saves').insert({ recommendation_id: recommendationId, user_id: uid })
 }
 
 export async function saveRecReview(recommendationId: string, rating: number | null, review: string): Promise<void> {
