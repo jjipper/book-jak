@@ -14,6 +14,9 @@ import {
 import { REC_LIMIT_PER_USER, type RecRequest, type Recommendation } from '@/entities/recommendation/model/recommendations'
 import type { PostBook } from '@/entities/post/api/postsRemote'
 import { bookDetailHref } from '@/entities/external-book/model/aladdinBooks'
+import { getBookRating, saveBookRating, removeBookRating } from '@/entities/book-rating/model/bookRatings'
+import { pushRating, deleteRating } from '@/entities/book-rating/api/ratingsRemote'
+import { addToWishlist, loadWishlist } from '@/features/wishlist/model/wishlist'
 import { getMyId } from '@/entities/user/model/profile'
 import BookPicker from '@/features/post-compose/ui/BookPicker'
 import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNickname'
@@ -63,10 +66,39 @@ function RecCard({ rec, myId, onChanged, requireAuth }: RecCardProps) {
   const [reviewing, setReviewing] = useState(false)
   const [rating, setRating] = useState(0)
   const [review, setReview] = useState('')
+  // 서재·별점은 isbn이 있어야 책을 식별할 수 있다 (평가 탭과 같은 'isbn-{isbn13}' 키)
+  const bookId = rec.bookIsbn ? `isbn-${rec.bookIsbn}` : null
+  const [saved, setSaved] = useState(() => !!bookId && loadWishlist().some((w) => w.bookId === bookId))
+  const [stars, setStars] = useState(() => (bookId ? getBookRating(bookId)?.stars ?? 0 : 0))
 
   const myRead = rec.reads.find((r) => r.userId === myId)
   const readingCount = rec.reads.filter((r) => r.review === null).length
   const reviews = rec.reads.filter((r) => r.review !== null)
+
+  function handleSave() {
+    if (!bookId) return
+    requireAuth(() => {
+      addToWishlist({ bookId, title: rec.bookTitle, cover: rec.bookCover ?? undefined, ts: Date.now() })
+      setSaved(true)
+      toast.show('서재에 담았어요')
+    })
+  }
+
+  // 이미 읽은 책 — 그 자리에서 별점. 평가 탭과 같은 저장 경로(로컬 사본 + 서버 업서트)를 쓴다.
+  function handleRate(n: number) {
+    if (!bookId) return
+    requireAuth(() => {
+      setStars(n)
+      if (n === 0) {
+        removeBookRating(bookId)
+        deleteRating(bookId).catch(() => {})
+        return
+      }
+      saveBookRating({ bookId, title: rec.bookTitle, stars: n, review: getBookRating(bookId)?.review, ts: Date.now() })
+      pushRating({ id: bookId, title: rec.bookTitle, thumbnail: rec.bookCover ?? undefined }, n).catch(() => {})
+      toast.show('별점을 남겼어요')
+    })
+  }
 
   function run(action: () => Promise<void>) {
     requireAuth(() => {
@@ -94,6 +126,18 @@ function RecCard({ rec, myId, onChanged, requireAuth }: RecCardProps) {
               <p className="bj-body bj-body--sm">{r.review}</p>
             </div>
           ))}
+        </div>
+      )}
+
+      {bookId && (
+        <div className="bj-row-between">
+          <button type="button" className="bj-btn bj-btn--text" onClick={handleSave}>
+            {saved ? '서재에 담김' : '서재에 담기'}
+          </button>
+          <div className="bj-meta-row">
+            <span className="bj-caption">이미 읽었어요</span>
+            <StarRating value={stars} onChange={handleRate} size={20} />
+          </div>
         </div>
       )}
 
@@ -205,7 +249,7 @@ export default function RecommendDetailView() {
       <div className="bj-frame">
         <header className="bj-subpage-head">
           <BackLink href="/social?tab=recommend" />
-          <span className="bj-h2">책 추천</span>
+          <span className="bj-h2">추천 플레이리스트</span>
         </header>
 
         <div className="bj-content--lg">
@@ -215,7 +259,8 @@ export default function RecommendDetailView() {
                 {request.isOpen ? '추천 받는 중' : '닫힘'}
               </span>
             </div>
-            <p className="bj-h1">{request.mood}</p>
+            <p className="bj-h1">{request.title}</p>
+            {request.mood && <p className="bj-body">{request.mood}</p>}
             <PersonLink id={request.authorId} nickname={request.authorNickname} typeCode={request.typeCode} />
             {request.bookTitle && (
               <div className="bj-col-4">

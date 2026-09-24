@@ -217,7 +217,7 @@ export default function SocialClubDetailView() {
                     </Link>
                     <span className="bj-post-card__time bj-caption">{formatRelTime(p.ts)}</span>
                   </div>
-                  <p className="bj-body bj-body--sm bj-post-detail__content">{p.content}</p>
+                  <p className="bj-body bj-body--sm bj-post-detail__content bj-clamp-3">{p.content}</p>
                   {p.authorId === myId && (
                     <div className="bj-comment__actions">
                       <button type="button" className="bj-section__action" onClick={() => void handleDeletePost(p.id)}>

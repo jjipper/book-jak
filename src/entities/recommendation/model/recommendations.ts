@@ -3,7 +3,7 @@
 export type RecSort = 'latest' | 'popular'
 
 /** 한 요청에 한 사람이 추천할 수 있는 최대 권수 — DB 트리거(tg_guard_recommendation)와 같은 값 */
-export const REC_LIMIT_PER_USER = 3
+export const REC_LIMIT_PER_USER = 10
 
 export interface RecRequest {
   id: string
@@ -11,7 +11,10 @@ export interface RecRequest {
   authorNickname: string
   /** 작성 시점 BOOKBTI 스냅샷 */
   typeCode: string | null
-  mood: string
+  /** 플레이리스트 제목 — 목록·상세의 주인공 */
+  title: string
+  /** 분위기 설명 (선택) */
+  mood: string | null
   bookTitle: string | null
   bookIsbn: string | null
   bookCover: string | null
