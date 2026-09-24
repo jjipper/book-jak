@@ -18,6 +18,15 @@ import PeopleRail from '@/widgets/people-rail/PeopleRail'
 type Sort = 'latest' | 'popular'
 type Scope = 'all' | 'following'
 
+// 인기글(Hot) 기준 — 조회수 데이터가 없어 좋아요·댓글만 쓴다.
+// 댓글은 좋아요보다 품이 드는 반응이라 2배로 친다.
+const HOT_WINDOW_DAYS = 7
+const HOT_MIN_SCORE = 5
+const HOT_MAX = 3
+/** 기준 안에서 점수 높은 순으로 고를 후보 수 — 좋아요만으로 1차 정렬되므로 넉넉히 받는다 */
+const HOT_CANDIDATES = 20
+const hotScore = (p: Post) => p.likeCount + p.commentCount * 2
+
 // 팔로잉 탭을 마지막으로 본 시각 — 사용자별 키. 이보다 새 팔로잉 글이 있으면 빨간 점
 const seenKey = () => `bj_following_seen_${getMyId()}`
 function getFollowingSeen(): number {
@@ -54,7 +63,14 @@ export default function HomeView() {
 
   // 인기글 · 팔로잉 목록은 한 번만
   useEffect(() => {
-    void loadPopularPosts(3).then(setPopularPosts)
+    void loadPopularPosts(HOT_CANDIDATES, Date.now() - HOT_WINDOW_DAYS * 86400_000).then((posts) =>
+      setPopularPosts(
+        posts
+          .filter((p) => hotScore(p) >= HOT_MIN_SCORE)
+          .sort((a, b) => hotScore(b) - hotScore(a))
+          .slice(0, HOT_MAX),
+      ),
+    )
     void getFollowingIds().then(async (ids) => {
       setFollowingIds(ids)
       if (ids.length === 0) return
@@ -146,7 +162,7 @@ export default function HomeView() {
             </div>
             <div className="bj-col-10">
               {popularPosts.map((p) => (
-                <PostCard key={p.id} post={p} onRemoved={removePost} onBlocked={removeAuthor} />
+                <PostCard key={p.id} post={p} hot onRemoved={removePost} onBlocked={removeAuthor} />
               ))}
             </div>
           </section>

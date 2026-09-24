@@ -91,10 +91,11 @@ export async function loadPosts(params?: {
   return (data ?? []).map(mapPost)
 }
 
-/** 인기글 (likeCount 기준 상위 n개) */
-export async function loadPopularPosts(limit = 5): Promise<Post[]> {
+/** 인기글 (likeCount 기준 상위 n개). sinceTs를 주면 그 이후에 올라온 글만 */
+export async function loadPopularPosts(limit = 5, sinceTs?: number): Promise<Post[]> {
   const sb = createSupabaseBrowser()
   let query = sb.from('posts').select(SELECT).order('like_count', { ascending: false }).limit(limit)
+  if (sinceTs) query = query.gte('created_at', new Date(sinceTs).toISOString())
 
   const blocked = blockedFilter()
   if (blocked) query = query.not('author_id', 'in', blocked)

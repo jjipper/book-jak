@@ -2111,17 +2111,6 @@ body.bj-body {
   margin-top: 12px;
 }
 
-/* ExternalBookDetail — 내 리뷰 행 (action 테두리) */
-.bj-row--my-review {
-  align-items: flex-start;
-  border-color: var(--color-accent);
-}
-
-/* ExternalBookDetail — 일반 리뷰 행 */
-.bj-row--review {
-  align-items: flex-start;
-}
-
 /* ExternalBookDetail — 리뷰 본문 14px */
 .bj-review-body {
   font-size: 14px;
@@ -3499,4 +3488,96 @@ body.bj-body {
 .bj-rate-search {
   width: 100%;
   margin-bottom: 12px;
+}
+
+/* ========== 전역 상단 액션 (검색·알림) ==========
+   탭 5개 화면 어디서나 우측 상단에서 검색·알림으로 간다.
+   각 화면 헤더를 건드리지 않으려고 레이아웃에서 띄우고, 겹치지 않게
+   바로 뒤 화면의 페이지 헤더에 그만큼 상단 여백을 준다. */
+.bj-topactions {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 25;
+  background: var(--color-bg);
+  padding-top: env(safe-area-inset-top);
+}
+.bj-topactions__inner {
+  max-width: var(--app-width);
+  margin-inline: auto;
+  padding: 6px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.bj-topactions__dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+.bj-topactions + main .bj-page-head {
+  padding-top: calc(48px + env(safe-area-inset-top));
+}
+
+/* 인기글 Hot 뱃지 */
+.bj-post-card__hot {
+  flex: none;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-text-on-accent);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* 인풋 우측 액션을 알약 버튼으로 — 텍스트만으론 눌러야 하는 자리로 안 읽힌다 (닉네임 랜덤) */
+.bj-input__action--pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 6px var(--space-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-weak);
+}
+.bj-input__action--pill:hover {
+  text-decoration: none;
+}
+
+/* ExternalBookDetail — 리뷰 목록. 테두리 없이 흰 면 + 여백으로 한 개씩 끊는다 */
+.bj-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.bj-review-item {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+/* 내 리뷰만 연한 주황 면으로 구분 */
+.bj-review-item--mine {
+  background: var(--color-accent-weak);
+}
+.bj-review-item__mine-tag {
+  color: var(--color-accent);
+}
+/* 시각은 오른쪽 끝에 — 별점·닉네임보다 한 단 약하게 */
+.bj-review-time {
+  margin-left: auto;
+  color: var(--color-text-caption);
+}
+
+/* 다른 독자들은 이 책도 좋아해요 — 표지 아래 제목·작가 */
+.bj-also-liked__author {
+  margin-top: 2px;
+  color: var(--color-text-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

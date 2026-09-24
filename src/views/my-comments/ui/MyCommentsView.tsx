@@ -35,7 +35,7 @@ export default function MyCommentsView() {
           comments.map((c) => (
             <Link key={c.id} href={`/posts/${c.postId}`} className="bj-row bj-row--top bj-unstyled-link">
               <div className="bj-flex-1">
-                <p className="bj-body bj-body--sm">{c.content}</p>
+                <p className="bj-body bj-body--sm bj-clamp-3">{c.content}</p>
               </div>
             </Link>
           ))
