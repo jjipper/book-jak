@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
-import { BADGE_LIST } from '@/entities/reading-type/model/badges'
 import { setAvatar, setNickname } from '@/entities/user/model/profile'
 import { fetchProfile, upsertProfile, signOut } from '@/entities/user/api/profileRemote'
 import { getFollowingIds, getFollowerIds } from '@/features/follow/model/follows'
@@ -23,9 +22,9 @@ import ProfileAvatar from '@/entities/user/ui/ProfileAvatar'
 import ConfirmSheet from '@/shared/ui/ConfirmSheet'
 import Icon from '@/shared/ui/Icon'
 import TypeBadge from '@/shared/ui/TypeBadge'
-import RarityBadge from '@/shared/ui/RarityBadge'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { toast } from '@/shared/lib/toast'
+import './MyView.css'
 
 function ActivityRow({ href, label, count }: { href: string; label: string; count: number }) {
   return (
@@ -68,9 +67,8 @@ export default function MyView() {
   const [ratedCount, setRatedCount] = useState(0)
   const [wishCount, setWishCount] = useState(0)
   const [discoverSaved, setDiscoverSaved] = useState(0)
-  const [discoverPassed, setDiscoverPassed] = useState(0)
   const [avgStars, setAvgStars] = useState(0)
-  const [topGenres, setTopGenres] = useState<{ name: string; count: number; avgStars: number }[]>([])
+  const [topGenres, setTopGenres] = useState<{ name: string; count: number }[]>([])
 
   useEffect(() => {
     async function load() {
@@ -117,31 +115,25 @@ export default function MyView() {
       setWishCount(loadWishlist().length)
       setAvgStars(ratings.length ? ratings.reduce((sum, r) => sum + r.stars, 0) / ratings.length : 0)
 
-      const genreStats = new Map<string, { count: number; totalStars: number }>()
+      const genreStats = new Map<string, number>()
       ratings.forEach((r) => {
         if (!r.categoryName) return
-        const cur = genreStats.get(r.categoryName) ?? { count: 0, totalStars: 0 }
-        cur.count += 1
-        cur.totalStars += r.stars
-        genreStats.set(r.categoryName, cur)
+        genreStats.set(r.categoryName, (genreStats.get(r.categoryName) ?? 0) + 1)
       })
       setTopGenres(
         [...genreStats.entries()]
-          .map(([name, { count, totalStars }]) => ({ name, count, avgStars: totalStars / count }))
+          .map(([name, count]) => ({ name, count }))
           .sort((a, b) => b.count - a.count)
           .slice(0, 5),
       )
 
-      const { saved, passed } = await getReactionCounts()
+      const { saved } = await getReactionCounts()
       setDiscoverSaved(saved)
-      setDiscoverPassed(passed)
     }
     void load()
   }, [])
 
   const myType = savedResult ? READING_TYPES[savedResult.typeCode] : null
-
-  const unlockedBadges = BADGE_LIST.filter((b) => savedResult?.badgeCandidates?.includes(b.key))
 
   async function handleAvatarChange(dataUrl: string) {
     setAvatarState(dataUrl)
@@ -242,78 +234,44 @@ export default function MyView() {
           </Link>
         )}
 
-        {/* 스타일 분석 + 배지 — 데스크톱(≥900px)에서 2열 */}
-        <div className="bj-list bj-list--lg-grid-2">
-
-        {/* 좋아하는 책 스타일 분석 */}
+        {/* 취향 리포트 — 요약만. 본편은 /my/report */}
         <div className="bj-card">
           <div className="bj-card-section-head">
-            <span className="bj-section-tag">좋아하는 책 스타일 분석</span>
+            <span className="bj-section-tag">취향 리포트</span>
           </div>
           {!loggedIn ? (
             <LoginRequiredNote />
-          ) : topGenres.length > 0 ? (
-            <div className="bj-col-14">
-              <div className="bj-report-stats">
-                <div className="bj-report-stat">
-                  <span className="bj-report-stat__num bj-report-stat__num--accent">{ratedCount}</span>
-                  <span className="bj-report-stat__label">평가한 책</span>
-                </div>
-                <div className="bj-report-stat">
-                  <span className="bj-report-stat__num">★{avgStars.toFixed(1)}</span>
-                  <span className="bj-report-stat__label">평균 별점</span>
-                </div>
-                <div className="bj-report-stat">
-                  <span className="bj-report-stat__num">{discoverSaved}</span>
-                  <span className="bj-report-stat__label">발견 저장</span>
-                </div>
-              </div>
-              <div className="bj-genre-bars">
-                {topGenres.map((genre) => (
-                  <div key={genre.name} className="bj-genre-bar-row">
-                    <span className="bj-genre-bar__label">{genre.name}</span>
-                    <div className="bj-genre-bar__track">
-                      <div
-                        className="bj-genre-bar__fill"
-                        style={{ width: `${Math.round((genre.count / topGenres[0].count) * 100)}%` }}
-                      />
-                    </div>
-                    <span className="bj-genre-bar__meta">★{genre.avgStars.toFixed(1)}</span>
-                  </div>
+          ) : ratedCount > 0 || myType ? (
+            <Link href="/my/report" className="bj-report-teaser">
+              <div className="bj-report-teaser__mini" aria-hidden="true">
+                {(topGenres.length ? topGenres : [{ name: '', count: 1 }]).slice(0, 4).map((g, i) => (
+                  <span key={g.name || i} className="bj-report-teaser__bar">
+                    <i style={{ width: `${Math.round((g.count / (topGenres[0]?.count ?? 1)) * 100)}%` }} />
+                  </span>
                 ))}
               </div>
-              <p className="bj-caption">발견 탭에서 패스 {discoverPassed}권</p>
-            </div>
+              <div className="bj-report-teaser__body">
+                <p className="bj-body bj-bold">
+                  {myType ? `${myType.name} · ${myType.code}` : '내 독서 취향 한눈에'}
+                </p>
+                <div className="bj-report-teaser__facts">
+                  <span className="bj-caption">평가 {ratedCount}권</span>
+                  <span className="bj-caption">평균 ★{avgStars.toFixed(1)}</span>
+                  <span className="bj-caption">발견 담기 {discoverSaved}</span>
+                </div>
+                <p className="bj-caption bj-mt-4">자세히 보기 →</p>
+              </div>
+            </Link>
           ) : (
             <>
               <p className="bj-caption bj-text-center bj-mb-12 bj-pt-8">
-                책에 별점을 남기면<br />내가 좋아하는 장르를 분석해드려요
+                책에 별점을 남기면<br />취향 리포트가 채워져요
               </p>
               <Link href="/rate" className="bj-btn bj-btn--block bj-btn--block-sm">
                 책 평가하러 가기
               </Link>
             </>
           )}
-        </div>
-
-        {/* 배지 섹션 */}
-        <div className="bj-card">
-          <div className="bj-card-section-head--mb16">
-            <span className="bj-section-tag">나의 배지</span>
-            <span className="bj-caption">{unlockedBadges.length}/{BADGE_LIST.length}</span>
-          </div>
-
-          {unlockedBadges.length > 0 ? (
-            <div className="bj-badge-grid">
-              {unlockedBadges.map((badge) => (
-                <RarityBadge key={badge.key} variant="common" label={badge.name} size="sm" />
-              ))}
-            </div>
-          ) : (
-            <p className="bj-caption bj-text-center">테스트로 배지를 획득해보세요</p>
-          )}
-        </div>
-
         </div>
 
         {/* 보관함 + 활동 — 데스크톱(≥900px)에서 2열 */}

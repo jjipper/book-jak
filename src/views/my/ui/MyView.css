@@ -1,0 +1,43 @@
+/* 마이 전용 — 취향 리포트 진입 카드 */
+
+.bj-report-teaser {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.bj-report-teaser__mini {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 78px;
+  flex: none;
+}
+
+.bj-report-teaser__bar {
+  height: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+  overflow: hidden;
+}
+
+.bj-report-teaser__bar i {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+}
+
+.bj-report-teaser__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.bj-report-teaser__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 6px;
+}
