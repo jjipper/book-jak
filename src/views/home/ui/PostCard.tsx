@@ -14,12 +14,14 @@ import TypeBadge from '@/shared/ui/TypeBadge'
 
 interface PostCardProps {
   post: Post
+  /** 인기글 섹션에서만 true — Hot 뱃지 */
+  hot?: boolean
   /** 목록에서 제거해야 할 때 (삭제·차단) */
   onRemoved?: (postId: string) => void
   onBlocked?: (authorId: string) => void
 }
 
-export default function PostCard({ post, onRemoved, onBlocked }: PostCardProps) {
+export default function PostCard({ post, hot, onRemoved, onBlocked }: PostCardProps) {
   const [liked, setLiked] = useState(() => isPostLiked(post.id))
   const [likeCount, setLikeCount] = useState(post.likeCount)
   const [showMore, setShowMore] = useState(false)
@@ -45,6 +47,7 @@ export default function PostCard({ post, onRemoved, onBlocked }: PostCardProps) 
           <TypeBadge code={post.authorTypeCode} />
           <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
         </Link>
+        {hot && <span className="bj-post-card__hot">Hot</span>}
         <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
       </div>
       <Link href={`/posts/${post.id}`} className="bj-post-card__link">

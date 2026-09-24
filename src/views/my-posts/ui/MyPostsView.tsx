@@ -36,7 +36,7 @@ export default function MyPostsView() {
             <Link key={p.id} href={`/posts/${p.id}`} className="bj-row bj-row--top bj-unstyled-link">
               <div className="bj-flex-1">
                 {p.bookTitle && <p className="bj-caption bj-bold bj-mb-4">{p.bookTitle}</p>}
-                <p className="bj-body bj-body--sm bj-mb-6">{p.content}</p>
+                <p className="bj-body bj-body--sm bj-mb-6 bj-clamp-3">{p.content}</p>
                 <p className="bj-caption">좋아요 {p.likeCount} · 댓글 {p.commentCount}</p>
               </div>
             </Link>
