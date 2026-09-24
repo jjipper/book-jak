@@ -18,10 +18,13 @@ create index if not exists notifications_user_idx
   on public.notifications (user_id, created_at desc);
 
 alter table public.notifications enable row level security;
+drop policy if exists "notifications: 본인만 조회" on public.notifications;
 create policy "notifications: 본인만 조회" on public.notifications
   for select to authenticated using (auth.uid() = user_id);
+drop policy if exists "notifications: 본인만 수정" on public.notifications;
 create policy "notifications: 본인만 수정" on public.notifications
   for update to authenticated using (auth.uid() = user_id);
+drop policy if exists "notifications: 본인만 삭제" on public.notifications;
 create policy "notifications: 본인만 삭제" on public.notifications
   for delete to authenticated using (auth.uid() = user_id);
 -- insert 정책 없음: 생성은 아래 security definer 트리거만 한다.
@@ -108,9 +111,12 @@ create table if not exists public.comments (
 create index if not exists comments_post_idx on public.comments (post_id, created_at);
 
 alter table public.comments enable row level security;
+drop policy if exists "comments: 누구나 조회" on public.comments;
 create policy "comments: 누구나 조회" on public.comments for select using (true);
+drop policy if exists "comments: 본인만 등록" on public.comments;
 create policy "comments: 본인만 등록" on public.comments
   for insert to authenticated with check (auth.uid() = author_id);
+drop policy if exists "comments: 본인만 삭제" on public.comments;
 create policy "comments: 본인만 삭제" on public.comments
   for delete to authenticated using (auth.uid() = author_id);
 
@@ -148,8 +154,10 @@ create table if not exists public.reports (
   unique (reporter_id, target_type, target_id)
 );
 alter table public.reports enable row level security;
+drop policy if exists "reports: 본인 신고만 조회" on public.reports;
 create policy "reports: 본인 신고만 조회" on public.reports
   for select to authenticated using (auth.uid() = reporter_id);
+drop policy if exists "reports: 본인만 등록" on public.reports;
 create policy "reports: 본인만 등록" on public.reports
   for insert to authenticated with check (auth.uid() = reporter_id);
 
@@ -161,10 +169,13 @@ create table if not exists public.blocks (
   check (blocker_id <> blocked_id)
 );
 alter table public.blocks enable row level security;
+drop policy if exists "blocks: 본인 것만 조회" on public.blocks;
 create policy "blocks: 본인 것만 조회" on public.blocks
   for select to authenticated using (auth.uid() = blocker_id);
+drop policy if exists "blocks: 본인만 등록" on public.blocks;
 create policy "blocks: 본인만 등록" on public.blocks
   for insert to authenticated with check (auth.uid() = blocker_id);
+drop policy if exists "blocks: 본인만 해제" on public.blocks;
 create policy "blocks: 본인만 해제" on public.blocks
   for delete to authenticated using (auth.uid() = blocker_id);
 

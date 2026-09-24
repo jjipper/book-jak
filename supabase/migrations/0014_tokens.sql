@@ -1,7 +1,8 @@
 -- 토큰 — 활동으로 모으고 블라인드 북 공개에 쓴다.
 --
 -- 규칙 (하루 기준은 KST)
---  - 가입 환영 +3 (1회, 기존 가입자도 이 파일 실행 시 1회 백필)
+--  - 가입 환영 +10 (1회, 기존 가입자도 이 파일 실행 시 1회 백필)
+--    블라인드 북은 하루 5권이 공개 대상이므로 10개는 이틀치다 — 첫 이틀은 토큰 걱정 없이 둘러보게 한다.
 --  - 출석 +1/일        : 앱 진입 시 claim_attendance() RPC
 --  - 글 1개 이상 +1/일  : posts insert 트리거
 --  - 댓글 2개 이상 +1/일: comments insert 트리거
@@ -125,12 +126,12 @@ drop trigger if exists token_daily_comment on public.comments;
 create trigger token_daily_comment after insert on public.comments
   for each row execute function public.tg_token_daily_comment();
 
--- 가입 환영 +3
+-- 가입 환영 +10 (하루 공개 대상 5권 × 이틀치)
 create or replace function public.tg_token_welcome() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   insert into public.token_ledger (user_id, amount, reason)
-  values (new.id, 3, 'welcome')
+  values (new.id, 10, 'welcome')
   on conflict do nothing;
   return new;
 end;
@@ -141,7 +142,7 @@ create trigger token_welcome after insert on public.profiles
 
 -- 기존 가입자 백필 (탈퇴자 제외)
 insert into public.token_ledger (user_id, amount, reason)
-select id, 3, 'welcome' from public.profiles where withdrawn_at is null
+select id, 10, 'welcome' from public.profiles where withdrawn_at is null
 on conflict do nothing;
 
 -- 블라인드 북 반응: 알라딘 isbn13(13자리)을 담도록 int → bigint.
