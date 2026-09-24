@@ -4,6 +4,7 @@
 -- 1) books 업서트가 RLS에 막히는 버그
 --    pushRating()은 books를 upsert하는데, 이미 다른 사용자가 등록한 책이면
 --    insert가 아니라 update로 떨어진다. books에는 update 정책이 없어서 평가 저장 전체가 실패했다.
+drop policy if exists "books: 로그인 사용자 수정" on public.books;
 create policy "books: 로그인 사용자 수정" on public.books
   for update to authenticated using (true) with check (true);
 

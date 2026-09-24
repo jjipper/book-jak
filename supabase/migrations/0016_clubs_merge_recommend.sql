@@ -1,7 +1,7 @@
 -- 모임 탭 재구성
 --   1) 공식 이벤트 → 모임으로 통합: clubs.is_official / starts_at 추가, events·event_participants 이관 후 삭제
 --   2) 모임 게시판 club_posts — 멤버만 읽기·쓰기 (RLS)
---   3) 책 추천: rec_requests(추천 요청) / recommendations(추천) / rec_reads(읽을게요·후기)
+--   3) 책 추천: rec_requests(추천 요청 = 플레이리스트) / recommendations(추천) / rec_reads(읽을게요·후기)
 --
 -- 0015(notifications.type에 'recommend','rec_review' 추가) 다음에 실행할 것.
 -- 0015 없이 실행하면 추천·후기 insert가 알림 type 제약에 걸려 실패한다.
@@ -98,7 +98,9 @@ create table if not exists public.rec_requests (
   id uuid primary key default gen_random_uuid(),
   author_id uuid not null references public.profiles (id) on delete cascade,
   type_code text,                                   -- 작성 시점 BOOKBTI 스냅샷 (트리거가 채움)
-  mood text not null check (char_length(btrim(mood)) between 2 and 100),
+  -- 플레이리스트 제목이 주인공 ("비 오는 날 읽기 좋은 책"). 분위기 설명(mood)은 선택.
+  title text not null check (char_length(btrim(title)) between 2 and 40),
+  mood text check (char_length(btrim(mood)) between 2 and 100),
   book_title text,                                  -- 최근 좋았던 책 (선택)
   book_isbn text,
   book_cover text,
@@ -136,7 +138,7 @@ create table if not exists public.rec_reads (
 
 -- 권한: 카운터·스냅샷 컬럼은 트리거만 쓴다
 revoke insert, update on public.rec_requests from anon, authenticated;
-grant insert (author_id, mood, book_title, book_isbn, book_cover) on public.rec_requests to authenticated;
+grant insert (author_id, title, mood, book_title, book_isbn, book_cover) on public.rec_requests to authenticated;
 grant update (is_open) on public.rec_requests to authenticated;
 revoke insert, update on public.recommendations from anon, authenticated;
 grant insert (request_id, author_id, book_title, book_isbn, book_cover, reason) on public.recommendations to authenticated;
@@ -186,8 +188,9 @@ drop trigger if exists rec_request_snapshot on public.rec_requests;
 create trigger rec_request_snapshot before insert on public.rec_requests
   for each row execute function public.tg_rec_request_snapshot();
 
--- 추천: 본인 요청 불가 / 닫힌 요청 불가 / 요청당 1인 3권
--- 요청 행을 for update로 잠가 같은 요청에 대한 동시 추천을 직렬화한다 (3권 검사 경쟁 방지).
+-- 추천: 본인 요청 불가 / 닫힌 요청 불가 / 요청당 1인 10권
+-- (요청 개수 자체엔 제한이 없다. rate_limit 트리거의 10초 간격만 연타를 막는다.)
+-- 요청 행을 for update로 잠가 같은 요청에 대한 동시 추천을 직렬화한다 (10권 검사 경쟁 방지).
 create or replace function public.tg_guard_recommendation() returns trigger
 language plpgsql security definer set search_path = public as $$
 declare req record;
@@ -197,7 +200,7 @@ begin
   if req.author_id = new.author_id then raise exception 'rec_self' using errcode = 'P0001'; end if;
   if not req.is_open then raise exception 'rec_closed' using errcode = 'P0001'; end if;
   if (select count(*) from public.recommendations
-       where request_id = new.request_id and author_id = new.author_id) >= 3 then
+       where request_id = new.request_id and author_id = new.author_id) >= 10 then
     raise exception 'rec_limit' using errcode = 'P0001';
   end if;
   return new;
