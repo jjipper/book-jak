@@ -122,3 +122,29 @@ export async function leaveClub(id: string): Promise<void> {
 export function displayMemberCount(club: BookClub): number {
   return club.memberCount
 }
+
+// ── 관심 모임 (club_interests, 0018) — 담아뒀다 마이 > 모임에서 본다 ──
+
+export async function getInterestedIds(): Promise<string[]> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) return []
+  const { data } = await sb
+    .from('club_interests')
+    .select('club_id')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+  return (data ?? []).map((r) => r.club_id as string)
+}
+
+/** 관심 등록/해제. 반환값은 토글 후 상태 */
+export async function toggleInterest(id: string, next: boolean): Promise<boolean> {
+  const sb = createSupabaseBrowser()
+  const { data: { user } } = await sb.auth.getUser()
+  if (!user) throw new Error('로그인이 필요해요')
+  const { error } = next
+    ? await sb.from('club_interests').upsert({ club_id: id, user_id: user.id }, { ignoreDuplicates: true })
+    : await sb.from('club_interests').delete().eq('club_id', id).eq('user_id', user.id)
+  if (error) throw new Error(next ? '관심 모임에 담지 못했어요' : '관심을 해제하지 못했어요')
+  return next
+}

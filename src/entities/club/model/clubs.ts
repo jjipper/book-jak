@@ -19,6 +19,30 @@ export const CLUB_ILLUSTS: { code: ClubIllustCode; label: string }[] = [
   { code: 'CLUB_RANDOM',    label: '랜덤' },
 ]
 
+// 일러스트를 고르지 않은 모임(공식·이관 모임 등)도 그림이 있어야 한다.
+// 태그로 분위기를 먼저 맞추고, 태그가 없으면 id 해시로 고정 배정한다(같은 모임은 항상 같은 그림).
+const TAG_ILLUST: Record<string, ClubIllustCode> = {
+  '토론': 'CLUB_DISCUSSION',
+  '판타지·SF': 'CLUB_ADVENTURE',
+  '스릴러': 'CLUB_ADVENTURE',
+  '에세이': 'CLUB_HEALING',
+  '시': 'CLUB_HEALING',
+  '자기계발': 'CLUB_KNOWLEDGE',
+  '소설': 'CLUB_LITERATURE',
+  '고전': 'CLUB_LITERATURE',
+}
+
+export function clubIllust(club: Pick<BookClub, 'id' | 'illust' | 'tags'>): ClubIllustCode {
+  if (club.illust) return club.illust
+  for (const tag of club.tags) {
+    const code = TAG_ILLUST[tag]
+    if (code) return code
+  }
+  let hash = 0
+  for (let i = 0; i < club.id.length; i += 1) hash = (hash * 31 + club.id.charCodeAt(i)) >>> 0
+  return CLUB_ILLUSTS[hash % CLUB_ILLUSTS.length].code
+}
+
 export interface BookClub {
   id: string
   name: string

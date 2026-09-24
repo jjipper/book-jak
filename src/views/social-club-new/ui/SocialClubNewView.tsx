@@ -62,13 +62,15 @@ export default function SocialClubNewView() {
         </div>
 
         <div>
-          <p className="bj-caption bj-bold bj-mb-8">한 줄 소개</p>
+          <p className="bj-caption bj-bold bj-mb-8">모임 소개</p>
           <textarea
-            className="bj-textarea bj-textarea--sm"
-            placeholder="어떤 모임인지 소개해주세요"
+            className="bj-textarea bj-textarea--tall"
+            placeholder={'어떤 모임인지 자세히 알려주세요\n어떤 책을 읽는지, 언제 어떻게 만나는지, 어떤 사람과 함께하고 싶은지'}
+            maxLength={2000}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
+          <p className="bj-caption bj-text-muted">{description.length}/2000</p>
         </div>
 
         <div>

@@ -1,4 +1,4 @@
-// 모임 상세 — 멤버 목록 + 게시판(club_posts). 게시판 읽기·쓰기는 멤버만 (RLS, 0016).
+// 모임 상세 — 멤버 목록 + QnA(club_posts). 읽기는 누구나, 쓰기는 로그인 (RLS, 0018).
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import type { ClubMember, ClubPost } from '@/entities/club/model/clubs'
@@ -34,14 +34,14 @@ function mapPost(row: Record<string, unknown>): ClubPost {
   }
 }
 
-/** 비멤버는 RLS로 빈 배열을 받는다 */
+// 오래된 순 — 질문 바로 아래에 답이 붙는 흐름
 export async function loadClubPosts(clubId: string): Promise<ClubPost[]> {
   const sb = createSupabaseBrowser()
   const { data } = await sb
     .from('club_posts')
     .select('*, profiles!author_id(nickname, type_code)')
     .eq('club_id', clubId)
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: true })
   return (data ?? []).map(mapPost)
 }
 
@@ -50,11 +50,11 @@ export async function createClubPost(clubId: string, content: string): Promise<v
   const { data: { user } } = await sb.auth.getUser()
   if (!user) throw new Error('로그인이 필요해요')
   const { error } = await sb.from('club_posts').insert({ club_id: clubId, author_id: user.id, content })
-  if (error) throw new Error(error.message.includes('너무 빠르게') ? error.message : '글을 남기지 못했어요')
+  if (error) throw new Error(error.message.includes('너무 빠르게') ? error.message : '남기지 못했어요')
 }
 
 export async function deleteClubPost(id: string): Promise<void> {
   const sb = createSupabaseBrowser()
   const { error } = await sb.from('club_posts').delete().eq('id', id)
-  if (error) throw new Error('글을 지우지 못했어요')
+  if (error) throw new Error('지우지 못했어요')
 }

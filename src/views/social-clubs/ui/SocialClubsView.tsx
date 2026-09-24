@@ -2,15 +2,25 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { loadClubs, displayMemberCount } from '@/entities/club/model/clubActions'
+import { loadClubs, displayMemberCount, getInterestedIds } from '@/entities/club/model/clubActions'
 import { resolveAuthor } from '@/features/resolve-author/model/author'
-import type { BookClub } from '@/entities/club/model/clubs'
+import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
+import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
 import BackLink from '@/shared/ui/BackLink'
 
 export default function SocialClubsView() {
   const [clubs, setClubs] = useState<BookClub[] | null>(null)
+  const [interested, setInterested] = useState<string[]>([])
 
-  useEffect(() => { async function load() { setClubs(await loadClubs()) }; void load() }, [])
+  useEffect(() => {
+    async function load() {
+      const [list, ids] = await Promise.all([loadClubs(), getInterestedIds()])
+      setClubs(list)
+      setInterested(ids)
+    }
+    void load()
+  }, [])
 
   return (
     <main className="bj-shell">
@@ -40,13 +50,20 @@ export default function SocialClubsView() {
             const isFull = memberCount >= club.capacity
             return (
               <Link key={club.id} href={`/social/clubs/${club.id}`} className="bj-row bj-row--top bj-unstyled-link">
+                <IllustPlaceholder
+                  code={clubIllust(club)}
+                  alt=""
+                  aspectRatio="1 / 1"
+                  className="bj-club-thumb"
+                  background="var(--color-control-surface)"
+                />
                 <div className="bj-flex-1">
                   <div className="bj-meta-row bj-mb-4">
                     {club.isOfficial && <span className="bj-chip bj-chip--active">공식</span>}
                     <p className="bj-body bj-bold bj-discuss-text">{club.name}</p>
                     <span className="bj-chip">{club.format}</span>
                   </div>
-                  <p className="bj-caption bj-mb-6">{club.description}</p>
+                  <p className="bj-caption bj-mb-6 bj-clamp-3">{club.description}</p>
                   <div className="bj-tag-group">
                     {club.tags.map((tag) => <span key={tag} className="bj-chip bj-chip--active">{tag}</span>)}
                   </div>
@@ -55,7 +72,14 @@ export default function SocialClubsView() {
                   <p className={`bj-caption bj-bold${isFull ? ' bj-club-count--full' : ' bj-club-count--open'}`}>
                     {memberCount}/{club.capacity}
                   </p>
-                  <p className="bj-caption bj-caption--xs">{organizer}</p>
+                  <p className="bj-caption bj-caption--xs bj-mb-4">{organizer}</p>
+                  <ClubInterestButton
+                    clubId={club.id}
+                    interested={interested.includes(club.id)}
+                    onChange={(next) =>
+                      setInterested((prev) => (next ? [...prev, club.id] : prev.filter((id) => id !== club.id)))
+                    }
+                  />
                 </div>
               </Link>
             )
