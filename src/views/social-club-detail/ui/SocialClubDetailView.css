@@ -1,0 +1,24 @@
+/* 궁금한 점 — 질문 하나와 그에 달린 답글을 한 덩어리로 묶는다 */
+.bj-qna {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* 답글·답글쓰기는 질문 밑에 들여쓴다 (2단까지만) */
+.bj-qna__replies {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 20px;
+}
+
+/* 주최자 글은 면을 바꿔 눈에 띄게 (주최자 칩과 함께) */
+.bj-qna--organizer {
+  background: var(--color-accent-weak);
+}
+
+/* "답글 달기" — 들여쓴 칸에서 왼쪽에 붙인다 */
+.bj-qna__reply-open {
+  align-self: flex-start;
+}

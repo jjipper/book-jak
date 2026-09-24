@@ -49,29 +49,40 @@ export async function loadClub(id: string): Promise<BookClub | undefined> {
   return data ? mapClub(data) : undefined
 }
 
-export async function createClub(params: {
+/** 주최자가 직접 채우는 값 — 만들기·수정이 함께 쓴다 (카운터·공식 여부는 DB만 쓴다) */
+export interface ClubInput {
   name: string
   description: string
   tags: string[]
   capacity: number
   format: ClubFormat
+  region?: string
+  startsAt?: string
   illust?: ClubIllustCode
-}): Promise<BookClub> {
+}
+
+function toRow(params: ClubInput) {
+  return {
+    name: params.name,
+    description: params.description,
+    tags: params.tags,
+    capacity: params.capacity,
+    format: params.format,
+    // 온라인 모임엔 지역이 없다
+    region: params.format === '오프라인' ? params.region?.trim() || null : null,
+    starts_at: params.startsAt ?? null,
+    illust: params.illust ?? null,
+  }
+}
+
+export async function createClub(params: ClubInput): Promise<BookClub> {
   const sb = createSupabaseBrowser()
   const { data: { user } } = await sb.auth.getUser()
   if (!user) throw new Error('로그인이 필요해요')
 
   const { data, error } = await sb
     .from('clubs')
-    .insert({
-      name: params.name,
-      description: params.description,
-      tags: params.tags,
-      capacity: params.capacity,
-      format: params.format,
-      illust: params.illust ?? null,
-      organizer_id: user.id,
-    })
+    .insert({ ...toRow(params), organizer_id: user.id })
     .select()
     .single()
   if (error || !data) throw new Error(error?.message ?? '모임을 만들지 못했어요')
@@ -80,6 +91,21 @@ export async function createClub(params: {
   joinedIds.add(data.id as string)
   recordActivity('club_create')
   return mapClub(data)
+}
+
+/** 주최자만 수정할 수 있다 (RLS "clubs: 주최자만 수정"). 정원은 0021 체크 제약이 인원 밑으로 못 내린다. */
+export async function updateClub(id: string, params: ClubInput): Promise<void> {
+  const sb = createSupabaseBrowser()
+  const { data, error } = await sb.from('clubs').update(toRow(params)).eq('id', id).select('id')
+  if (error) {
+    throw new Error(
+      error.message.includes('clubs_capacity_gte_members')
+        ? '정원을 현재 참여 인원보다 적게 줄일 수 없어요'
+        : '모임을 수정하지 못했어요',
+    )
+  }
+  // RLS가 행을 걸러내면 에러 없이 0건이 돌아온다
+  if ((data ?? []).length === 0) throw new Error('주최자만 수정할 수 있어요')
 }
 
 export function isJoined(id: string): boolean {
