@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { loadClub, displayMemberCount, getJoinedIds, getInterestedIds, joinClub, leaveClub } from '@/entities/club/model/clubActions'
-import { loadClubMembers, loadClubPosts, createClubPost, deleteClubPost } from '@/entities/club/api/clubBoardRemote'
+import { loadClubMembers, loadClubQna, createClubPost, deleteClubPost, type ClubQna } from '@/entities/club/api/clubBoardRemote'
 import { formatRelTime } from '@/entities/post/model/relTime'
 import { toast } from '@/shared/lib/toast'
 import { getMyId } from '@/entities/user/model/profile'
@@ -14,10 +14,38 @@ import TypeBadge from '@/shared/ui/TypeBadge'
 import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import { clubIllust, type BookClub, type ClubMember, type ClubPost } from '@/entities/club/model/clubs'
 import BackLink from '@/shared/ui/BackLink'
+import './SocialClubDetailView.css'
 
 function formatStartsAt(iso: string): string {
   const d = new Date(iso)
   return `${d.getMonth() + 1}/${d.getDate()} (${['일', '월', '화', '수', '목', '금', '토'][d.getDay()]}) ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+function QnaPost({ post, organizerId, myId, onDelete }: {
+  post: ClubPost
+  organizerId: string | null
+  myId: string
+  onDelete: () => void
+}) {
+  const byOrganizer = post.authorId === organizerId
+  return (
+    <div className={`bj-comment${byOrganizer ? ' bj-qna--organizer' : ''}`}>
+      <div className="bj-post-card__header">
+        <Link href={`/people/${post.authorId}`} className="bj-post-card__author-link">
+          <TypeBadge code={post.authorTypeCode} />
+          <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
+        </Link>
+        {byOrganizer && <span className="bj-chip bj-chip--active">주최자</span>}
+        <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
+      </div>
+      <p className="bj-body bj-body--sm bj-post-detail__content">{post.content}</p>
+      {post.authorId === myId && (
+        <div className="bj-comment__actions">
+          <button type="button" className="bj-section__action" onClick={onDelete}>삭제</button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function SocialClubDetailView() {
@@ -25,8 +53,10 @@ export default function SocialClubDetailView() {
   const [club, setClub] = useState<BookClub | null>(null)
   const [joined, setJoined] = useState(false)
   const [members, setMembers] = useState<ClubMember[]>([])
-  const [posts, setPosts] = useState<ClubPost[]>([])
+  const [threads, setThreads] = useState<ClubQna[]>([])
   const [draft, setDraft] = useState('')
+  const [replyTo, setReplyTo] = useState<string | null>(null)
+  const [replyDraft, setReplyDraft] = useState('')
   const [interested, setInterested] = useState(false)
   const [descOpen, setDescOpen] = useState(false)
   const { showGate, closeGate, requireAuth } = useAuthGate()
@@ -37,13 +67,13 @@ export default function SocialClubDetailView() {
       loadClub(params.id),
       getJoinedIds(),
       loadClubMembers(params.id),
-      loadClubPosts(params.id),
+      loadClubQna(params.id),
       getInterestedIds(),
     ]).then(([c, joinedIds, m, p, interestedIds]) => {
       setClub(c ?? null)
       setJoined(joinedIds.includes(params.id))
       setMembers(m)
-      setPosts(p)
+      setThreads(p)
       setInterested(interestedIds.includes(params.id))
     }),
     [params.id],
@@ -90,15 +120,20 @@ export default function SocialClubDetailView() {
     })
   }
 
-  function handlePost() {
-    const content = draft.trim()
+  // parentId가 있으면 답글. 없으면 새 질문.
+  function handlePost(content: string, parentId?: string) {
     if (!content) return
     void requireAuth(() => {
       void (async () => {
         try {
-          await createClubPost(club!.id, content)
-          setDraft('')
-          setPosts(await loadClubPosts(club!.id))
+          await createClubPost(club!.id, content, parentId)
+          if (parentId) {
+            setReplyTo(null)
+            setReplyDraft('')
+          } else {
+            setDraft('')
+          }
+          setThreads(await loadClubQna(club!.id))
         } catch (e) {
           toast.error((e as Error).message)
         }
@@ -106,10 +141,14 @@ export default function SocialClubDetailView() {
     })
   }
 
-  async function handleDeletePost(id: string) {
+  async function handleDeletePost(post: ClubPost, replyCount: number) {
+    const warn = replyCount > 0
+      ? `이 질문을 지우면 달린 답글 ${replyCount}개도 함께 사라져요. 지울까요?`
+      : '지울까요?'
+    if (!window.confirm(warn)) return
     try {
-      await deleteClubPost(id)
-      setPosts((prev) => prev.filter((p) => p.id !== id))
+      await deleteClubPost(post.id)
+      setThreads(await loadClubQna(club!.id))
     } catch (e) {
       toast.error((e as Error).message)
     }
@@ -172,7 +211,9 @@ export default function SocialClubDetailView() {
 
         <div className="bj-club-actions">
           {isMine ? (
-            <p className="bj-caption bj-text-center bj-flex-1">내가 만든 모임이에요</p>
+            <Link href={`/social/clubs/${club.id}/edit`} className="bj-btn bj-btn--tall bj-flex-1 bj-text-center">
+              모임 수정
+            </Link>
           ) : (
             <button
               type="button"
@@ -217,29 +258,67 @@ export default function SocialClubDetailView() {
             type="button"
             className="bj-btn bj-btn--primary bj-btn--block"
             disabled={draft.trim().length === 0}
-            onClick={handlePost}
+            onClick={() => handlePost(draft.trim())}
           >
             남기기
           </button>
-          {posts.length === 0 && <p className="bj-caption bj-text-muted">아직 질문이 없어요</p>}
-          {posts.map((p) => (
-            <div key={p.id} className="bj-comment">
-              <div className="bj-post-card__header">
-                <Link href={`/people/${p.authorId}`} className="bj-post-card__author-link">
-                  <TypeBadge code={p.authorTypeCode} />
-                  <span className="bj-post-card__author bj-bold">{p.authorNickname}</span>
-                </Link>
-                {p.authorId === club.organizerId && <span className="bj-chip bj-chip--active">주최자</span>}
-                <span className="bj-post-card__time bj-caption">{formatRelTime(p.ts)}</span>
-              </div>
-              <p className="bj-body bj-body--sm bj-post-detail__content">{p.content}</p>
-              {p.authorId === myId && (
-                <div className="bj-comment__actions">
-                  <button type="button" className="bj-section__action" onClick={() => void handleDeletePost(p.id)}>
-                    삭제
-                  </button>
+          {threads.length === 0 && <p className="bj-caption bj-text-muted">아직 질문이 없어요</p>}
+          {threads.map(({ question, replies }) => (
+            <div key={question.id} className="bj-qna">
+              <QnaPost
+                post={question}
+                organizerId={club!.organizerId}
+                myId={myId}
+                onDelete={() => void handleDeletePost(question, replies.length)}
+              />
+              {replies.length > 0 && (
+                <div className="bj-qna__replies">
+                  {replies.map((r) => (
+                    <QnaPost
+                      key={r.id}
+                      post={r}
+                      organizerId={club!.organizerId}
+                      myId={myId}
+                      onDelete={() => void handleDeletePost(r, 0)}
+                    />
+                  ))}
                 </div>
               )}
+              <div className="bj-qna__replies">
+                {replyTo === question.id ? (
+                  <>
+                    <textarea
+                      className="bj-textarea bj-textarea--sm"
+                      placeholder="답글을 남겨보세요"
+                      maxLength={1000}
+                      autoFocus
+                      value={replyDraft}
+                      onChange={(e) => setReplyDraft(e.target.value)}
+                    />
+                    <div className="bj-comment__actions">
+                      <button
+                        type="button"
+                        className="bj-section__action"
+                        disabled={replyDraft.trim().length === 0}
+                        onClick={() => handlePost(replyDraft.trim(), question.id)}
+                      >
+                        답글 남기기
+                      </button>
+                      <button type="button" className="bj-section__action" onClick={() => setReplyTo(null)}>
+                        취소
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="bj-section__action bj-qna__reply-open"
+                    onClick={() => { setReplyTo(question.id); setReplyDraft('') }}
+                  >
+                    답글 달기
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </section>

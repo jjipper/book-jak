@@ -70,6 +70,8 @@ export interface ClubMember {
 
 export interface ClubPost {
   id: string
+  /** null이면 질문, 값이 있으면 그 질문의 답글 (2단까지) */
+  parentId: string | null
   authorId: string
   authorNickname: string
   authorTypeCode: string | null
