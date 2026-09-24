@@ -41,8 +41,8 @@ function RecRequestCard({ req }: { req: RecRequest }) {
         </span>
       </div>
       <Link href={`/social/recommend/${req.id}`} className="bj-unstyled-link">
-        <p className="bj-body bj-bold bj-event-card__title">{req.mood}</p>
-        {req.bookTitle && <p className="bj-caption bj-event-card__desc">최근 좋았던 책 · {req.bookTitle}</p>}
+        <p className="bj-body bj-bold bj-event-card__title">{req.title}</p>
+        {req.mood && <p className="bj-caption bj-event-card__desc">{req.mood}</p>}
       </Link>
       <div className="bj-meta-row">
         <Link href={`/people/${req.authorId}`} className="bj-post-card__author-link">
@@ -106,7 +106,7 @@ function RecommendTab() {
             </button>
           ))}
         </div>
-        <Link href="/social/recommend/new" className="bj-section__action">+ 추천 받기</Link>
+        <Link href="/social/recommend/new" className="bj-section__action">+ 만들기</Link>
       </div>
       {list === null ? (
         <p className="bj-caption bj-text-muted">불러오는 중…</p>
@@ -116,8 +116,8 @@ function RecommendTab() {
         </div>
       ) : (
         <div className="bj-search-empty">
-          <p className="bj-body bj-text-muted bj-mb-12">아직 추천 요청이 없어요</p>
-          <Link href="/social/recommend/new" className="bj-btn bj-btn--primary bj-btn--cta">책 추천 받기</Link>
+          <p className="bj-body bj-text-muted bj-mb-12">아직 플레이리스트가 없어요</p>
+          <Link href="/social/recommend/new" className="bj-btn bj-btn--primary bj-btn--cta">플레이리스트 만들기</Link>
         </div>
       )}
     </section>

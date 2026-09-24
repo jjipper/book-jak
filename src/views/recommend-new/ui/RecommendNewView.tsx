@@ -14,13 +14,14 @@ import BackLink from '@/shared/ui/BackLink'
 
 export default function RecommendNewView() {
   const router = useRouter()
+  const [title, setTitle] = useState('')
   const [mood, setMood] = useState('')
   const [book, setBook] = useState<PostBook | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const { showNicknameSheet, requireNickname, handleNicknameSubmit, closeNicknameSheet } = useRequireNickname()
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
-  const canSubmit = mood.trim().length >= 2 && !submitting
+  const canSubmit = title.trim().length >= 2 && !submitting
 
   function handleSubmit() {
     if (!canSubmit) return
@@ -28,7 +29,7 @@ export default function RecommendNewView() {
       requireNickname(async () => {
         setSubmitting(true)
         try {
-          const id = await createRecRequest(mood.trim(), book)
+          const id = await createRecRequest(title.trim(), mood.trim(), book)
           router.push(`/social/recommend/${id}`)
         } catch (e) {
           toast.error((e as Error).message)
@@ -43,16 +44,28 @@ export default function RecommendNewView() {
       <div className="bj-frame">
         <header className="bj-subpage-head">
           <BackLink href="/social?tab=recommend" />
-          <span className="bj-h2">책 추천 받기</span>
+          <span className="bj-h2">추천 플레이리스트 만들기</span>
         </header>
 
         <div className="bj-content--new">
           <div>
-            <p className="bj-caption bj-bold bj-mb-8">요즘 읽고 싶은 분위기</p>
+            <p className="bj-caption bj-bold bj-mb-8">플레이리스트 제목</p>
             <input
               type="text"
               className="bj-input"
-              placeholder="예: 비 오는 날 이불 속에서 읽을 잔잔한 소설"
+              placeholder="예: 비 오는 날 읽기 좋은 책"
+              maxLength={40}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <p className="bj-caption bj-bold bj-mb-8">설명 (선택)</p>
+            <input
+              type="text"
+              className="bj-input"
+              placeholder="어떤 분위기를 찾는지 한 줄로"
               maxLength={100}
               value={mood}
               onChange={(e) => setMood(e.target.value)}
@@ -72,7 +85,7 @@ export default function RecommendNewView() {
             disabled={!canSubmit}
             className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
           >
-            추천 요청하기
+            플레이리스트 만들기
           </button>
         </div>
 

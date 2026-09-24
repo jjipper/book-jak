@@ -1,8 +1,8 @@
-// 책 추천 Supabase CRUD. 규칙(본인 요청 추천 불가·닫힌 요청 불가·1인 3권)은 DB 트리거가 강제한다 (0016).
+// 책 추천 Supabase CRUD. 규칙(본인 요청 추천 불가·닫힌 요청 불가·1인 10권)은 DB 트리거가 강제한다 (0016).
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import type { PostBook } from '@/entities/post/api/postsRemote'
-import type { RecRequest, RecSort, Recommendation } from '@/entities/recommendation/model/recommendations'
+import { REC_LIMIT_PER_USER, type RecRequest, type RecSort, type Recommendation } from '@/entities/recommendation/model/recommendations'
 
 type Profile = { nickname: string; type_code?: string | null } | null
 
@@ -13,7 +13,8 @@ function mapRequest(row: Record<string, unknown>): RecRequest {
     authorId: row.author_id as string,
     authorNickname: profile?.nickname ?? '알 수 없음',
     typeCode: (row.type_code as string | null) ?? null,
-    mood: row.mood as string,
+    title: row.title as string,
+    mood: (row.mood as string | null) ?? null,
     bookTitle: (row.book_title as string | null) ?? null,
     bookIsbn: (row.book_isbn as string | null) ?? null,
     bookCover: (row.book_cover as string | null) ?? null,
@@ -79,14 +80,15 @@ async function requireUserId(sb: ReturnType<typeof createSupabaseBrowser>): Prom
   return user.id
 }
 
-export async function createRecRequest(mood: string, book: PostBook | null): Promise<string> {
+export async function createRecRequest(title: string, mood: string, book: PostBook | null): Promise<string> {
   const sb = createSupabaseBrowser()
   const uid = await requireUserId(sb)
   const { data, error } = await sb
     .from('rec_requests')
     .insert({
       author_id: uid,
-      mood,
+      title,
+      mood: mood || null,
       book_title: book?.title ?? null,
       book_isbn: book?.isbn ?? null,
       book_cover: book?.cover ?? null,
@@ -106,7 +108,7 @@ export async function setRecRequestOpen(id: string, isOpen: boolean): Promise<vo
 const REC_ERRORS: Record<string, string> = {
   rec_self: '내 요청에는 추천할 수 없어요',
   rec_closed: '추천이 닫힌 요청이에요',
-  rec_limit: '한 요청에 3권까지 추천할 수 있어요',
+  rec_limit: `한 요청에 ${REC_LIMIT_PER_USER}권까지 추천할 수 있어요`,
 }
 
 export async function createRecommendation(requestId: string, book: PostBook, reason: string): Promise<void> {
