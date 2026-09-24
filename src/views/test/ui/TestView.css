@@ -1,0 +1,58 @@
+/* 테스트 문항 화면 전용 (TestView) */
+
+/* 헤더 가운데 BOOKBTI 타이틀 */
+.bj-test-head__title {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.06em;
+}
+
+/* 진행 점 12개 — 숫자는 우측에 보조로 */
+.bj-test-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 16px;
+}
+.bj-test-dot {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+  transition: background 0.2s ease;
+}
+.bj-test-dot--done {
+  background: var(--color-accent);
+}
+.bj-test-dot--current {
+  background: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-weak);
+}
+.bj-test-dots__count {
+  flex: none;
+  margin-left: 6px;
+}
+
+/* 문항 카드 — 더 크게 + 축 아이콘 */
+.bj-question-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding-block: var(--space-xl);
+  min-height: 210px;
+  justify-content: center;
+}
+.bj-question-card__icon {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-weak);
+  color: var(--color-accent);
+}

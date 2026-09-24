@@ -7,14 +7,22 @@ import { toPng } from 'html-to-image'
 import { toast } from '@/shared/lib/toast'
 import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
-import { READING_TYPES, type StatKey, type TypeCode } from '@/entities/reading-type/model/readingTypes'
+import { READING_TYPES, AXIS_KEYWORDS, type StatKey, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import TypeCard from '@/entities/reading-type/ui/TypeCard'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
+import Icon, { type IconName } from '@/shared/ui/Icon'
 import { useMounted } from '@/shared/lib/useMounted'
 import './ResultDetailView.css'
 
 interface ResultDetailViewProps {
   params: Promise<{ typeCode: string }>
+}
+
+/** 축 글자 → 아이콘. 앞 세 축(F/T · I/C · E/G)만 설명 위에 세운다 */
+const AXIS_ICONS: Record<string, IconName> = {
+  F: 'heart', T: 'search',
+  I: 'eye', C: 'moon',
+  E: 'compass', G: 'star',
 }
 
 const STAT_KEYS: StatKey[] = ['몰입력', '감수성', '완독력', '인내심', '허세력']
@@ -108,6 +116,11 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
   const isMine = result?.typeCode === typeCode
   const stats = isMine ? result.variantStats : type.baseStats
 
+  // 설명 첫 문장이 곧 유형 정의 — 거기까지만 강조한다
+  const dotAt = type.description.indexOf('. ')
+  const lead = dotAt < 0 ? type.description : type.description.slice(0, dotAt + 1)
+  const rest = dotAt < 0 ? '' : type.description.slice(dotAt + 1)
+
   async function handleSaveImage() {
     if (!captureRef.current) return
     setSaving(true)
@@ -116,7 +129,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
         cacheBust: true,
         backgroundColor: '#ffffff',
         pixelRatio: 2,
-        // 저장 이미지는 유형 카드 + 독서 궁합만
+        // 저장 이미지 = 유형 카드(희귀도 포함) + 유형 설명 + 독서 궁합
         filter: (node) => !(node instanceof HTMLElement && 'noCapture' in node.dataset),
       })
       const a = document.createElement('a'); a.download = `BOOKJAK_${typeCode}.png`; a.href = dataUrl; a.click()
@@ -203,10 +216,20 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
         <div ref={captureRef} className="bj-col-12 bj-w-full">
           <TypeCard typeCode={typeCode} />
 
-          {/* 유형 설명 */}
-          <section data-no-capture className="bj-card bj-report">
+          {/* 유형 설명 — 첫 문장(유형 정의)만 볼드 */}
+          <section className="bj-card bj-report">
             <h3 className="bj-h2">어떤 독서가냐면</h3>
-            <p className="bj-report__desc">{type.description}</p>
+            <ul className="bj-report__traits">
+              {typeCode.slice(0, 3).split('').map((axis) => (
+                <li key={axis} className="bj-report__trait">
+                  <Icon name={AXIS_ICONS[axis]} size={22} />
+                  <span>{AXIS_KEYWORDS[axis]}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="bj-report__desc">
+              <strong>{lead}</strong>{rest}
+            </p>
           </section>
 
           {/* 독서 스탯 */}

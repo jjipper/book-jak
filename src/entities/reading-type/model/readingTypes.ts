@@ -40,6 +40,14 @@ export interface ReadingType {
   books: { emoji: string; genre: string; note: string }[]
 }
 
+/** 유형 코드 한 글자 → 취향 키워드 (유형 카드 칩 · 결과 아이콘 공용) */
+export const AXIS_KEYWORDS: Record<string, string> = {
+  F: '감정 이입', T: '논리 분석',
+  I: '깊은 몰입', C: '차분한 사색',
+  E: '현실 도피', G: '자기 성장',
+  R: '현실 기반', W: '환상 세계',
+}
+
 export const READING_TYPES: Record<TypeCode, ReadingType> = {
   FIEW: {
     code: 'FIEW',

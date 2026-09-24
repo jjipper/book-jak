@@ -1,6 +1,6 @@
 'use client'
 
-import { READING_TYPES, rarityBadgeVariant, RARITY_BADGE_LABELS, type TypeCode } from '@/entities/reading-type/model/readingTypes'
+import { READING_TYPES, rarityBadgeVariant, RARITY_BADGE_LABELS, AXIS_KEYWORDS, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import TypeBadge from '@/shared/ui/TypeBadge'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 
@@ -10,14 +10,6 @@ interface TypeCardProps {
 
 // ponytail: 설문 응답 수가 아직 집계되지 않아 100명 기준으로 환산한다. 실제 응답 수가 생기면 그 값으로 교체.
 const SURVEY_COUNT = 100
-
-/** 유형 코드 네 글자 → 취향 키워드 칩 */
-const AXIS_KEYWORDS: Record<string, string> = {
-  F: '감정 이입', T: '논리 분석',
-  I: '깊은 몰입', C: '차분한 사색',
-  E: '현실 도피', G: '자기 성장',
-  R: '현실 기반', W: '환상 세계',
-}
 
 export default function TypeCard({ typeCode }: TypeCardProps) {
   const type = READING_TYPES[typeCode]

@@ -11,6 +11,35 @@
   line-height: 1.75;
   color: var(--color-text);
 }
+.bj-report__desc strong {
+  font-weight: 700;
+}
+
+/* 설명 위 취향 아이콘 3개 */
+.bj-report__traits {
+  display: flex;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.bj-report__trait {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-md) var(--space-xs);
+  border-radius: var(--radius-md);
+  background: var(--color-control-surface);
+  color: var(--color-accent);
+  font-size: var(--fs-body-sm);
+  font-weight: var(--fw-medium);
+  text-align: center;
+}
+.bj-report__trait span {
+  color: var(--color-text);
+}
 
 /* 독서 스탯 — 오각형 레이더 */
 .bj-radar {
