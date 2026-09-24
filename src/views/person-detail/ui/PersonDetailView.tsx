@@ -14,6 +14,8 @@ import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import BackLink from '@/shared/ui/BackLink'
 import TypeBadge from '@/shared/ui/TypeBadge'
+import { loadSharedHighRated, type SharedBooks } from '@/entities/profile-report/api/reportRemote'
+import './PersonDetailView.css'
 
 export default function PersonDetailView() {
   const params = useParams<{ id: string }>()
@@ -21,6 +23,7 @@ export default function PersonDetailView() {
   const [loading, setLoading] = useState(true)
   const [insight, setInsight] = useState<PersonInsight | null>(null)
   const [following, setFollowing] = useState(false)
+  const [shared, setShared] = useState<SharedBooks>({ count: 0, titles: [] })
   const { showGate, closeGate, requireAuth } = useAuthGate()
 
   useEffect(() => {
@@ -30,6 +33,8 @@ export default function PersonDetailView() {
       setInsight(p ? getPersonInsight(p) : null)
       setFollowing(following.includes(params.id))
       setLoading(false)
+      // 겹치는 책은 없어도 화면이 성립하므로 실패를 삼킨다
+      loadSharedHighRated(params.id).then(setShared, () => {})
     }
     void load()
   }, [params.id])
@@ -106,6 +111,31 @@ export default function PersonDetailView() {
                 <p className="bj-display bj-display--xl bj-affinity-pct--xl">{insight.affinity}%</p>
                 <p className="bj-body bj-affinity-label">{affinityLabel(insight.affinity)}</p>
               </div>
+
+              <div className="bj-match-facts">
+                <div className="bj-match-fact">
+                  <span className="bj-match-fact__num">{insight.affinity}</span>
+                  <span className="bj-caption">성향 궁합</span>
+                </div>
+                <div className="bj-match-fact">
+                  <span className="bj-match-fact__num">{shared.count}권</span>
+                  <span className="bj-caption">같이 높게 준 책</span>
+                </div>
+              </div>
+
+              {shared.count > 0 && (
+                <div>
+                  <p className="bj-caption bj-bold bj-mb-6">둘 다 별 4개 이상</p>
+                  <ul className="bj-match-books">
+                    {shared.titles.slice(0, 5).map((title) => (
+                      <li key={title} className="bj-match-book">{title}</li>
+                    ))}
+                  </ul>
+                  {shared.count > 5 && (
+                    <p className="bj-caption bj-mt-4">외 {shared.count - 5}권</p>
+                  )}
+                </div>
+              )}
 
               <div>
                 <p className="bj-caption bj-bold bj-mb-6">겹치는 취향</p>

@@ -1,0 +1,499 @@
+/* 취향 리포트 전용 스타일. 색은 tokens.css의 의미 토큰만 쓴다.
+   장르 조각처럼 구분이 필요한 곳도 주황 하나를 농도로 나눠 쓴다(color-mix). */
+
+.bj-report-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bj-report-card__title {
+  margin: -4px 0 0;
+}
+
+/* ── 1. BOOKBTI 히어로 ───────────────────────────────────────── */
+
+.bj-report-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--color-surface-spotlight);
+}
+
+.bj-report-hero__top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bj-report-hero__thumb {
+  width: 84px;
+  flex: none;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.bj-report-hero__code {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.bj-report-hero__spectrums {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bj-spectrum {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bj-spectrum__ends {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--fs-caption);
+  color: var(--color-text-caption);
+}
+
+.bj-spectrum__end--on {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.bj-spectrum__track {
+  position: relative;
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+}
+
+.bj-spectrum__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--color-accent);
+  border-radius: var(--radius-pill);
+  transition: width 0.4s ease;
+}
+
+.bj-spectrum__tick {
+  position: absolute;
+  top: -3px;
+  width: 4px;
+  height: 16px;
+  margin-left: -2px;
+  border-radius: var(--radius-pill);
+  background: var(--color-text);
+}
+
+/* ── 2. 장르 도넛 ────────────────────────────────────────────── */
+
+.bj-report-donut-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.bj-donut {
+  width: 140px;
+  flex: none;
+}
+
+.bj-donut__track,
+.bj-donut__arc {
+  fill: none;
+  stroke-width: 18;
+}
+
+.bj-donut__track {
+  stroke: var(--color-track);
+}
+
+.bj-donut__arc {
+  /* 12시에서 시계방향으로 돌도록 */
+  transform: rotate(-90deg);
+  transform-origin: 70px 70px;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.bj-donut__center-num {
+  fill: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.bj-donut__center-label {
+  fill: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+.bj-donut-legend {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bj-donut-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text);
+}
+
+.bj-donut-legend__dot {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 50%;
+}
+
+.bj-donut-legend__name {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bj-donut-legend__pct {
+  font-weight: 800;
+}
+
+/* ── 3. 별점 분포 ────────────────────────────────────────────── */
+
+.bj-report-star-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bj-report-bignum {
+  font-family: var(--font-body);
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-accent);
+}
+
+.bj-report-star-verdict {
+  text-align: right;
+  min-width: 140px;
+}
+
+.bj-starcols {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  height: 130px;
+}
+
+.bj-starcols__col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.bj-starcols__num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-muted);
+}
+
+.bj-starcols__track {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  background: var(--color-track);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.bj-starcols__fill {
+  width: 100%;
+  min-height: 3px;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  transition: height 0.4s ease;
+}
+
+.bj-starcols__label {
+  font-size: 11px;
+  color: var(--color-text-caption);
+}
+
+/* ── 4. 인생책 3권 ───────────────────────────────────────────── */
+
+.bj-lifebooks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bj-lifebook {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 10px;
+  border-radius: var(--radius-md);
+  background: var(--color-control-surface);
+}
+
+.bj-lifebook--empty {
+  background: var(--color-track);
+}
+
+.bj-lifebook__rank {
+  width: 22px;
+  flex: none;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--color-accent);
+}
+
+.bj-lifebook__title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bj-lifebook__title--empty {
+  font-weight: 400;
+  color: var(--color-text-caption);
+}
+
+.bj-lifebook__remove {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-caption);
+  cursor: pointer;
+}
+
+.bj-lifebook-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bj-lifebook-picker__list {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bj-lifebook-pick {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-control-surface);
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.bj-lifebook-pick--on {
+  background: var(--color-accent-weak);
+  color: var(--color-accent-hover);
+}
+
+.bj-lifebook-pick__title {
+  flex: 1;
+  font-size: 13px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bj-lifebook-pick__mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+
+/* ── 6. 발견 게이지 ──────────────────────────────────────────── */
+
+.bj-report-gauge-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bj-gauge {
+  width: 150px;
+  flex: none;
+}
+
+.bj-gauge__track,
+.bj-gauge__fill {
+  fill: none;
+  stroke-width: 12;
+  stroke-linecap: round;
+}
+
+.bj-gauge__track {
+  stroke: var(--color-track);
+}
+
+.bj-gauge__fill {
+  stroke: var(--color-accent);
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.bj-gauge__num {
+  fill: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.bj-gauge__end {
+  fill: var(--color-text-caption);
+  font-family: var(--font-body);
+  font-size: 10px;
+}
+
+/* ── 7. 배지 ─────────────────────────────────────────────────── */
+
+.bj-medal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 10px;
+}
+
+@media (min-width: 560px) {
+  .bj-medal-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.bj-medal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.bj-medal__art {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-control-surface);
+}
+
+.bj-medal__img,
+.bj-medal__fallback {
+  width: 48px;
+  height: 48px;
+}
+
+.bj-medal__fallback {
+  fill: var(--color-accent);
+  color: var(--color-text-on-accent);
+}
+
+.bj-medal--rare .bj-medal__fallback {
+  fill: var(--color-accent-hover);
+}
+
+.bj-medal--legendary .bj-medal__fallback {
+  fill: var(--color-text);
+}
+
+.bj-medal__fallback-text {
+  fill: var(--color-text-on-accent);
+  font-family: var(--font-display);
+  font-size: 22px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.bj-medal__lock {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 18px;
+  height: 18px;
+  padding: 2px;
+  border-radius: 50%;
+  background: var(--color-text);
+  fill: var(--color-text-on-accent);
+  color: var(--color-text-on-accent);
+}
+
+/* 미획득 — 흐리게. 이름·조건은 읽혀야 하므로 아트만 죽인다 */
+.bj-medal--locked .bj-medal__img,
+.bj-medal--locked .bj-medal__fallback {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+
+.bj-medal--locked .bj-medal__name {
+  color: var(--color-text-muted);
+}
+
+.bj-medal__name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+.bj-medal__cond {
+  font-size: 10px;
+  line-height: 1.3;
+  color: var(--color-text-caption);
+}
+
+.bj-medal-legend {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  padding-top: 4px;
+}
