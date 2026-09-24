@@ -8,8 +8,10 @@ import { QUESTIONS } from '@/entities/reading-type/model/questions'
 import type { TestAnswer } from '@/entities/reading-type/model/scoring'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Option from '@/shared/ui/Option'
-import Icon from '@/shared/ui/Icon'
+import Icon, { type IconName } from '@/shared/ui/Icon'
+import ConfirmSheet from '@/shared/ui/ConfirmSheet'
 import Logo from '@/shared/ui/Logo'
+import './TestView.css'
 
 const AXIS_LABELS: Record<string, string> = {
   FT: '감정·사유',
@@ -18,10 +20,19 @@ const AXIS_LABELS: Record<string, string> = {
   RW: '현실·환상',
 }
 
+// 축별 일러스트는 아직 없어서, 축 성격에 맞는 기존 아이콘을 문항 카드에 쓴다
+const AXIS_ICONS: Record<string, IconName> = {
+  FT: 'heart',
+  IC: 'eye',
+  EG: 'compass',
+  RW: 'moon',
+}
+
 export default function TestView() {
   const router = useRouter()
   const { currentStep, answers, selectAnswer, goBack, resetTest } = useTestStore()
   const [started, setStarted] = useState(false)
+  const [quitOpen, setQuitOpen] = useState(false)
 
   const question = QUESTIONS[currentStep]
 
@@ -38,8 +49,6 @@ export default function TestView() {
     // ?from=친구유형 을 결과 화면까지 넘겨 궁합 비교로 잇는다
     if (useTestStore.getState().isComplete) router.push(`/test/loading${window.location.search}`)
   }
-
-  const progressPct = ((currentStep + 1) / QUESTIONS.length) * 100
 
   // ── 인트로 화면 (테스트 시작 전 커버) ──────────────────────
   if (!started) {
@@ -119,21 +128,30 @@ export default function TestView() {
           <Icon name="chevron-left" size={24} />
         </button>
 
-        {/* 진행바 */}
-        <div className="bj-progress-wrap">
-          <div className="bj-row-between bj-mb-6">
-            <span className="bj-caption">{currentStep + 1} / {QUESTIONS.length}</span>
-            <span className="bj-caption bj-bold bj-progress-pct">{Math.round(progressPct)}%</span>
-          </div>
-          <div className="bj-progress__track">
-            <div className="bj-progress__fill" style={{ width: `${progressPct}%` }} />
-          </div>
-        </div>
+        <span className="bj-test-head__title">BOOKBTI</span>
 
-        <Link href="/home" className="bj-btn bj-btn--ghost bj-btn--sm" onClick={resetTest}>
-          그만두기
-        </Link>
+        <button onClick={() => setQuitOpen(true)} className="bj-icon-btn" aria-label="그만두기">
+          <Icon name="x" size={24} />
+        </button>
       </header>
+
+      {/* 진행 상황 — 문항 수만큼 점, 숫자는 보조 */}
+      <div
+        className="bj-test-dots"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={QUESTIONS.length}
+        aria-valuenow={currentStep + 1}
+        aria-label={`${QUESTIONS.length}문항 중 ${currentStep + 1}번째`}
+      >
+        {QUESTIONS.map((q, i) => (
+          <span
+            key={q.id}
+            className={`bj-test-dot${i < currentStep ? ' bj-test-dot--done' : i === currentStep ? ' bj-test-dot--current' : ''}`}
+          />
+        ))}
+        <span className="bj-caption bj-test-dots__count">{currentStep + 1}/{QUESTIONS.length}</span>
+      </div>
 
       {/* 축 인디케이터 */}
       <div className="bj-axis-row">
@@ -150,9 +168,12 @@ export default function TestView() {
 
       {/* 문항 카드 */}
       <div className="bj-question-area">
-        <div className="bj-card bj-mb-20">
+        <div className="bj-card bj-question-card bj-mb-20">
+          <div className="bj-question-card__icon" aria-hidden="true">
+            <Icon name={AXIS_ICONS[question.axis]} size={36} />
+          </div>
           <p className="bj-caption bj-bold bj-question-num">
-            Q{question.id}.
+            Q{question.id}. {AXIS_LABELS[question.axis]}
           </p>
           <h2 className="bj-h1 bj-h1--question">
             {question.text}
@@ -180,6 +201,15 @@ export default function TestView() {
           {question.type === 'quad' ? '가장 가까운 것 하나만 고르면 돼요' : '솔직하게 고를수록 정확해요'}
         </p>
       </div>
+
+      <ConfirmSheet
+        open={quitOpen}
+        message="정말 그만둘까요?"
+        confirmLabel="그만두기"
+        cancelLabel="계속하기"
+        onConfirm={() => { resetTest(); router.push('/home') }}
+        onCancel={() => setQuitOpen(false)}
+      />
       </div>
     </main>
   )

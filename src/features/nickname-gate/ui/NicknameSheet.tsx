@@ -158,7 +158,6 @@ export default function NicknameSheet({
   initialValue = "",
 }: NicknameSheetProps) {
   const [value, setValue] = useState(initialValue);
-  const [hasGenerated, setHasGenerated] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
@@ -185,7 +184,6 @@ export default function NicknameSheet({
 
   function handleGenerate() {
     changeValue(pickRandom());
-    setHasGenerated(true);
   }
 
   async function handleSubmit() {
@@ -218,8 +216,13 @@ export default function NicknameSheet({
               if (e.key === "Enter") handleSubmit();
             }}
           />
-          <button type="button" className="bj-input__action" onClick={handleGenerate}>
-            {hasGenerated ? "다시 짓기" : "무작위 짓기"}
+          <button
+            type="button"
+            className="bj-input__action bj-input__action--pill"
+            onClick={handleGenerate}
+            aria-label="닉네임 무작위로 짓기"
+          >
+            <span aria-hidden="true">🎲</span> 랜덤
           </button>
         </div>
 
