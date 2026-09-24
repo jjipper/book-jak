@@ -3581,3 +3581,51 @@ body.bj-body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ── 모임 — 목록 썸네일 / 카드 본문 / 관심 버튼 ─────────── */
+/* 목록은 작게, 상세 헤더(.bj-club-hero)는 크게 */
+.bj-club-thumb {
+  width: 64px;
+  flex: none;
+  border-radius: var(--radius-md);
+}
+
+/* 모임 카드 안 가로 배치 — .bj-row는 면·패딩이 붙어 카드 위에 겹치므로 쓰지 않는다 */
+.bj-club-card__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* 카드 전체가 Link라 관심 버튼은 눌리는 영역을 스스로 지킨다 */
+.bj-club-interest {
+  cursor: pointer;
+  border: none;
+  flex: none;
+}
+
+/* 상세 — 참여하기 + 관심 한 줄 */
+.bj-club-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* 모임 소개는 길게 쓸 수 있어야 한다 */
+.bj-textarea--tall {
+  min-height: 180px;
+}
+
+/* 책 추천 카드 — 제목이 주인공(모임 카드보다 한 단 크게), 추천자·수치는 보조 */
+.bj-event-card__title--lead {
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.bj-rec-card__stats {
+  margin-left: auto;
+  color: var(--color-text-caption);
+  white-space: nowrap;
+}
