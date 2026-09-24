@@ -6,6 +6,7 @@
 import { unstable_cache } from 'next/cache'
 import { createSupabaseServer } from '@/shared/api/supabase-server'
 import {
+  BOOKS_PER_DAY,
   kstDateKey,
   pickDailyBlindBooks,
   type AladdinItem,
@@ -13,33 +14,41 @@ import {
   type DailyBlindBook,
 } from '@/entities/blind-book/model/blindBooks'
 
-// 소설 / 에세이 / 인문 베스트셀러를 섞는다
-const CATEGORIES = ['1', '55889', '656']
+// 요일별 테마 — 그 카테고리의 지난주 베스트셀러 + 주목할 만한 신간에서 고른다.
+// [라벨, 알라딘 CategoryId] (0 = 국내도서 전체)
+const THEMES: [string, string][] = [
+  ['이것저것', '0'], // 일
+  ['소설', '1'],
+  ['에세이', '55889'],
+  ['인문', '656'],
+  ['과학', '987'],
+  ['자기계발', '336'],
+  ['이것저것', '0'], // 토
+]
 
-// 날짜로 과거 한 주(약 5년 안)를 고른다. 지난주 베스트셀러는 바뀌지 않아서
-// 캐시가 어느 시점에 갱신되든 같은 날짜는 같은 목록이 나온다.
-function weekOf(dateKey: string) {
+const themeOf = (dateKey: string) => {
   const [y, m, d] = dateKey.split('-').map(Number)
-  let seed = 0
-  for (const c of dateKey) seed = (seed * 31 + c.charCodeAt(0)) | 0
-  const weeksAgo = 2 + (Math.abs(seed) % 260)
-  const t = new Date(Date.UTC(y, m - 1, d) - weeksAgo * 7 * 86400_000)
+  return THEMES[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]
+}
+
+// 지난주(완결된 주)를 가리킨다. 이미 확정된 순위라 캐시가 언제 갱신되든 같은 날짜는 같은 목록.
+function lastWeekOf(dateKey: string) {
+  const [y, m, d] = dateKey.split('-').map(Number)
+  const t = new Date(Date.UTC(y, m - 1, d) - 7 * 86400_000)
   return { Year: String(t.getUTCFullYear()), Month: String(t.getUTCMonth() + 1), Week: String(Math.min(4, Math.ceil(t.getUTCDate() / 7))) }
 }
 
-// 실패는 throw — 한 카테고리만 빠진 채로 캐시되면 그날 목록이 달라진다
-async function fetchCategory(key: string, categoryId: string, dateKey: string): Promise<AladdinItem[]> {
+// 실패는 throw — 한 목록만 빠진 채로 캐시되면 그날 목록이 달라진다
+async function fetchList(key: string, extra: Record<string, string>): Promise<AladdinItem[]> {
   const params = new URLSearchParams({
     TTBKey: key,
-    QueryType: 'Bestseller',
-    CategoryId: categoryId,
     MaxResults: '50',
     Start: '1',
     SearchTarget: 'Book',
     Cover: 'Big',
     Output: 'JS',
     Version: '20131101',
-    ...weekOf(dateKey),
+    ...extra,
   })
   const res = await fetch(`https://www.aladin.co.kr/ttb/api/ItemList.aspx?${params}`, { cache: 'no-store' })
   if (!res.ok) throw new Error(`aladdin ${res.status}`)
@@ -50,23 +59,38 @@ async function fetchCategory(key: string, categoryId: string, dateKey: string): 
 
 // 날짜별 하루 캐시 (날짜가 인자라 캐시 키에 들어간다). throw한 결과는 캐시되지 않는다.
 const getDailyCached = unstable_cache(
-  async (dateKey: string): Promise<DailyBlindBook[]> => {
+  async (dateKey: string): Promise<{ theme: string; books: DailyBlindBook[] }> => {
     const key = process.env.ALADDIN_TTB_KEY
     if (!key) throw new Error('ALADDIN_TTB_KEY 없음')
-    const lists = await Promise.all(CATEGORIES.map((c) => fetchCategory(key, c, dateKey)))
-    return pickDailyBlindBooks(lists.flat(), dateKey)
+    const [theme, categoryId] = themeOf(dateKey)
+    const week = lastWeekOf(dateKey)
+    const lists = await Promise.all([
+      fetchList(key, { QueryType: 'Bestseller', CategoryId: categoryId, ...week }),
+      // ponytail: 신간 목록은 주 단위로 바뀌어 주 경계에서 같은 날 목록이 갈릴 수 있다.
+      // 문제가 되면 Bestseller만 쓰거나 결과를 DB에 박아 고정한다.
+      fetchList(key, { QueryType: 'ItemNewSpecial', CategoryId: categoryId }),
+    ])
+    let books = pickDailyBlindBooks(lists.flat(), dateKey)
+    // 좁은 테마라 소개 없는 책이 많으면 종합 베스트셀러로 채운다
+    if (books.length < BOOKS_PER_DAY && categoryId !== '0') {
+      const general = await fetchList(key, { QueryType: 'Bestseller', CategoryId: '0', ...week })
+      const seen = new Set(books.map((b) => b.book.isbn13))
+      books = [...books, ...pickDailyBlindBooks(general, dateKey).filter((b) => !seen.has(b.book.isbn13))].slice(0, BOOKS_PER_DAY)
+    }
+    return { theme, books }
   },
-  ['blind-daily-v1'], // 선정·가림 규칙을 바꾸면 버전을 올린다 (안 올리면 그날 캐시가 옛 규칙대로 남는다)
+  ['blind-daily-v2'], // 선정·가림 규칙을 바꾸면 버전을 올린다 (안 올리면 그날 캐시가 옛 규칙대로 남는다)
   { revalidate: 86400 },
 )
 
-const getDaily = (dateKey: string) => getDailyCached(dateKey).catch((): DailyBlindBook[] => [])
+const EMPTY = { theme: '', books: [] as DailyBlindBook[] }
+const getDaily = (dateKey: string) => getDailyCached(dateKey).catch(() => EMPTY)
 
 const noStore = { headers: { 'Cache-Control': 'private, no-store' } }
 
 export async function GET() {
   const date = kstDateKey()
-  const daily = await getDaily(date)
+  const { theme, books: daily } = await getDaily(date)
   if (daily.length === 0) return Response.json({ error: '오늘의 블라인드 북을 불러오지 못했어요' }, { status: 502 })
 
   const sb = await createSupabaseServer()
@@ -88,7 +112,7 @@ export async function GET() {
     const status = revealed.has(isbn) ? 'revealed' : reacted.has(isbn) ? 'passed' : 'new'
     return { index, blurb: d.blurb, tags: d.tags, illustCode: d.illustCode, status, ...(status === 'revealed' ? { book: d.book } : {}) }
   })
-  return Response.json({ date, books }, noStore)
+  return Response.json({ date, theme, books }, noStore)
 }
 
 export async function POST(request: Request) {
@@ -101,7 +125,7 @@ export async function POST(request: Request) {
   const { data: { user } } = await sb.auth.getUser()
   if (!user) return Response.json({ error: 'LOGIN_REQUIRED' }, { status: 401 })
 
-  const target = (await getDaily(date))[body.index ?? -1]
+  const target = (await getDaily(date)).books[body.index ?? -1]
   if (!target) return Response.json({ error: 'NOT_FOUND' }, { status: 404 })
   const isbn = target.book.isbn13
 

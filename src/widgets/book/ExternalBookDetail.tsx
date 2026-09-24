@@ -20,6 +20,7 @@ import { addToWishlist, loadWishlist, removeFromWishlist } from '@/features/wish
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getNickname } from '@/entities/user/model/profile'
+import { formatRelTime } from '@/entities/post/model/relTime'
 import { toast } from '@/shared/lib/toast'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
@@ -190,8 +191,6 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   const category = book.categoryName.split('>').slice(1).join(' › ')
   const descLong = book.description.length > DESC_FOLD_AT
   const typeName = typeCode ? READING_TYPES[typeCode as keyof typeof READING_TYPES]?.name : undefined
-  // 서버 집계에 이 화면에서 누른 것만 반영
-  const wishCount = (extra?.wishCount ?? 0) + (wishEdit === null ? 0 : Number(wishEdit) - Number(storedWished))
 
   return (
     <main className="bj-shell">
@@ -220,7 +219,6 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
               {[book.publisher, book.pubDate?.replace(/-/g, '.'), book.itemPage ? `${book.itemPage}쪽` : null].filter(Boolean).join(' · ')}
             </p>
             {category && <p className="bj-caption bj-book-meta-hint">{category}</p>}
-            {wishCount > 0 && <p className="bj-caption bj-book-meta-hint">{wishCount}명이 서재에 담았어요</p>}
             <div className="bj-book-actions">
               <button
                 type="button"
@@ -301,28 +299,27 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
           return (
             <section>
               <SectionLabel>리뷰 {total}</SectionLabel>
-              <div className="bj-col-10 bj-col-10--mt12">
+              <div className="bj-review-list">
                 {myRating?.review && (
-                  <div className="bj-row bj-row--my-review">
-                    <div className="bj-flex-1">
-                      <div className="bj-review-meta">
-                        <Stars value={myRating.stars} size={12} />
-                        <span className="bj-caption bj-bold bj-caption--action">{getNickname() ?? '나'} (내 리뷰)</span>
-                      </div>
-                      <p className="bj-body bj-review-body">{myRating.review}</p>
+                  <article className="bj-review-item bj-review-item--mine">
+                    <div className="bj-review-meta">
+                      <Stars value={myRating.stars} size={12} />
+                      <span className="bj-caption bj-bold">{getNickname() ?? '나'}</span>
+                      <span className="bj-caption bj-review-item__mine-tag">내 리뷰</span>
+                      <span className="bj-caption bj-review-time">{formatRelTime(myRating.ts)}</span>
                     </div>
-                  </div>
+                    <p className="bj-body bj-review-body">{myRating.review}</p>
+                  </article>
                 )}
                 {otherReviews.map((r) => (
-                  <div key={r.userId + r.createdAt} className="bj-row bj-row--review">
-                    <div className="bj-flex-1">
-                      <div className="bj-review-meta">
-                        <Stars value={r.stars} size={12} />
-                        <span className="bj-caption bj-bold">{r.nickname}</span>
-                      </div>
-                      <p className="bj-body bj-review-body">{r.review}</p>
+                  <article key={r.userId + r.createdAt} className="bj-review-item">
+                    <div className="bj-review-meta">
+                      <Stars value={r.stars} size={12} />
+                      <span className="bj-caption bj-bold">{r.nickname}</span>
+                      <span className="bj-caption bj-review-time">{formatRelTime(Date.parse(r.createdAt))}</span>
                     </div>
-                  </div>
+                    <p className="bj-body bj-review-body">{r.review}</p>
+                  </article>
                 ))}
                 {total === 0 && (
                   <p className="bj-caption bj-text-center bj-review-empty">
@@ -362,10 +359,10 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
             </div>
           </section>
         )}
-        {/* 이 책을 좋아한 사람들이 좋아한 책 — 4점 이상 준 사람들이 4점 이상 준 다른 책 */}
+        {/* 다른 독자들은 이 책도 좋아해요 — 4점 이상 준 사람들이 4점 이상 준 다른 책 */}
         {extra && extra.alsoLiked.length > 0 && (
           <section>
-            <SectionLabel>이 책을 좋아한 사람들이 좋아한 책</SectionLabel>
+            <SectionLabel>다른 독자들은 이 책도 좋아해요</SectionLabel>
             <div className="bj-rail bj-also-liked">
               {extra.alsoLiked.map((b) => (
                 <Link key={b.id} href={`/rate/books/${b.id}`} className="bj-unstyled-link bj-also-liked__item">
@@ -376,6 +373,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
                     )}
                   </div>
                   <p className="bj-caption bj-also-liked__title">{b.title}</p>
+                  {b.author && <p className="bj-caption bj-also-liked__author">{b.author}</p>}
                 </Link>
               ))}
             </div>

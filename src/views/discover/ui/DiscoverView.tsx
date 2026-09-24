@@ -115,7 +115,9 @@ export default function DiscoverView() {
         <header className="bj-page-head bj-row-between">
           <div>
             <span className="bj-display bj-display--lg">발견</span>
-            <p className="bj-caption">오늘의 블라인드 북 {books.length || 5}권 · 매일 새로 공개</p>
+            <p className="bj-caption">
+              오늘은 {today?.theme ?? '…'} · 블라인드 북 {books.length || 5}권
+            </p>
           </div>
           {tokens !== null && <span className="bj-discover__tokens">토큰 {tokens}</span>}
         </header>

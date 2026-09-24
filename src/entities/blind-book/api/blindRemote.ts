@@ -2,6 +2,7 @@ import type { BlindBook, RevealedBook } from '@/entities/blind-book/model/blindB
 
 export interface TodayBlind {
   date: string
+  theme: string // 오늘의 요일 테마 라벨 ('소설' 등)
   books: BlindBook[]
 }
 
