@@ -106,16 +106,27 @@ const REC_ERRORS: Record<string, string> = {
 }
 
 export async function createRecommendation(requestId: string, book: PostBook, reason: string): Promise<void> {
+  return createRecommendations(requestId, [{ book, reason }])
+}
+
+/** 한 요청에 여러 권을 한 번에 담는다 (추천 작성 화면). 권수 제한은 DB 트리거가 본다. */
+export async function createRecommendations(
+  requestId: string,
+  items: { book: PostBook; reason: string }[],
+): Promise<void> {
+  if (items.length === 0) return
   const sb = createSupabaseBrowser()
   const uid = await requireUserId(sb)
-  const { error } = await sb.from('recommendations').insert({
-    request_id: requestId,
-    author_id: uid,
-    book_title: book.title,
-    book_isbn: book.isbn,
-    book_cover: book.cover,
-    reason,
-  })
+  const { error } = await sb.from('recommendations').insert(
+    items.map(({ book, reason }) => ({
+      request_id: requestId,
+      author_id: uid,
+      book_title: book.title,
+      book_isbn: book.isbn,
+      book_cover: book.cover,
+      reason,
+    })),
+  )
   if (error) {
     const key = Object.keys(REC_ERRORS).find((k) => error.message.includes(k))
     throw new Error(key ? REC_ERRORS[key] : error.message.includes('너무 빠르게') ? error.message : '추천하지 못했어요')

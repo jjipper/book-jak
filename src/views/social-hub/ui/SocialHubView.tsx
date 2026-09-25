@@ -10,6 +10,7 @@ import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
 import { REC_KIND_LABEL, type RecKind, type RecRequest, type RecSort } from '@/entities/recommendation/model/recommendations'
 import TypeBadge from '@/shared/ui/TypeBadge'
+import Icon from '@/shared/ui/Icon'
 
 type HubTab = 'clubs' | 'recommend'
 
@@ -92,7 +93,6 @@ function ClubsTab() {
     <section>
       <div className="bj-section__head">
         <p className="bj-h2">모임</p>
-        <Link href="/social/clubs/new" className="bj-section__action">+ 만들기</Link>
       </div>
       {clubs === null ? (
         <p className="bj-caption bj-text-muted">불러오는 중…</p>
@@ -125,8 +125,7 @@ const KIND_COPY: Record<RecKind, { tab: string; make: string; empty: string }> =
   share: { tab: '추천하기', make: '내 추천 목록 만들기', empty: '아직 추천 목록이 없어요' },
 }
 
-function RecommendTab() {
-  const [kind, setKind] = useState<RecKind>('ask')
+function RecommendTab({ kind, setKind }: { kind: RecKind; setKind: (k: RecKind) => void }) {
   const [sort, setSort] = useState<RecSort>('latest')
   // 결과를 그 결과를 낳은 조건과 함께 담아, 조건이 바뀌면 그 자체로 '불러오는 중'이 되게 한다
   const [result, setResult] = useState<{ sort: RecSort; kind: RecKind; list: RecRequest[] } | null>(null)
@@ -168,7 +167,6 @@ function RecommendTab() {
             </button>
           ))}
         </div>
-        <Link href={newHref} className="bj-section__action">+ {copy.make}</Link>
       </div>
       {list === null ? (
         <p className="bj-caption bj-text-muted">불러오는 중…</p>
@@ -188,6 +186,9 @@ function RecommendTab() {
 
 export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: HubTab }) {
   const [tab, setTab] = useState<HubTab>(initialTab)
+  // 추천 종류는 FAB의 기본값이 되므로 탭 바깥에서 들고 있는다 (작성 화면에서 바꿀 수 있다)
+  const [kind, setKind] = useState<RecKind>('ask')
+  const newHref = tab === 'clubs' ? '/social/clubs/new' : `/social/recommend/new?kind=${kind}`
 
   return (
     <main className="bj-shell bj-shell--pb">
@@ -208,14 +209,19 @@ export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: H
                 onClick={() => setTab(t)}
                 className={`bj-choice bj-choice--flex bj-text-center${tab === t ? ' is-active' : ''}`}
               >
-                {t === 'clubs' ? '모임' : '책 추천'}
+                {t === 'clubs' ? '모임' : '추천'}
               </button>
             ))}
           </div>
 
-          {tab === 'clubs' ? <ClubsTab /> : <RecommendTab />}
+          {tab === 'clubs' ? <ClubsTab /> : <RecommendTab kind={kind} setKind={setKind} />}
         </div>
       </div>
+
+      {/* 만들기 FAB — 보고 있는 세그먼트가 작성 화면의 기본값이 된다 */}
+      <Link href={newHref} className="bj-fab" aria-label={tab === 'clubs' ? '모임 만들기' : '추천 쓰기'}>
+        <Icon name="plus" size={24} />
+      </Link>
     </main>
   )
 }
