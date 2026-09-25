@@ -28,7 +28,7 @@ export default function MyCommentsView() {
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 남긴 댓글이 없어요</p>
             <Link href="/home" className="bj-btn bj-btn--primary bj-btn--cta">
-              피드 보러가기
+              피드 둘러보기
             </Link>
           </div>
         ) : (

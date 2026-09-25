@@ -26,9 +26,9 @@ export default function MyLikesView() {
           <p className="bj-caption bj-text-muted">불러오는 중…</p>
         ) : posts.length === 0 ? (
           <div className="bj-empty bj-card">
-            <p className="bj-body bj-bold bj-mb-6">좋아요 한 글이 없어요</p>
+            <p className="bj-body bj-bold bj-mb-6">아직 좋아요 한 글이 없어요</p>
             <Link href="/home" className="bj-btn bj-btn--primary bj-btn--cta">
-              피드 보러가기
+              피드 둘러보기
             </Link>
           </div>
         ) : (

@@ -34,7 +34,7 @@ export default function MyWishlistView() {
       <div className="bj-frame">
       <header className="bj-subpage-head">
         <BackLink href="/my" />
-        <span className="bj-h2">내 서재</span>
+        <span className="bj-h2">서재에 담은 책</span>
       </header>
 
       <div className="bj-content">
@@ -42,8 +42,8 @@ export default function MyWishlistView() {
           <p className="bj-caption bj-text-muted">불러오는 중…</p>
         ) : items.length === 0 ? (
           <div className="bj-empty bj-card">
-            <p className="bj-body bj-bold bj-mb-6">아직 담아둔 책이 없어요</p>
-            <p className="bj-caption bj-mb-16">책 상세나 발견 탭에서 궁금한 책을 서재에 담아보세요</p>
+            <p className="bj-body bj-bold bj-mb-6">아직 서재에 담은 책이 없어요</p>
+            <p className="bj-caption bj-mb-16">발견 탭이나 책 상세에서 궁금한 책을 담아두세요</p>
             <Link href="/discover" className="bj-btn bj-btn--primary bj-btn--cta">
               발견하러 가기
             </Link>

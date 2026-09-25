@@ -82,7 +82,7 @@ export default function TestView() {
               테스트 시작
             </button>
             <p className="bj-caption bj-text-center">
-              가입 없이 바로 시작 · 약 3분 소요
+              약 3분이면 끝나요. 가입하지 않아도 돼요
             </p>
           </div>
 

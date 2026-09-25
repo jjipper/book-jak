@@ -67,7 +67,7 @@ export default function MyClubsView() {
               {tab === 'joined' ? '아직 참여한 모임이 없어요' : '아직 관심 모임이 없어요'}
             </p>
             <Link href="/social" className="bj-btn bj-btn--primary bj-btn--cta">
-              책 모임 보러가기
+              모임 둘러보기
             </Link>
           </div>
         ) : (

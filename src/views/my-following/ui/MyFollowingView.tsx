@@ -54,7 +54,7 @@ export default function MyFollowingView() {
                   </div>
                   <div className="bj-flex-1">
                     <p className="bj-body bj-bold bj-body--sm">{person.nickname}</p>
-                    <p className="bj-caption">{type?.name ?? '유형 미진단'}</p>
+                    <p className="bj-caption">{type?.name ?? '아직 테스트 전'}</p>
                   </div>
                 </Link>
                 <button

@@ -9,7 +9,7 @@ interface HomeHeroProps {
 export default function HomeHero({ typeCode }: HomeHeroProps) {
   const cta = typeCode
     ? { href: `/result/${typeCode}`, label: '내 유형 카드 보기' }
-    : { href: '/test', label: '테스트 시작하기' }
+    : { href: '/test', label: '테스트 시작' }
 
   return (
     <section className="bj-hero">

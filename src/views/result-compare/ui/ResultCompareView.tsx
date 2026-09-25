@@ -70,7 +70,7 @@ function CompareContent() {
               ? cardBox(myType, '나')
               : <Link href="/test" className="bj-card--flat bj-unstyled-link bj-text-center bj-block">
                   <p className="bj-pick-placeholder">?</p>
-                  <p className="bj-caption">테스트 먼저!</p>
+                  <p className="bj-caption">테스트 먼저 하기</p>
                 </Link>
             }
           </div>
@@ -110,13 +110,13 @@ function CompareContent() {
             </div>
             {myType.compatibility.match === friendType && (
               <div className="bj-callout bj-text-center">
-                <p className="bj-callout-title">환상의 조합!</p>
+                <p className="bj-callout-title">환상의 조합</p>
                 <p className="bj-caption bj-caption--inherit">&ldquo;{myType.compatibility.matchLine}&rdquo;</p>
               </div>
             )}
             {myType.compatibility.opposite === friendType && (
               <div className="bj-callout bj-callout--muted bj-text-center">
-                <p className="bj-callout-title">완전 상극!</p>
+                <p className="bj-callout-title">완전 상극</p>
                 <p className="bj-caption">&ldquo;{myType.compatibility.oppLine}&rdquo;</p>
               </div>
             )}
@@ -140,7 +140,7 @@ function CompareContent() {
               const path = myTypeCode ? `/result/${myTypeCode}` : '/test'
               try {
                 await navigator.clipboard.writeText(`${window.location.origin}${path}`)
-                toast.show('링크 복사됐어요!')
+                toast.show('링크를 복사했어요')
               } catch {
                 toast.error('링크 복사에 실패했어요')
               }

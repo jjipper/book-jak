@@ -114,7 +114,7 @@ export default function BlindBookCard({ book, tokens, onPass, onReveal }: BlindB
           </button>
           {(tokens !== 0 || alreadyRevealed) && (
             <button type="button" onClick={onReveal} className="bj-btn bj-btn--primary">
-              {alreadyRevealed ? '공개한 책 보기' : `블라인드 북 공개하기 · 토큰 ${REVEAL_COST}`}
+              {alreadyRevealed ? '공개한 책 보기' : `토큰 ${REVEAL_COST}개로 공개하기`}
             </button>
           )}
         </div>
