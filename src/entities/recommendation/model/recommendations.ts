@@ -10,9 +10,19 @@ export type RecSort = 'latest' | 'popular'
  */
 export type RecKind = 'ask' | 'share'
 
+/** 한 목록에 섞여 나오므로 라벨은 첫 글자부터 갈라지는 명사로 둔다 */
 export const REC_KIND_LABEL: Record<RecKind, string> = {
-  ask: '추천받아요',
-  share: '추천해요',
+  ask: '추천 요청',
+  share: '추천 목록',
+}
+
+/** 목록 필터 — 'all'은 두 종류를 함께 본다 */
+export type RecFilter = RecKind | 'all'
+
+export const REC_FILTER_LABEL: Record<RecFilter, string> = {
+  all: '전체',
+  ask: '추천받기',
+  share: '추천하기',
 }
 
 /** 한 요청에 한 사람이 추천할 수 있는 최대 권수 — DB 트리거(tg_guard_recommendation)와 같은 값 */

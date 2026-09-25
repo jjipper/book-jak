@@ -83,7 +83,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <p className="bj-caption bj-bold bj-mb-8">모임 분위기 선택</p>
+        <p className="bj-caption bj-bold bj-mb-8">모임 분위기</p>
         <div className="bj-illust-grid">
           {CLUB_ILLUSTS.map(({ code, label }) => {
             const active = illust === code
@@ -121,7 +121,7 @@ export default function ClubForm({
           ))}
         </div>
         {minCapacity > 0 && (
-          <p className="bj-caption bj-text-muted">이미 {minCapacity}명이 참여 중이라 그보다 적게는 못 줄여요</p>
+          <p className="bj-caption bj-text-muted">이미 {minCapacity}명이 참여 중이라 정원을 그보다 줄일 수 없어요</p>
         )}
       </div>
 
@@ -166,7 +166,7 @@ export default function ClubForm({
       </div>
 
       <div>
-        <p className="bj-caption bj-bold bj-mb-8">태그 (여러 개 선택 가능)</p>
+        <p className="bj-caption bj-bold bj-mb-8">태그 (여러 개 가능)</p>
         <div className="bj-tag-group">
           {CLUB_TAGS.map((tag) => (
             <button

@@ -2,7 +2,7 @@
 
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
 import type { PostBook } from '@/entities/post/api/postsRemote'
-import { REC_LIMIT_PER_USER, type RecKind, type RecRequest, type RecSort, type Recommendation } from '@/entities/recommendation/model/recommendations'
+import { REC_LIMIT_PER_USER, type RecFilter, type RecKind, type RecRequest, type RecSort, type Recommendation } from '@/entities/recommendation/model/recommendations'
 
 type Profile = { nickname: string; type_code?: string | null } | null
 
@@ -49,9 +49,10 @@ function mapRecommendation(row: Record<string, unknown>): Recommendation {
 
 const REQUEST_SELECT = '*, profiles!author_id(nickname)'
 
-export async function loadRecRequests(sort: RecSort, kind: RecKind): Promise<RecRequest[]> {
+export async function loadRecRequests(sort: RecSort, filter: RecFilter): Promise<RecRequest[]> {
   const sb = createSupabaseBrowser()
-  let q = sb.from('rec_requests').select(REQUEST_SELECT).eq('kind', kind)
+  let q = sb.from('rec_requests').select(REQUEST_SELECT)
+  if (filter !== 'all') q = q.eq('kind', filter)
   // 인기 = rec_count + reader_count × 2 (DB generated column)
   if (sort === 'popular') q = q.order('popularity', { ascending: false })
   const { data } = await q.order('created_at', { ascending: false }).limit(50)
@@ -95,7 +96,7 @@ export async function createRecRequest(kind: RecKind, title: string, mood: strin
 export async function setRecRequestOpen(id: string, isOpen: boolean): Promise<void> {
   const sb = createSupabaseBrowser()
   const { error } = await sb.from('rec_requests').update({ is_open: isOpen }).eq('id', id)
-  if (error) throw new Error('상태를 바꾸지 못했어요')
+  if (error) throw new Error('추천 상태를 바꾸지 못했어요')
 }
 
 const REC_ERRORS: Record<string, string> = {
@@ -140,7 +141,7 @@ export async function setReading(recommendationId: string, reading: boolean): Pr
   const { error } = reading
     ? await sb.from('rec_reads').insert({ recommendation_id: recommendationId, user_id: uid })
     : await sb.from('rec_reads').delete().eq('recommendation_id', recommendationId).eq('user_id', uid)
-  if (error) throw new Error('반영하지 못했어요')
+  if (error) throw new Error('읽기 상태를 바꾸지 못했어요')
 }
 
 /** 서재에 담기 — 담은 수 집계용 기록 (서재 본체는 features/wishlist). 이미 담겼으면 조용히 넘어간다. */

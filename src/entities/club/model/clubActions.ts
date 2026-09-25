@@ -171,6 +171,6 @@ export async function toggleInterest(id: string, next: boolean): Promise<boolean
   const { error } = next
     ? await sb.from('club_interests').upsert({ club_id: id, user_id: user.id }, { ignoreDuplicates: true })
     : await sb.from('club_interests').delete().eq('club_id', id).eq('user_id', user.id)
-  if (error) throw new Error(next ? '관심 모임에 담지 못했어요' : '관심을 해제하지 못했어요')
+  if (error) throw new Error(next ? '관심 모임으로 담지 못했어요' : '관심 모임에서 빼지 못했어요')
   return next
 }

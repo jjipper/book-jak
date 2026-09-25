@@ -63,11 +63,11 @@ export async function createClubPost(clubId: string, content: string, parentId?:
   const { error } = await sb
     .from('club_posts')
     .insert({ club_id: clubId, author_id: user.id, content, parent_id: parentId ?? null })
-  if (error) throw new Error(error.message.includes('너무 빠르게') ? error.message : '남기지 못했어요')
+  if (error) throw new Error(error.message.includes('너무 빠르게') ? error.message : '글을 남기지 못했어요')
 }
 
 export async function deleteClubPost(id: string): Promise<void> {
   const sb = createSupabaseBrowser()
   const { error } = await sb.from('club_posts').delete().eq('id', id)
-  if (error) throw new Error('지우지 못했어요')
+  if (error) throw new Error('글을 지우지 못했어요')
 }
