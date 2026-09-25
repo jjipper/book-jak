@@ -27,7 +27,7 @@ export default function SocialClubsView() {
       <div className="bj-frame">
       <header className="bj-subpage-head">
         <BackLink href="/social" />
-        <span className="bj-h2">책 모임</span>
+        <span className="bj-h2">모임</span>
       </header>
 
       <div className="bj-content--lg">
@@ -40,7 +40,7 @@ export default function SocialClubsView() {
         ) : clubs.length === 0 ? (
           <div className="bj-empty bj-card">
             <p className="bj-body bj-bold bj-mb-6">아직 열린 모임이 없어요</p>
-            <p className="bj-caption">첫 모임을 열면 관심 있는 사람이 모여요</p>
+            <p className="bj-caption">위에서 첫 모임을 만들어보세요</p>
           </div>
         ) : (
         <div className="bj-col-10">

@@ -39,7 +39,7 @@ export default function SocialClubEditView() {
           <ClubForm
             initial={club}
             minCapacity={club.memberCount}
-            submitLabel="수정 저장"
+            submitLabel="저장"
             onSubmit={(values: ClubInput) => {
               void (async () => {
                 try {

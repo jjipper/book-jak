@@ -8,7 +8,7 @@ import { resolveAuthor } from '@/features/resolve-author/model/author'
 import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
-import { REC_KIND_LABEL, type RecKind, type RecRequest, type RecSort } from '@/entities/recommendation/model/recommendations'
+import { REC_FILTER_LABEL, REC_KIND_LABEL, type RecFilter, type RecRequest, type RecSort } from '@/entities/recommendation/model/recommendations'
 import TypeBadge from '@/shared/ui/TypeBadge'
 import Icon from '@/shared/ui/Icon'
 
@@ -44,16 +44,15 @@ function ClubCard({ club, interested, onInterest }: {
         </div>
       </div>
       <div className="bj-meta-row">
-        <p className="bj-caption bj-flex-1">
-          {organizer} 주최 · {memberCount}/{club.capacity}명
-        </p>
+        <p className="bj-caption bj-flex-1">{organizer} 주최</p>
+        <p className="bj-caption">{memberCount}/{club.capacity}명</p>
         <ClubInterestButton clubId={club.id} interested={interested} onChange={onInterest} />
       </div>
     </Link>
   )
 }
 
-// 제목이 주인공 — 추천자는 아래 보조 한 줄. 종류는 라벨 + 색(share만 주황 채움)으로 구분한다.
+// 한 목록에 두 종류가 섞이므로 종류 칩을 맨 앞에 세우고 색까지 갈라 놓는다 (share만 주황 채움).
 function RecRequestCard({ req }: { req: RecRequest }) {
   const isShare = req.kind === 'share'
   return (
@@ -73,9 +72,7 @@ function RecRequestCard({ req }: { req: RecRequest }) {
           <TypeBadge code={req.typeCode} />
           <span className="bj-caption bj-text-muted">{req.authorNickname}</span>
         </Link>
-        <span className="bj-caption bj-rec-card__stats">
-          책 {req.recCount} · 읽는 중 {req.readerCount} · 담음 {req.savedCount}
-        </span>
+        <span className="bj-caption bj-rec-card__stats">책 {req.recCount}권</span>
       </div>
     </div>
   )
@@ -111,50 +108,37 @@ function ClubsTab() {
         </div>
       ) : (
         <div className="bj-search-empty">
-          <p className="bj-body bj-text-muted bj-mb-12">아직 모임이 없어요</p>
-          <Link href="/social/clubs/new" className="bj-btn bj-btn--primary bj-btn--cta">첫 모임 만들기</Link>
+          <p className="bj-body bj-text-muted bj-mb-12">아직 열린 모임이 없어요</p>
+          <Link href="/social/clubs/new" className="bj-btn bj-btn--primary bj-btn--cta">모임 만들기</Link>
         </div>
       )}
     </section>
   )
 }
 
-// 추천받기(ask)와 추천하기(share)는 만들기 버튼 카피까지 다르다
-const KIND_COPY: Record<RecKind, { tab: string; make: string; empty: string }> = {
-  ask: { tab: '추천받기', make: '추천 받고 싶어요', empty: '아직 추천 요청이 없어요' },
-  share: { tab: '추천하기', make: '내 추천 목록 만들기', empty: '아직 추천 목록이 없어요' },
-}
-
-function RecommendTab({ kind, setKind }: { kind: RecKind; setKind: (k: RecKind) => void }) {
+function RecommendTab({ filter, setFilter }: { filter: RecFilter; setFilter: (f: RecFilter) => void }) {
   const [sort, setSort] = useState<RecSort>('latest')
   // 결과를 그 결과를 낳은 조건과 함께 담아, 조건이 바뀌면 그 자체로 '불러오는 중'이 되게 한다
-  const [result, setResult] = useState<{ sort: RecSort; kind: RecKind; list: RecRequest[] } | null>(null)
-  const list = result?.sort === sort && result.kind === kind ? result.list : null
-  const copy = KIND_COPY[kind]
-  const newHref = `/social/recommend/new?kind=${kind}`
+  const [result, setResult] = useState<{ sort: RecSort; filter: RecFilter; list: RecRequest[] } | null>(null)
+  const list = result?.sort === sort && result.filter === filter ? result.list : null
 
   useEffect(() => {
-    void loadRecRequests(sort, kind).then((l) => setResult({ sort, kind, list: l }))
-  }, [sort, kind])
+    void loadRecRequests(sort, filter).then((l) => setResult({ sort, filter, list: l }))
+  }, [sort, filter])
 
   return (
     <section className="bj-col-10">
-      <div className="bj-choice-row" role="tablist">
-        {(['ask', 'share'] as const).map((k) => (
-          <button
-            key={k}
-            type="button"
-            role="tab"
-            aria-selected={kind === k}
-            onClick={() => setKind(k)}
-            className={`bj-choice bj-choice--flex bj-text-center${kind === k ? ' is-active' : ''}`}
-          >
-            {KIND_COPY[k].tab}
-          </button>
-        ))}
-      </div>
-
       <div className="bj-section__head">
+        <select
+          className="bj-select"
+          aria-label="추천 종류"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as RecFilter)}
+        >
+          {(['all', 'ask', 'share'] as const).map((f) => (
+            <option key={f} value={f}>{REC_FILTER_LABEL[f]}</option>
+          ))}
+        </select>
         <div className="bj-meta-row">
           {(['latest', 'popular'] as const).map((s) => (
             <button
@@ -176,19 +160,24 @@ function RecommendTab({ kind, setKind }: { kind: RecKind; setKind: (k: RecKind) 
         </div>
       ) : (
         <div className="bj-search-empty">
-          <p className="bj-body bj-text-muted bj-mb-12">{copy.empty}</p>
-          <Link href={newHref} className="bj-btn bj-btn--primary bj-btn--cta">{copy.make}</Link>
+          <p className="bj-body bj-text-muted bj-mb-12">아직 올라온 추천이 없어요</p>
+          <Link href={recommendNewHref(filter)} className="bj-btn bj-btn--primary bj-btn--cta">추천 쓰기</Link>
         </div>
       )}
     </section>
   )
 }
 
+// 전체를 보고 있으면 종류를 고른 게 아니므로 작성 화면 기본값(추천받기)에 맡긴다
+function recommendNewHref(filter: RecFilter): string {
+  return filter === 'all' ? '/social/recommend/new' : `/social/recommend/new?kind=${filter}`
+}
+
 export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: HubTab }) {
   const [tab, setTab] = useState<HubTab>(initialTab)
-  // 추천 종류는 FAB의 기본값이 되므로 탭 바깥에서 들고 있는다 (작성 화면에서 바꿀 수 있다)
-  const [kind, setKind] = useState<RecKind>('ask')
-  const newHref = tab === 'clubs' ? '/social/clubs/new' : `/social/recommend/new?kind=${kind}`
+  // 목록 필터가 FAB의 기본값이 되므로 탭 바깥에서 들고 있는다 (작성 화면에서 바꿀 수 있다)
+  const [filter, setFilter] = useState<RecFilter>('all')
+  const newHref = tab === 'clubs' ? '/social/clubs/new' : recommendNewHref(filter)
 
   return (
     <main className="bj-shell bj-shell--pb">
@@ -214,11 +203,11 @@ export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: H
             ))}
           </div>
 
-          {tab === 'clubs' ? <ClubsTab /> : <RecommendTab kind={kind} setKind={setKind} />}
+          {tab === 'clubs' ? <ClubsTab /> : <RecommendTab filter={filter} setFilter={setFilter} />}
         </div>
       </div>
 
-      {/* 만들기 FAB — 보고 있는 세그먼트가 작성 화면의 기본값이 된다 */}
+      {/* 만들기 FAB — 보고 있는 필터가 작성 화면의 기본값이 된다 */}
       <Link href={newHref} className="bj-fab" aria-label={tab === 'clubs' ? '모임 만들기' : '추천 쓰기'}>
         <Icon name="plus" size={24} />
       </Link>

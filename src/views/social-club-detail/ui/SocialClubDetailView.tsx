@@ -143,8 +143,8 @@ export default function SocialClubDetailView() {
 
   async function handleDeletePost(post: ClubPost, replyCount: number) {
     const warn = replyCount > 0
-      ? `이 질문을 지우면 달린 답글 ${replyCount}개도 함께 사라져요. 지울까요?`
-      : '지울까요?'
+      ? `이 질문을 지우면 달린 답글 ${replyCount}개도 함께 사라져요. 삭제할까요?`
+      : '삭제할까요?'
     if (!window.confirm(warn)) return
     try {
       await deleteClubPost(post.id)
@@ -222,7 +222,7 @@ export default function SocialClubDetailView() {
               className={`bj-btn ${joined ? '' : 'bj-btn--primary'} bj-btn--tall bj-flex-1`}
               style={{ opacity: !joined && isFull ? 0.4 : 1 }}
             >
-              {joined ? '참여 취소하기' : isFull ? '정원 마감' : '참여하기'}
+              {joined ? '참여 취소' : isFull ? '정원 마감' : '참여하기'}
             </button>
           )}
           <ClubInterestButton clubId={club.id} interested={interested} onChange={setInterested} />
@@ -246,7 +246,7 @@ export default function SocialClubDetailView() {
 
         <section className="bj-col-8">
           <p className="bj-h2">궁금한 점</p>
-          <p className="bj-caption bj-text-muted">모임에 대해 묻고, 주최자와 참여자가 답해요</p>
+          <p className="bj-caption bj-text-muted">주최자와 참여자가 답해줘요</p>
           <textarea
             className="bj-textarea bj-textarea--sm"
             placeholder="궁금한 점을 남겨보세요"
@@ -260,7 +260,7 @@ export default function SocialClubDetailView() {
             disabled={draft.trim().length === 0}
             onClick={() => handlePost(draft.trim())}
           >
-            남기기
+            질문 남기기
           </button>
           {threads.length === 0 && <p className="bj-caption bj-text-muted">아직 질문이 없어요</p>}
           {threads.map(({ question, replies }) => (

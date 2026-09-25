@@ -128,7 +128,10 @@ function RecCard({ rec, showAuthor, myId, onChanged, requireAuth }: RecCardProps
         {showAuthor
           ? <PersonLink id={rec.authorId} nickname={rec.authorNickname} typeCode={rec.authorTypeCode} />
           : <span />}
-        <span className="bj-caption">읽는 중 {readingCount} · 담음 {rec.savedBy.length}</span>
+        <span className="bj-meta-row">
+          <span className="bj-caption">읽는 중 {readingCount}명</span>
+          <span className="bj-caption">담음 {rec.savedBy.length}명</span>
+        </span>
       </div>
 
       {!myRead ? (
@@ -200,17 +203,17 @@ function RecCard({ rec, showAuthor, myId, onChanged, requireAuth }: RecCardProps
 // 두 종류는 같은 화면을 쓰고 카피만 다르다
 const COPY: Record<RecKind, { head: string; books: string; empty: string; compose: string; submit: string }> = {
   ask: {
-    head: '추천 받고 싶어요',
+    head: '추천 요청',
     books: '추천받은 책',
     empty: '아직 추천이 없어요. 첫 책을 권해보세요',
-    compose: '이거 읽어봐',
+    compose: '책 추천하기',
     submit: '추천하기',
   },
   share: {
-    head: '내가 추천해요',
+    head: '추천 목록',
     books: '이 목록의 책',
     empty: '아직 담긴 책이 없어요',
-    compose: '이 목록에 책 담기',
+    compose: '책 담기',
     submit: '책 담기',
   },
 }
@@ -243,7 +246,7 @@ export default function RecommendDetailView() {
         <div className="bj-frame">
           <div className="bj-subpage-loading">
             <BackLink href="/social?tab=recommend" />
-            {req === false && <p className="bj-caption bj-text-muted">사라진 목록이에요</p>}
+            {req === false && <p className="bj-caption bj-text-muted">삭제됐거나 없는 목록이에요</p>}
           </div>
         </div>
       </main>
@@ -300,9 +303,11 @@ export default function RecommendDetailView() {
             <p className="bj-h1">{request.title}</p>
             <PersonLink id={request.authorId} nickname={request.authorNickname} typeCode={request.typeCode} />
             {request.mood && <p className="bj-body">{request.mood}</p>}
-            <span className="bj-caption bj-text-muted">
-              책 {request.recCount} · 읽는 중 {request.readerCount} · 서재에 담음 {request.savedCount}
-            </span>
+            <div className="bj-col-4">
+              <p className="bj-caption bj-row-between"><span>담긴 책</span><span className="bj-bold">{request.recCount}권</span></p>
+              <p className="bj-caption bj-row-between"><span>읽는 중</span><span className="bj-bold">{request.readerCount}명</span></p>
+              <p className="bj-caption bj-row-between"><span>서재에 담음</span><span className="bj-bold">{request.savedCount}명</span></p>
+            </div>
             {isMine && !isShare && (
               <button type="button" className="bj-btn bj-btn--text bj-btn--block" onClick={toggleOpen}>
                 {request.isOpen ? '추천 닫기' : '다시 열기'}
@@ -311,7 +316,7 @@ export default function RecommendDetailView() {
           </div>
 
           <section className="bj-col-10">
-            <p className="bj-h2">{copy.books} {recs.length}</p>
+            <p className="bj-h2">{copy.books} {recs.length}권</p>
             {recs.length === 0 && <p className="bj-caption bj-text-muted">{copy.empty}</p>}
             {recs.map((r) => (
               <RecCard
@@ -346,7 +351,7 @@ export default function RecommendDetailView() {
               </button>
             </section>
           ) : isShare ? null : !request.isOpen ? (
-            <p className="bj-caption bj-text-center">추천이 닫힌 목록이에요</p>
+            <p className="bj-caption bj-text-center">추천이 닫힌 요청이에요</p>
           ) : !isMine && myRecCount >= REC_LIMIT_PER_USER ? (
             <p className="bj-caption bj-text-center">이 목록에 {REC_LIMIT_PER_USER}권을 모두 추천했어요</p>
           ) : null}

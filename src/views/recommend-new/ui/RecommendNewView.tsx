@@ -16,24 +16,21 @@ import BackLink from '@/shared/ui/BackLink'
 
 // 두 종류는 같은 폼을 쓰고 카피만 다르다 (DB rec_requests.kind). 종류는 등록 때 정하면 못 바꾼다.
 const COPY: Record<RecKind, {
-  tab: string; titleLabel: string; titlePlaceholder: string
-  descPlaceholder: string; hint: string; submit: string
+  tab: string; titlePlaceholder: string; descPlaceholder: string; hint: string; submit: string
 }> = {
   ask: {
     tab: '추천받기',
-    titleLabel: '어떤 책을 찾고 있나요',
     titlePlaceholder: '예: 비 오는 날 읽을 책 추천받아요',
     descPlaceholder: '어떤 분위기를 찾는지, 요즘 뭘 읽었는지, 피하고 싶은 건 뭔지 적어주세요',
-    hint: '다른 사람들이 이 목록에 책을 채워줘요. 책은 내가 담지 않아요',
-    submit: '추천 받고 싶어요',
+    hint: '다른 사람들이 책을 추천해줘요. 내가 직접 담을 수는 없어요',
+    submit: '추천 요청 올리기',
   },
   share: {
     tab: '추천하기',
-    titleLabel: '목록 제목',
     titlePlaceholder: '예: 울고 싶을 때 보는 책 5선',
     descPlaceholder: '어떤 사람에게 권하는 목록인지, 어떻게 고른 책들인지 적어주세요',
-    hint: '다른 사람은 읽을게요·서재에 담기·후기만 남겨요',
-    submit: '내 추천 목록 만들기',
+    hint: '다른 사람은 책을 담을 수 없고, 읽을게요와 후기만 남겨요',
+    submit: '추천 목록 올리기',
   },
 }
 
@@ -94,9 +91,9 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
 
         <div className="bj-content--new">
           <div>
-            <p className="bj-caption bj-bold bj-mb-8">무엇을 할까요</p>
+            <p className="bj-caption bj-bold bj-mb-8">종류</p>
             <div className="bj-choice-row" role="tablist">
-              {(['share', 'ask'] as const).map((k) => (
+              {(['ask', 'share'] as const).map((k) => (
                 <button
                   key={k}
                   type="button"
@@ -112,7 +109,7 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
           </div>
 
           <div>
-            <p className="bj-caption bj-bold bj-mb-8">{copy.titleLabel}</p>
+            <p className="bj-caption bj-bold bj-mb-8">제목</p>
             <input
               type="text"
               className="bj-input"
@@ -169,7 +166,10 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
             </div>
           )}
 
-          <p className="bj-caption bj-text-muted">{copy.hint} · 내 BOOKBTI가 함께 표시돼요</p>
+          <div>
+            <p className="bj-caption bj-text-muted">{copy.hint}</p>
+            <p className="bj-caption bj-text-muted">내 BOOKBTI가 함께 표시돼요</p>
+          </div>
 
           <button
             type="button"
