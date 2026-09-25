@@ -157,7 +157,7 @@ export default function MyView() {
           </button>
         </div>
         <p className="bj-caption">
-          {nickname ? `${nickname} · ` : ''}취향 리포트와 내 서재
+          {nickname || '취향 리포트와 내 서재'}
         </p>
       </header>
 
@@ -220,7 +220,7 @@ export default function MyView() {
             <p className="bj-body bj-bold bj-mb-6">아직 테스트 전이에요</p>
             <p className="bj-caption bj-mb-16">나의 BOOKBTI를 먼저 알아보세요</p>
             <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">
-              테스트 시작하기 →
+              테스트 시작
             </Link>
           </div>
         )}
@@ -252,9 +252,10 @@ export default function MyView() {
               </div>
               <div className="bj-report-teaser__body">
                 <p className="bj-body bj-bold">
-                  {myType ? `${myType.name} · ${myType.code}` : '내 독서 취향 한눈에'}
+                  {myType ? myType.name : '내 독서 취향 한눈에'}
                 </p>
                 <div className="bj-report-teaser__facts">
+                  {myType && <span className="bj-caption">BOOKBTI {myType.code}</span>}
                   <span className="bj-caption">평가 {ratedCount}권</span>
                   <span className="bj-caption">평균 ★{avgStars.toFixed(1)}</span>
                   <span className="bj-caption">발견 담기 {discoverSaved}</span>
@@ -284,7 +285,7 @@ export default function MyView() {
           </div>
           {loggedIn ? (
             <div className="bj-col-8">
-              <ActivityRow href="/my/rated" label="내가 읽고 별점 준 책" count={ratedCount} />
+              <ActivityRow href="/my/rated" label="별점 준 책" count={ratedCount} />
               <ActivityRow href="/my/wishlist" label="서재에 담은 책" count={wishCount} />
             </div>
           ) : (

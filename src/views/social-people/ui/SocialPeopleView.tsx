@@ -61,9 +61,9 @@ export default function SocialPeopleView() {
         ) : ranked.length === 0 ? (
           // 초기 런칭 — 유형 진단을 마친 다른 가입자가 아직 없을 때
           <div className="bj-empty-card">
-            <p className="bj-h1 bj-mb-10">아직 취향 매칭 유저가 없어요</p>
+            <p className="bj-h1 bj-mb-10">아직 취향을 맞춰볼 사람이 없어요</p>
             <p className="bj-body bj-text-muted bj-mb-20">
-              대신 홈 피드에서<br />다른 사람 글을 둘러볼까요?
+              먼저 피드에서<br />다른 사람 글을 둘러보세요
             </p>
             <Link href="/home" className="bj-btn bj-btn--primary bj-btn--block">
               피드 둘러보기
@@ -91,14 +91,14 @@ export default function SocialPeopleView() {
                       <div className="bj-flex-1">
                         <div className="bj-meta-row bj-mb-2">
                           <p className="bj-body bj-bold bj-discuss-text">{person.nickname}</p>
-                          {type && <span className="bj-caption">· {type.name}</span>}
+                          {type && <span className="bj-caption">{type.name}</span>}
                         </div>
                         <p className="bj-caption bj-truncate">
                           {person.bio}
                         </p>
                         {sharedTags.length > 0 && (
                           <p className="bj-caption bj-shared-tags">
-                            공통 관심사 · {sharedTags.join(', ')}
+                            공통 관심사 {sharedTags.join(', ')}
                           </p>
                         )}
                       </div>

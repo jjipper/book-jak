@@ -159,7 +159,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
       }
       addToWishlist({ bookId, title: book.title, author: book.author, publisher: book.publisher, cover: book.cover, ts: Date.now() })
       setWishEdit(true)
-      toast.show('내 서재에 담았어요')
+      toast.show('서재에 담았어요')
     })
   }
 
@@ -185,7 +185,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
     )
       .then(() => fetchBookStats(bookId))
       .then((s) => setStats(s))
-      .catch(() => toast.error('서버 동기화에 실패했어요. 로컬에는 저장됐어요'))
+      .catch(() => toast.error('이 기기에만 저장했어요. 연결되면 다시 올릴게요'))
   }
 
   const category = book.categoryName.split('>').slice(1).join(' › ')
@@ -226,7 +226,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
                 className={`bj-btn bj-btn--sm ${wished ? 'bj-btn--secondary' : 'bj-btn--primary'}`}
                 aria-pressed={wished}
               >
-                {wished ? '서재에 담김 ✓' : '서재에 담기'}
+                {wished ? '서재에 담김' : '서재에 담기'}
               </button>
               <a
                 href={aladdinProductHref(book.isbn13)}
@@ -245,7 +245,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
           <span className="bj-caption bj-bold">
             {stats && stats.count > 0
               ? <>평균 별점 <span className="bj-stat-star">★ {stats.avg.toFixed(1)}</span> (북작 {stats.count}명)</>
-              : '아직 이 책을 평가한 북작 사용자가 없어요'}
+              : '아직 이 책을 평가한 사람이 없어요'}
           </span>
           {typeName && extra?.typeAvg != null && (
             <span className="bj-caption">
@@ -254,10 +254,13 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
           )}
           <StarRating value={stars} onChange={handleRate} size={32} />
           <p className="bj-caption" style={{ color: stars > 0 ? 'var(--color-accent)' : undefined }}>
-            {stars > 0
-              ? `내 별점 ${stars}점 · 같은 별을 다시 누르면 취소돼요${justSaved ? ' · 저장됐어요!' : ''}`
-              : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
+            {stars > 0 ? `내 별점 ${stars}점` : '별을 눌러 평가해보세요 (반 칸 = 0.5점)'}
           </p>
+          {stars > 0 && (
+            <p className="bj-caption">
+              {justSaved ? '저장했어요' : '같은 별을 다시 누르면 평가가 취소돼요'}
+            </p>
+          )}
           {stars > 0 && (
             <div className="bj-review-input-row">
               <textarea

@@ -164,12 +164,10 @@ export default function RateView({ initialQuery }: RateViewProps) {
       <div className="bj-frame">
         <header className="bj-page-head">
           <span className="bj-display bj-display--lg">평가</span>
-          <p className="bj-caption">
-            별점을 줄수록 내 장르 취향이 선명해져요
-            {ratedCount > 0 && (
-              <span className="bj-bold bj-caption--action"> · {ratedCount}권 평가함</span>
-            )}
-          </p>
+          <p className="bj-caption">별점을 줄수록 내 장르 취향이 선명해져요</p>
+          {ratedCount > 0 && (
+            <p className="bj-caption bj-bold bj-caption--action">지금까지 {ratedCount}권 평가</p>
+          )}
         </header>
 
         <input

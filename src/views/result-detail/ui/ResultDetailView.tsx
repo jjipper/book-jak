@@ -152,7 +152,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     }
     try {
       await navigator.clipboard.writeText(url)
-      toast.show('궁합 링크를 복사했어요! 친구에게 보내보세요')
+      toast.show('궁합 링크를 복사했어요')
     } catch {
       toast.error('링크 복사에 실패했어요')
     }
@@ -180,7 +180,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
               친구가 공유한 카드예요.<br />나의 유형은 뭘까요? 테스트하고 궁합도 확인해보세요
             </p>
             <Link href={`/test?from=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--cta">
-              나도 테스트해보기 →
+              테스트 시작
             </Link>
           </div>
         )}
@@ -191,7 +191,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
             <p className="bj-body bj-text-muted bj-mb-12">친구의 결과예요</p>
             <div className="bj-col-10">
               <Link href={`/result/compare?type=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--block">
-                나와 궁합 보기 →
+                나와 궁합 보기
               </Link>
               <Link href={`/result/${result.typeCode}`} className="bj-btn bj-btn--secondary bj-btn--block">
                 내 결과 보기
@@ -207,7 +207,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
               링크를 보낸 친구의 유형은<br />{READING_TYPES[fromType].emoji} {READING_TYPES[fromType].name}
             </p>
             <Link href={`/result/compare?type=${fromType}`} className="bj-btn bj-btn--primary bj-btn--cta">
-              친구와 궁합 보기 →
+              친구와 궁합 보기
             </Link>
           </div>
         )}

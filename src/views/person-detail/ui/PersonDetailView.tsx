@@ -159,7 +159,7 @@ export default function PersonDetailView() {
               </p>
               {!person.typeCode ? null : (
                 <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta-sm">
-                  테스트 시작하기 →
+                  테스트 시작
                 </Link>
               )}
             </div>

@@ -48,11 +48,20 @@ export default function MyRankingView() {
       <div className="bj-content--lg">
         {ranked !== null && (
           <div className="bj-card--flat">
-            <p className="bj-body bj-semibold bj-mb-6">이번 주 내 활동 · {me?.score ?? 0}점</p>
+            <p className="bj-body bj-semibold bj-mb-6">이번 주 내 활동</p>
             {summaryEntries.length > 0 ? (
-              <p className="bj-caption">
-                {summaryEntries.map(({ key, label }) => `${label} ${me![key]}번`).join(' · ')}
-              </p>
+              <div className="bj-col-8">
+                {summaryEntries.map(({ key, label }) => (
+                  <p key={key} className="bj-caption bj-row-between">
+                    <span>{label}</span>
+                    <span className="bj-bold">{me![key] as number}번</span>
+                  </p>
+                ))}
+                <p className="bj-body bj-semibold bj-row-between">
+                  <span>합계</span>
+                  <span>{me?.score ?? 0}점</span>
+                </p>
+              </div>
             ) : (
               <p className="bj-caption">월요일마다 새로 시작해요. 책을 평가하고 글을 쓰면 점수가 쌓여요</p>
             )}
@@ -93,7 +102,7 @@ export default function MyRankingView() {
                     <Link href={`/people/${entry.userId}`} className="bj-body bj-bold bj-discuss-text bj-unstyled-link">
                       {entry.nickname}{isMe && ' (나)'}
                     </Link>
-                    <p className="bj-caption">{type ? type.name : '유형 미진단'}</p>
+                    <p className="bj-caption">{type ? type.name : '아직 테스트 전'}</p>
                   </div>
                   <p className={`bj-body bj-bold bj-rank-score${isMe ? ' bj-rank-score--me' : ''}`}>
                     {entry.score}점

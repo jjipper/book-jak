@@ -116,10 +116,10 @@ function SpectrumRow({ axis }: { axis: AxisSpectrum }) {
     <div className="bj-spectrum">
       <div className="bj-spectrum__ends">
         <span className={`bj-spectrum__end${leftWins ? ' bj-spectrum__end--on' : ''}`}>
-          {axis.left} · {axis.leftLabel}
+          {axis.leftLabel}
         </span>
         <span className={`bj-spectrum__end${leftWins ? '' : ' bj-spectrum__end--on'}`}>
-          {axis.rightLabel} · {axis.right}
+          {axis.rightLabel}
         </span>
       </div>
       <div className="bj-spectrum__track">
@@ -309,7 +309,7 @@ export default function MyReportView() {
             <section className="bj-card bj-card--empty-lg">
               <p className="bj-body bj-bold bj-mb-6">BOOKBTI부터 알아볼까요</p>
               <p className="bj-caption bj-mb-16">유형을 알아야 리포트가 채워져요</p>
-              <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">테스트 시작하기 →</Link>
+              <Link href="/test" className="bj-btn bj-btn--primary bj-btn--cta">테스트 시작</Link>
             </section>
           )}
 
@@ -341,7 +341,7 @@ export default function MyReportView() {
             <div className="bj-report-star-head">
               <div>
                 <p className="bj-report-bignum">★{starProfile.avg.toFixed(1)}</p>
-                <p className="bj-caption">평균 별점 · {ratings.length}권</p>
+                <p className="bj-caption">평가한 {ratings.length}권의 평균</p>
               </div>
               <div className="bj-report-star-verdict">
                 <p className="bj-body bj-bold">{starProfile.label}</p>
@@ -447,7 +447,7 @@ export default function MyReportView() {
               <div>
                 <p className="bj-body bj-bold">{discovery.label}</p>
                 <p className="bj-caption">{discovery.note}</p>
-                <p className="bj-caption bj-mt-4">담기 {discovery.saved} · 패스 {discovery.passed}</p>
+                <p className="bj-caption bj-mt-4">{discovery.saved}권 담고 {discovery.passed}권 넘겼어요</p>
               </div>
             </div>
           </SectionCard>
