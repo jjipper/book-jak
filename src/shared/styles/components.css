@@ -24,19 +24,11 @@ body.bj-body {
   outline-offset: 2px;
 }
 
-/* ========== 00. LOGO (Wildgak 허용 대상: 로고) ========== */
+/* ========== 00. LOGO ========== */
 .bj-logo {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 400;
-  color: var(--color-text);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  word-break: keep-all;
-}
-.bj-logo__mark {
-  color: var(--color-accent);
+  display: block;
+  height: 32px;
+  width: auto;
 }
 
 /* ========== 01. BUTTONS ========== */
@@ -693,25 +685,6 @@ body.bj-body {
   display: flex;
   align-items: center;
   gap: 4px;
-}
-
-/* 로고 * 마크 — 리소 미스레지스트레이션 적용 자리 (문서 5번) */
-.bj-riso-star {
-  position: relative;
-  display: inline-block;
-  font-size: 0.62em;
-  line-height: 1;
-  vertical-align: super;
-}
-.bj-riso-star__a {
-  color: var(--color-riso-a);
-}
-.bj-riso-star__b {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  color: var(--color-riso-b);
-  mix-blend-mode: multiply;
 }
 
 /* 알림 dot — .bj-icon-btn 내부에 배치 */
@@ -2810,7 +2783,7 @@ body.bj-body {
 }
 
 .bj-login-body .bj-logo {
-  font-size: 40px;
+  height: 72px;
 }
 
 .bj-login-tagline {

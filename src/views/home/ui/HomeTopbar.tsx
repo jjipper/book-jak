@@ -17,7 +17,7 @@ export default function HomeTopbar() {
     <header className="bj-topbar">
       <div className="bj-topbar__brand">
         <Link href="/home" className="bj-unstyled-link">
-          <Logo riso />
+          <Logo />
         </Link>
         <span className="bj-topbar__divider" aria-hidden="true" />
         <div className="bj-topbar__slogan">

@@ -29,7 +29,7 @@ export default function LoginView() {
     <main className="bj-shell bj-login-shell">
       <div className="bj-login-body">
         <div className="bj-login-hero">
-          <Logo riso />
+          <Logo />
           <p className="bj-caption bj-login-tagline">
             취향으로 북적이는 독서 취향 소셜
           </p>

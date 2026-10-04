@@ -30,7 +30,7 @@ export default function MatchInviteView({ typeCode }: { typeCode: TypeCode }) {
       <div className="bj-frame">
         <header className="bj-page-head">
           <Link href="/home" className="bj-unstyled-link">
-            <Logo riso />
+            <Logo />
           </Link>
         </header>
 

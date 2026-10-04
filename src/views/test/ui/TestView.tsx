@@ -57,7 +57,7 @@ export default function TestView() {
         <div className="bj-frame bj-frame--col">
         <header className="bj-page-head">
           <Link href="/home" className="bj-unstyled-link">
-            <Logo riso />
+            <Logo />
           </Link>
         </header>
 

@@ -12,8 +12,12 @@ const INK = '#1A1A2E'
 const INK_SOFT = '#5A5A68'
 const ORANGE = '#F0562E'
 
+const logoSrc = async () =>
+  `data:image/png;base64,${(await readFile(join(process.cwd(), 'public/brand/logo.png'))).toString('base64')}`
+
 export async function ogCard(opts: { emoji: string; title: string; subtitle: string; badge?: string }) {
   const wildgak = await readFile(join(process.cwd(), 'public/fonts/Wildgak.ttf'))
+  const logo = await logoSrc()
 
   return new ImageResponse(
     (
@@ -38,7 +42,7 @@ export async function ogCard(opts: { emoji: string; title: string; subtitle: str
           {opts.subtitle}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', marginTop: 'auto', gap: 16 }}>
-          <div style={{ display: 'flex', fontSize: 34, color: ORANGE }}>북작</div>
+          <img src={logo} height={72} alt="북작" />
           <div style={{ display: 'flex', fontSize: 30, color: INK_SOFT }}>
             {opts.badge ?? '취향으로 북적이는 독서 취향 소셜'}
           </div>
@@ -55,6 +59,7 @@ export async function ogCard(opts: { emoji: string; title: string; subtitle: str
 /** 궁합 초대 카드 — 왼쪽 친구 유형, 오른쪽 "?"(받는 사람) 두 사람이 마주 보는 레이아웃 */
 export async function ogInviteCard(opts: { emoji: string; name: string; code: string }) {
   const wildgak = await readFile(join(process.cwd(), 'public/fonts/Wildgak.ttf'))
+  const logo = await logoSrc()
   const bubble = {
     display: 'flex',
     alignItems: 'center',
@@ -93,7 +98,7 @@ export async function ogInviteCard(opts: { emoji: string; name: string; code: st
             {`${opts.name} 친구가 보낸 초대장`}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: 48, gap: 16 }}>
-            <div style={{ display: 'flex', fontSize: 34, color: ORANGE }}>북작</div>
+            <img src={logo} height={72} alt="북작" />
             <div style={{ display: 'flex', fontSize: 28, color: INK_SOFT }}>{`${opts.code} · BOOKBTI 궁합`}</div>
           </div>
         </div>
