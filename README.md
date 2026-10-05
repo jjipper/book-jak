@@ -64,14 +64,17 @@ pnpm install
 
 ### 환경변수 설정
 
-프로젝트 루트에 `.env.local` 파일을 생성하고 아래 값을 채워 넣습니다.
-
 ```bash
-NEXT_PUBLIC_SUPABASE_URL=       # Supabase 프로젝트 URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Supabase anon key
-ALADDIN_TTB_KEY=                # 알라딘 TTBKey (책 목록·검색·상세)
-SUPABASE_DB_URL=                # Supabase DB 접속 URI (마이그레이션 실행용) — https://www.aladin.co.kr/ttb/wapui/wapi_guide.aspx
+cp .env.example .env.local
 ```
+
+| 키 | 필수 | 설명 |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | O | Supabase 프로젝트 URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | O | Supabase anon key |
+| `ALADDIN_TTB_KEY` | O | [알라딘 TTBKey](https://www.aladin.co.kr/ttb/wapui/wapi_guide.aspx) — 책 목록·검색·상세 (서버 전용) |
+| `SUPABASE_DB_URL` | | DB 접속 URI — 마이그레이션 실행 시 |
+| `NEXT_PUBLIC_SITE_URL` | | 배포 도메인 — OG·sitemap 절대 URL 기준 |
 
 ### 개발 서버 실행
 
@@ -87,6 +90,7 @@ pnpm dev
 pnpm build                  # 프로덕션 빌드
 pnpm start                  # 프로덕션 서버 실행
 pnpm lint                   # ESLint 검사
+pnpm typecheck              # 타입 검사 (tsc --noEmit)
 node scripts/migrate.mjs    # supabase/migrations 중 미적용분 실행
 ```
 
