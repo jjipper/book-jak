@@ -15,7 +15,7 @@
 
 ### 블라인드 북 평가 & 취향 기반 추천
 - 표지·제목을 가린 "블라인드 카드"로 선입견 없이 책을 평가하는 발견(Discover) 탭
-- 날짜 시드 기반 결정적 셔플로 매일 같은 "오늘의 발견" 5권 제공
+- 알라딘 베스트셀러·신간에서 날짜별로 모든 사용자에게 같은 "오늘의 발견" 5권 제공
 - 내 평가 이력(태그별 평균 별점)을 바탕으로 특정 책의 예상 점수·매칭도를 계산하는 개인화 로직
 
 ### 소셜
@@ -24,7 +24,7 @@
 - 소셜 랭킹, 토론(디스커션) 게시판
 
 ### 그 외
-- 카카오 도서 검색 API 연동 (제목·저자 통합 검색, ISBN 단건 조회)
+- 알라딘 도서 API 연동 (카테고리 목록·검색·ISBN 단건 조회)
 - 카카오 OAuth 소셜 로그인
 - 위시리스트, 별점 평가, 닉네임 게이트(최초 방문 시 닉네임 설정)
 
@@ -35,7 +35,7 @@
 | 프레임워크 | Next.js 16 (App Router), React 19, TypeScript |
 | 상태관리 | Zustand (전역 상태 필요 시) + localStorage 기반 순수 함수 패턴 (단순 저장/조회) |
 | 백엔드 / 인증 | Supabase (Auth, DB) — 카카오 OAuth 연동 |
-| 외부 API | 카카오 도서 검색 API (서버 라우트에서 프록시, REST 키 서버측 은닉) |
+| 외부 API | 알라딘 도서 API (서버 라우트에서 프록시, TTBKey 서버측 은닉) |
 | 이미지 생성 | html-to-image (결과 카드 캡처·공유) |
 | 배포 | Vercel |
 | 아키텍처 | FSD(Feature-Sliced Design) 변형 — `app / views / widgets / features / entities / shared` |
@@ -44,21 +44,22 @@
 - `app`은 라우팅 껍데기만 담당, 실제 화면 로직은 `views/*/ui/*View.tsx`에 위임해 라우트와 화면 로직을 분리
 - `views` 폴더명은 라우트 경로를 kebab-case로 평탄화 (`/social/clubs/[id]` → `views/social-club-detail`)
 - `entities`는 필요한 서브폴더(`ui`/`model`/`api`)만 선택적으로 구성해 불필요한 보일러플레이트 최소화
-- Supabase 클라이언트를 용도별(브라우저/서버/레거시)로 분리해 클라이언트-서버 경계를 명확히 관리
+- Supabase 클라이언트를 용도별(브라우저: 클라이언트 컴포넌트 / 서버: 서버 컴포넌트·라우트 핸들러)로 분리해 클라이언트-서버 경계를 명확히 관리
 
 ## 실행 방법
 
 ### 요구사항
 - Node.js 20 이상
+- pnpm
 - Supabase 프로젝트 (Auth + DB)
-- 카카오 개발자 REST API 키 (도서 검색용)
+- 알라딘 TTBKey (도서 데이터용)
 
 ### 설치
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/jjipper/book-jak.git
 cd book-jak
-npm install
+pnpm install
 ```
 
 ### 환경변수 설정
@@ -68,14 +69,14 @@ npm install
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=       # Supabase 프로젝트 URL
 NEXT_PUBLIC_SUPABASE_ANON_KEY=  # Supabase anon key
-KAKAO_REST_KEY=                 # 카카오 개발자센터 REST API 키 (도서 검색 · 로그인)
-ALADDIN_TTB_KEY=                # 알라딘 TTBKey (베스트셀러·신간 목록) — https://www.aladin.co.kr/ttb/wapui/wapi_guide.aspx
+ALADDIN_TTB_KEY=                # 알라딘 TTBKey (책 목록·검색·상세)
+SUPABASE_DB_URL=                # Supabase DB 접속 URI (마이그레이션 실행용) — https://www.aladin.co.kr/ttb/wapui/wapi_guide.aspx
 ```
 
 ### 개발 서버 실행
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
@@ -83,9 +84,10 @@ npm run dev
 ### 기타 명령어
 
 ```bash
-npm run build   # 프로덕션 빌드
-npm run start   # 프로덕션 서버 실행
-npm run lint    # ESLint 검사
+pnpm build                  # 프로덕션 빌드
+pnpm start                  # 프로덕션 서버 실행
+pnpm lint                   # ESLint 검사
+node scripts/migrate.mjs    # supabase/migrations 중 미적용분 실행
 ```
 
 ## 디자인 시스템

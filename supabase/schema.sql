@@ -22,7 +22,7 @@ create policy "profiles: 본인 수정" on public.profiles
 
 -- 책 (평가가 달리는 순간 upsert되는 메타데이터 스냅샷)
 create table public.books (
-  id text primary key, -- 카탈로그 책 'b01', 카카오 검색 책 'isbn-{ISBN13}'
+  id text primary key, -- 카탈로그 책 'b01', 알라딘 책 'isbn-{ISBN13}'
   title text not null,
   authors text[] not null default '{}',
   publisher text,

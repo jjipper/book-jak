@@ -22,11 +22,10 @@
 
 ## Supabase 클라이언트 — 용도별 구분
 
-`src/shared/api/`에 헬퍼 3개가 있다. 용도를 섞지 않는다.
+`src/shared/api/`에 헬퍼 2개가 있다. 용도를 섞지 않는다.
 
 - `supabase-browser.ts` (`createBrowserClient`) → **클라이언트 컴포넌트**
 - `supabase-server.ts` (`createServerClient`) → **서버 컴포넌트 / 라우트 핸들러**
-- `supabase.ts` (`getSupabase()`) → **레거시. 신규 코드에서 쓰지 않는다.**
 
 ---
 
