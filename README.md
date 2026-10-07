@@ -7,33 +7,33 @@
 
 **라이브** · https://book-jak.vercel.app　|　**디자인 시스템** · https://book-jak.vercel.app/design-system
 
-<!-- 스크린샷: docs/images/ 에 파일을 넣으면 표시됩니다 -->
-| 독서 유형 결과 | 블라인드 북 | 책 평가 |
+| 유형 테스트 | 결과 카드 | 블라인드 북 |
 |---|---|---|
-| ![독서 유형 결과](docs/images/result.png) | ![블라인드 북](docs/images/discover.gif) | ![책 평가](docs/images/rate.png) |
+| ![유형 테스트](docs/images/test.webp) | ![결과 카드](docs/images/result.webp) | ![블라인드 북](docs/images/discover.webp) |
+
+> 둘러보기는 로그인 없이 됩니다. 테스트·결과·블라인드 북·책 검색은 비로그인으로 볼 수 있고, 글쓰기·평가 저장 같은 쓰기 동작만 카카오 로그인을 요구합니다.
 
 ## 주요 기능
 
-### 독서 취향 테스트
-- 12개 문항으로 4개 축(감정형/사유형, 즉흥형/계획형 등)을 조합한 16가지 독서 유형 산출 (MBTI 스타일)
-- 유형별 희귀도(%), 능력치, 궁합 유형, 경고·운세 문구 등 상세 결과 제공
-- 결과 카드를 이미지로 캡처해 SNS에 공유 가능 (`html-to-image`)
-- 두 사람의 유형 코드로 궁합 점수를 계산하는 결과 비교 기능
+### BOOKBTI 독서 유형 테스트
+- 12문항, 4개 축 조합으로 16가지 독서 유형 산출. 희소도는 2025 국민독서실태조사 응답 비율로 산정
+- 유형별 능력치·궁합·생각 말풍선, 결과 카드 이미지 저장(`html-to-image`)
+- 유형별 OG 이미지(`next/og`)와 궁합 초대 링크 — 친구가 링크로 테스트를 끝내면 궁합 비교로 이어짐
 
-### 블라인드 북 평가 & 취향 기반 추천
-- 표지·제목을 가린 "블라인드 카드"로 선입견 없이 책을 평가하는 발견(Discover) 탭
-- 알라딘 베스트셀러·신간에서 날짜별로 모든 사용자에게 같은 "오늘의 발견" 5권 제공
-- 내 평가 이력(태그별 평균 별점)을 바탕으로 특정 책의 예상 점수·매칭도를 계산하는 개인화 로직
+### 블라인드 북
+- 알라딘 베스트셀러·신간에서 KST 날짜별로 모든 사용자에게 같은 5권, 요일별 테마
+- 소개 문장에서 제목·저자·다른 작품명을 가려 1~2문장만 노출
+- 공개에 토큰 1개(출석·글·댓글로 적립). 지급·차감은 DB 함수가 원자적으로 처리
+
+### 평가 · 취향 리포트
+- 알라딘 검색으로 책 찾기, 0.5점 단위 별점·리뷰, 위시리스트
+- 취향 리포트: 4축 스펙트럼, 장르 비율, 별점 성향, 인생책 3권, 배지 44종(흔함·희귀·최희귀)
 
 ### 소셜
-- 팔로우 / 좋아요 / 책 모임(클럽) 생성·가입
-- 취향 유형 궁합과 겹치는 태그·책을 기준으로 나와 잘 맞는 사람 매칭
-- 소셜 랭킹, 토론(디스커션) 게시판
-
-### 그 외
-- 알라딘 도서 API 연동 (카테고리 목록·검색·ISBN 단건 조회)
-- 카카오 OAuth 소셜 로그인
-- 위시리스트, 별점 평가, 닉네임 게이트(최초 방문 시 닉네임 설정)
+- 홈 피드(글·댓글·좋아요·Hot), 팔로우, 알림(내 소식 / 팔로잉 활동)
+- 책 모임(게시판·궁금한 점 스레드·관심 모임), 책 추천(추천받기 / 추천하기)
+- 유형 궁합과 같이 높게 준 책으로 취향 비슷한 사람 찾기, 랭킹
+- 신고·차단, 탈퇴 시 글은 남기고 개인정보만 파기(익명화)
 
 ## 기술 스택
 
@@ -43,8 +43,9 @@
 | 상태관리 | Zustand (전역 상태 필요 시) + localStorage 기반 순수 함수 패턴 (단순 저장/조회) |
 | 백엔드 / 인증 | Supabase (Auth, DB) — 카카오 OAuth 연동 |
 | 외부 API | 알라딘 도서 API (서버 라우트에서 프록시, TTBKey 서버측 은닉) |
-| 이미지 생성 | html-to-image (결과 카드 캡처·공유) |
-| 배포 | Vercel |
+| 이미지 생성 | html-to-image (결과 카드 저장), next/og (유형별 OG 이미지) |
+| 테스트 · CI | Vitest, GitHub Actions (lint → typecheck → test) |
+| 배포 · 관측 | Vercel, Vercel Analytics · Speed Insights |
 | 아키텍처 | FSD(Feature-Sliced Design) 변형 — `app / views / widgets / features / entities / shared` |
 
 ### 아키텍처 특징
@@ -101,12 +102,18 @@ pnpm build                  # 프로덕션 빌드
 pnpm start                  # 프로덕션 서버 실행
 pnpm lint                   # ESLint 검사
 pnpm typecheck              # 타입 검사 (tsc --noEmit)
+pnpm test                   # 단위 테스트 (Vitest)
+pnpm rls:check              # RLS 점검 — 가상 사용자로 남의 데이터 접근 시도 후 롤백
 node scripts/migrate.mjs    # supabase/migrations 중 미적용분 실행
 ```
 
 ## 디자인 시스템
 
 [`/design-system`](https://book-jak.vercel.app/design-system)에서 공용 컴포넌트 갤러리를 볼 수 있습니다. 전체 규칙은 [`docs/DESIGN.md`](./docs/DESIGN.md)에 있습니다.
+
+![디자인 시스템 갤러리](docs/images/design-system.webp)
+
+Figma에서 먼저 설계하고 코드로 옮겼습니다. 파일은 Foundations(색·타이포·효과 스타일) / Components(7개 카테고리, 배리언트·스펙 노트) / Screens(화면 12개를 컴포넌트로) / Flow(화면 인스턴스로 구성한 사용자 흐름 3개 레인)로 나눴습니다. 화면을 컴포넌트로 만들어 두어 시안을 고치면 Flow 다이어그램도 함께 바뀝니다. Figma 효과 스타일 수치는 SVG 내보내기에서 뽑아 `--elevation-floating` 같은 토큰으로 옮겼습니다.
 
 ### 핵심 규칙
 - **UI 강조는 주황 하나.** 버튼·활성·뱃지 모두 `--color-accent`만 씁니다. 형광색은 일러스트에만 씁니다.
@@ -127,6 +134,24 @@ src/shared/ui/*.tsx                Button → .bj-btn--primary …
 src/views/*/ui/*View.tsx           화면 (화면 전용 CSS는 같은 폴더의 *.css)
 ```
 
+## 품질 · 보안 · 성능
+
+문제 해결 과정은 [`docs/TROUBLESHOOTING.md`](./docs/TROUBLESHOOTING.md)에 배경 → 판단 → 실행 → 결과로 정리했습니다.
+
+- **테스트** — 유형 채점·궁합·배지 판정·블라인드 북 가림/일별 선정·상대 시간 등 도메인 순수 함수를 Vitest로 검증하고, CI에서 lint·typecheck와 함께 돌립니다.
+- **권한은 DB가 보장** — 모든 테이블에 RLS를 적용했습니다. 카운트·토큰처럼 조작되면 안 되는 값은 클라이언트가 아니라 트리거·DB 함수만 바꿉니다. `pnpm rls:check`로 남의 글 수정·사칭·집계 조작·토큰 직접 지급 등을 시도해 막히는지 확인합니다.
+- **외부 API 키 은닉** — 알라딘 TTBKey는 서버 라우트에서만 쓰고, 일 호출 한도를 고려해 응답을 서버에서 캐시합니다.
+- **성능** — 정적 이미지 164MB → 4.5MB(WebP·표시 크기 맞춤), 폰트 렌더 차단 제거, LCP 이미지 우선 로드.
+- **접근성** — 작은 글자는 WCAG AA 대비(4.5:1)를 맞춘 토큰(`--color-accent-text`)을 따로 둡니다.
+
+Lighthouse 모바일 기준이며, 배포본에서 개선 전 1회, 개선 후 3회를 측정해 중앙값을 적었습니다.
+
+| 페이지 | 성능 점수 | LCP | 전송량 |
+|---|---|---|---|
+| 홈 | 65 → 78 | 9.7s → 5.7s | 2,299KB → 788KB |
+| 테스트 | 71 → 77 | 9.0s → 5.1s | 2,516KB → 898KB |
+| 블라인드 북 | 73 → 79 | 6.2s → 5.0s | 1,141KB → 763KB |
+
 ## AI 협업 워크플로우
 
 Claude Code로 개발하면서, AI가 매번 같은 판단을 하도록 규칙을 문서로 고정했습니다. [`CLAUDE.md`](./CLAUDE.md)를 진입점으로 두고, 상세 규칙은 역할별 문서로 나눴습니다.
@@ -137,6 +162,7 @@ Claude Code로 개발하면서, AI가 매번 같은 판단을 하도록 규칙�
 | [`docs/PRD.md`](./docs/PRD.md) | 제품 사양 |
 | [`docs/DESIGN.md`](./docs/DESIGN.md) | 디자인 규칙 — 토큰, 면 위계, 로딩·에러·긴 텍스트 처리 |
 | [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) | 폴더 구조와 배치 기준 |
+| [`docs/ai/BADGE_IMAGEGEN.md`](./docs/ai/BADGE_IMAGEGEN.md) | 배지 44종 이미지 생성 — 프롬프트 구조와 자동 검증 기준 |
 | [`AGENTS.md`](./AGENTS.md) | Next.js 16 버전별 주의사항 (도구 자동 생성) |
 
 대표 규칙:

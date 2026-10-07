@@ -37,6 +37,7 @@
 | 텍스트 | `--color-text` (잉크) | 본문. 순수 검정 대신 따뜻한 잉크 |
 | 액션 | `--color-accent` (주황) | 버튼·강조·활성. UI 유일 포인트 |
 | 액션 틴트 | `--color-accent-weak` | 선택지 활성 배경 등 연한 강조 |
+| 액션 글자 | `--color-accent-text` | 주황 **글자**는 반드시 이것. 화이트·크림·눌린 면 위 대비 4.5:1 (WCAG AA). `--color-accent`·`-hover`는 면·아이콘용 |
 | 트랙 | `--color-track` | 진행바·비활성 채움·disabled 버튼 |
 
 ---
