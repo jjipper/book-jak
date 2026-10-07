@@ -20,7 +20,7 @@
   padding: 6px 12px;
   border-radius: var(--radius-pill);
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;

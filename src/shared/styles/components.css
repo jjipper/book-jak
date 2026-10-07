@@ -62,7 +62,7 @@ body.bj-body {
 /* 보조 액션 — 주황100 채움 / 주황600 (무테) */
 .bj-btn--secondary {
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
   font-weight: var(--fw-medium);
 }
 .bj-btn--secondary:hover {
@@ -151,7 +151,7 @@ body.bj-body {
   color: var(--color-text-muted);
 }
 .bj-option--selected .bj-option__key {
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
 }
 .bj-option__text {
   /* 문항 선택지는 개행(\n)이 든 두 줄 카피가 온다 */
@@ -897,7 +897,7 @@ body.bj-body {
 }
 .bj-badge--rare {
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
 }
 
 /* Chip done state */
@@ -1770,7 +1770,7 @@ body.bj-body {
 /* 팔로우 버튼 — 주황100 채움으로 액션임을 표시 */
 .bj-chip--outline-strong {
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
 }
 
 /* 사람 링크 — gap 12 flex (SocialPeopleView: align flex-start) */
@@ -2908,7 +2908,7 @@ body.bj-body {
   right: 14px;
   border: 1.5px solid var(--color-accent);
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
 }
 
 /* ── 홈 피드 — PostCard ──────────────────────────────── */
@@ -2937,7 +2937,7 @@ body.bj-body {
   padding: 0 8px;
   border-radius: var(--radius-pill);
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
   font-family: var(--font-display);
   font-size: 10px;
   font-weight: 700;

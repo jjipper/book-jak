@@ -334,7 +334,7 @@
 
 .bj-lifebook-pick--on {
   background: var(--color-accent-weak);
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
 }
 
 .bj-lifebook-pick__title {

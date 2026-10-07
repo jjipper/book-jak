@@ -250,7 +250,7 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 1.6;
-  color: var(--color-accent-hover);
+  color: var(--color-accent-text);
 }
 
 /* 같은 유형이 좋아하는 책 — 가로 스크롤, 카드 패딩 밖까지 블리드 */
