@@ -1,4 +1,8 @@
 
+/* Pretendard — 쓰인 글자 범위의 woff2만 받는 dynamic-subset. 패키지에서 번들해 같은 출처로 내보낸다
+   (CDN @import·link는 다른 출처라 렌더를 ~750ms 막았다) */
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
 /* 초기화 → 토큰 → 컴포넌트 순서로 로드 */
 @import "../shared/styles/reset.css";
 @import "../shared/styles/tokens.css";
