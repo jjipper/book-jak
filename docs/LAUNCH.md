@@ -51,17 +51,18 @@
 
 ### RLS 실제 검증 방법
 
-스키마에 RLS는 걸려 있지만 **"걸려 있다"와 "동작한다"는 다르다.** 배포 전 아래를 직접 확인한다.
+스키마에 RLS는 걸려 있지만 **"걸려 있다"와 "동작한다"는 다르다.** 배포 전·마이그레이션 후 아래를 돌린다.
 
-1. 테스트 계정 A, B 두 개로 로그인.
-2. A로 리뷰·토론 글·모임을 하나씩 생성.
-3. B 세션에서 A의 데이터를 수정/삭제 시도 → **실패해야 한다.**
-   - 브라우저 콘솔에서: `await sb.from('ratings').delete().eq('id','<A의 레코드 id>')` → `count: 0` 또는 에러.
-4. 로그아웃 상태(anon)에서 insert 시도 → 거부되어야 한다.
-5. `blind_reactions`는 본인만 조회 가능하도록 되어 있다. B 세션에서 select 해서 A의 행이 안 나오는지 확인.
-6. Supabase 대시보드 > Advisors > Security 에서 RLS 미적용 테이블 경고가 없는지 확인.
+```bash
+pnpm rls:check   # scripts/rls-check.mjs
+```
 
-> 주의: `increment_post_like` / `decrement_post_like`는 `security definer`라 RLS를 우회한다. 임의의 post id로 호출해 좋아요 수를 조작할 수 있으므로, 남용이 보이면 함수에 호출자 검증을 추가한다.
+한 트랜잭션 안에서 가상 사용자 A·B를 만들고 API와 같은 조건(role `authenticated`/`anon` + JWT sub)으로
+남의 글 수정·삭제·사칭, 비로그인 쓰기, 집계 컬럼 조작, 본인 전용 테이블 엿보기, 토큰·알림 직접 생성,
+공용 책 정보 덮어쓰기를 시도한다. 끝나면 전부 롤백되어 데이터가 남지 않는다.
+새 테이블이나 정책을 만들면 여기에 검사를 하나 더 붙인다.
+
+추가로 Supabase 대시보드 > Advisors > Security 에서 경고가 없는지 확인한다.
 
 ---
 

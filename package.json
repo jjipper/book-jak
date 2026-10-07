@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "rls:check": "node scripts/rls-check.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.4",
