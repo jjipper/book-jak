@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { SITE_URL } from './site-url'
 
@@ -42,6 +44,9 @@ export default function RootLayout({
         <div id="app-root">
           {children}
         </div>
+        {/* 방문·유입(Analytics)과 실사용자 Core Web Vitals(Speed Insights). Vercel 대시보드에서 켜야 수집된다 */}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
