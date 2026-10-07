@@ -3,12 +3,11 @@ import BackLink from '@/shared/ui/BackLink'
 
 export const metadata: Metadata = { title: '이용약관' }
 
-/** {{ }} 표기는 사업자가 직접 채워야 하는 값. */
 const ARTICLES: { title: string; body: string[] }[] = [
   {
     title: '제1조 (목적)',
     body: [
-      '이 약관은 {{사업자명}}(이하 ‘회사’)이 제공하는 독서 취향 소셜 서비스 ‘북작’(이하 ‘서비스’)의 이용 조건과 절차, 회사와 이용자의 권리·의무 및 책임사항을 정함을 목적으로 합니다.',
+      '이 약관은 개인 운영자 진주(이하 ‘회사’)이 제공하는 독서 취향 소셜 서비스 ‘북작’(이하 ‘서비스’)의 이용 조건과 절차, 회사와 이용자의 권리·의무 및 책임사항을 정함을 목적으로 합니다.',
     ],
   },
   {
@@ -110,7 +109,7 @@ const ARTICLES: { title: string; body: string[] }[] = [
   },
   {
     title: '부칙',
-    body: ['이 약관은 {{시행일자}}부터 시행합니다.'],
+    body: ['이 약관은 2026년 10월 14일부터 시행합니다.'],
   },
 ]
 
