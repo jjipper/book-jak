@@ -54,5 +54,5 @@
   margin-bottom: var(--space-md);
   border-radius: var(--radius-pill);
   background: var(--color-accent-weak);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }

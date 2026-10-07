@@ -25,7 +25,7 @@ export default function ContactPage() {
               target="_blank"
               rel="noreferrer"
               className="bj-body bj-bold"
-              style={{ color: 'var(--color-accent)' }}
+              style={{ color: 'var(--color-accent-text)' }}
             >
               github.com/jjipper/book-jak/issues
             </a>

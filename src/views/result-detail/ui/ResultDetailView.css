@@ -32,7 +32,7 @@
   padding: var(--space-md) var(--space-xs);
   border-radius: var(--radius-md);
   background: var(--color-control-surface);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: var(--fs-body-sm);
   font-weight: var(--fw-medium);
   text-align: center;
@@ -220,7 +220,7 @@
   background: var(--color-surface);
   font-size: 15px;
   font-weight: 800;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 .bj-caution__list {
   display: flex;

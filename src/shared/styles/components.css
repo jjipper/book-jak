@@ -72,7 +72,7 @@ body.bj-body {
 /* 텍스트 버튼 (나중에 할게요) — 컨테이너에 따라 화이트/크림 면 */
 .bj-btn--text {
   background: var(--color-control-surface);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-weight: 500;
 }
 .bj-btn--text:hover {
@@ -105,7 +105,7 @@ body.bj-body {
   background: var(--color-control-surface);
 }
 .bj-icon-btn--active {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* ========== 02. QUESTION CARD (진단 문항) ========== */
@@ -315,7 +315,7 @@ body.bj-body {
   width: 32px;
   text-align: right;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   flex: none;
 }
 
@@ -602,7 +602,7 @@ body.bj-body {
   cursor: pointer;
 }
 .bj-navitem--active {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-weight: 700;
   letter-spacing: 0.08em;
 }
@@ -706,7 +706,7 @@ body.bj-body {
   padding: 0;
   font-size: 12px;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   text-decoration: none;
 }
 
@@ -909,7 +909,7 @@ body.bj-body {
 /* Ghost button alias (v1 name → v2 text button style) */
 .bj-btn--ghost {
   background: transparent;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   border-color: transparent;
 }
 .bj-btn--ghost:hover {
@@ -1349,7 +1349,7 @@ body.bj-body {
 .bj-typecard__rarity-head {
   font-size: 22px;
   line-height: 1.2;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 .bj-typecard__rarity-sub {
   font-size: 12px;
@@ -1391,7 +1391,7 @@ body.bj-body {
 }
 .bj-typecard__footer-brand {
   font-size: 16px;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 .bj-typecard__footer-caption {
   color: var(--color-text-caption);
@@ -1649,7 +1649,7 @@ body.bj-body {
   color: var(--color-text-muted);
 }
 .bj-like-col--active {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 .bj-like-count {
   font-size: 11px;
@@ -1692,7 +1692,7 @@ body.bj-body {
   color: var(--color-text-muted);
 }
 .bj-club-count--open {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* 모임 상세 — 영웅 이미지 블록 */
@@ -1750,7 +1750,7 @@ body.bj-body {
 }
 .bj-illust-pick__label--active {
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* 선택지 가로 나열 (정원/형태) */
@@ -1792,7 +1792,7 @@ body.bj-body {
 
 /* 공통 관심사 텍스트 */
 .bj-shared-tags {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-top: 2px;
 }
 
@@ -1809,7 +1809,7 @@ body.bj-body {
 /* 친화도 % 숫자 */
 .bj-affinity-pct {
   font-size: 18px;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* 랭킹 번호 */
@@ -1819,7 +1819,7 @@ body.bj-body {
   flex-shrink: 0;
 }
 .bj-rank-num--top {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 .bj-rank-num--rest {
   color: var(--color-text-muted);
@@ -1849,7 +1849,7 @@ body.bj-body {
   font-size: 15px;
 }
 .bj-rank-score--me {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* 빈 상태 카드 (center + 패딩) */
@@ -1968,7 +1968,7 @@ body.bj-body {
 
 /* PersonDetail — 궁합 % 강조색 (action) */
 .bj-affinity-pct--xl {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: 4px;
 }
 
@@ -2075,7 +2075,7 @@ body.bj-body {
 .bj-book-more-link {
   display: inline-block;
   margin-top: 8px;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-weight: 700;
 }
 
@@ -2193,7 +2193,7 @@ body.bj-body {
 
 /* 별점 강조 (action 색) — MyRated, BookRow 등 */
 .bj-caption--action {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 .bj-caption--error {
   color: var(--color-error);
@@ -2208,7 +2208,7 @@ body.bj-body {
   font-family: var(--font-body);
   font-size: var(--fs-body-sm);
   font-weight: var(--fw-medium);
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   padding: 0 var(--space-xs);
   white-space: nowrap;
 }
@@ -2308,7 +2308,7 @@ body.bj-body {
 /* 작가 링크 (action 색 + bold + mt 6) */
 .bj-book-author-link {
   font-size: 15px;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-weight: 700;
   margin-top: 6px;
   text-decoration: none;
@@ -2322,7 +2322,7 @@ body.bj-body {
 
 /* 별점 숫자 — 액션 색 17px 800 */
 .bj-stat-star--action {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: 17px;
   font-weight: 800;
 }
@@ -2356,12 +2356,12 @@ body.bj-body {
 
 /* 액션 색 텍스트 */
 .bj-text-action {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* 액션 색 + bold */
 .bj-text-action-bold {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-weight: 700;
 }
 
@@ -2447,7 +2447,7 @@ body.bj-body {
 /* ResultCompare — 취향 일치 % 22px action */
 .bj-affinity-lg {
   font-size: 22px;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* ResultCompare — VS 18px hint */
@@ -2470,7 +2470,7 @@ body.bj-body {
 
 /* ResultCompare — xl % (action + mb 4) */
 .bj-affinity-xl {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: 4px;
 }
 
@@ -2552,7 +2552,7 @@ body.bj-body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: 12px;
 }
 
@@ -2583,7 +2583,7 @@ body.bj-body {
 /* TestView — 인트로 스탯 값 (20px + action + mb 4) */
 .bj-stat-value {
   font-size: 20px;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: 4px;
 }
 
@@ -2594,7 +2594,7 @@ body.bj-body {
 
 /* TestView — 진행 % 라벨 (action 색) */
 .bj-progress-pct {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* TestView — 문항 카드 영역 */
@@ -2607,7 +2607,7 @@ body.bj-body {
 /* TestView — Q 라벨 (action + 자간 + mb 14) */
 .bj-question-num {
   letter-spacing: 0.14em;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   margin-bottom: 14px;
 }
 
@@ -2675,7 +2675,7 @@ body.bj-body {
 .bj-loading-pct {
   text-align: center;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 /* TestLoadingView — 하단 캡션 */
@@ -2798,7 +2798,7 @@ body.bj-body {
 }
 
 .bj-login-error {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   text-align: center;
 }
 
@@ -3059,7 +3059,7 @@ body.bj-body {
 }
 
 .bj-post-card__like-btn--active {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 .bj-post-card__comment-count {
@@ -3211,7 +3211,7 @@ body.bj-body {
 }
 
 .bj-chip--online {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   border-color: var(--color-accent-weak);
   background: var(--color-accent-weak);
 }
@@ -3267,7 +3267,7 @@ body.bj-body {
 }
 
 .bj-report-stat__num--accent {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 .bj-report-stat__label {
@@ -3538,7 +3538,7 @@ body.bj-body {
   background: var(--color-accent-weak);
 }
 .bj-review-item__mine-tag {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 /* 시각은 오른쪽 끝에 — 별점·닉네임보다 한 단 약하게 */
 .bj-review-time {

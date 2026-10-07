@@ -21,13 +21,14 @@
   /* 포인트 (UI 유일한 vivid. 이미지-only 리소 팔레트와 구분됨) */
   --p-orange-500: #F0562E;   /* 포인트 컬러 (단일) */
   --p-orange-600: #D8451F;   /* hover/active 어둡게 */
+  --p-orange-700: #CB350F;   /* 작은 글자용 — 크림·화이트 위 대비 4.5:1 이상 (WCAG AA) */
   --p-orange-100: #FBDFD5;   /* 선택 상태 배경(연한 주황) */
   --p-orange-050: #FCEDE7;   /* 아주 옅은 강조 배경 */
 
   /* 잉크 (텍스트/아이콘) */
   --p-ink-900: #1A1A2E;      /* 텍스트 / 아이콘 */
   --p-ink-600: #5A5A68;      /* 보조 텍스트 (900에서 파생) */
-  --p-ink-400: #9A9AA4;      /* 캡션/플레이스홀더 */
+  --p-ink-400: #6C6C76;      /* 캡션/플레이스홀더 — 크림 위 대비 4.5:1 (구 #9A9AA4는 2.45:1) */
   --p-ink-200: #D8D5CC;      /* 보더 (배경 위 저대비 선) */
   --p-ink-100: #E7E3D9;      /* 트랙/비활성 채움 */
 
@@ -95,6 +96,7 @@
   /* accent (포인트) */
   --color-accent:        var(--p-orange-500);
   --color-accent-hover:  var(--p-orange-600);
+  --color-accent-text:   var(--p-orange-700);  /* 주황 글자. 면·아이콘·큰 요소는 --color-accent */
   --color-accent-weak:   var(--p-orange-100);  /* 선택 상태 배경 */
   --color-accent-faint:  var(--p-orange-050);
 
