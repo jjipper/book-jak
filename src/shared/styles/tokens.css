@@ -7,7 +7,7 @@
 /* Wildgak — 로고·희소도 뱃지 한정 꾸밈 폰트 */
 @font-face {
   font-family: 'Wildgak';
-  src: url('/fonts/Wildgak.ttf') format('truetype');
+  src: url('/fonts/Wildgak.woff2') format('woff2');
   font-weight: 400;
   font-display: swap;
 }
@@ -48,8 +48,8 @@
      폰트 역할 분리(엄격): Pretendard=모든 정보성/본문,
      Wildgak=닉네임·로고·희소도 뱃지 한정.
      --------------------------------------------------------------------- */
-  --p-font-body:    'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-  --p-font-display: 'Wildgak', 'Pretendard', sans-serif;
+  --p-font-body:    'Pretendard Variable', 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  --p-font-display: 'Wildgak', 'Pretendard Variable', sans-serif;
 
   --p-fs-12: 12px;
   --p-fs-14: 14px;

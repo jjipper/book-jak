@@ -29,6 +29,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
+      <head>
+        {/* CSS @import는 globals.css를 받은 뒤에야 요청이 시작돼 렌더를 한 단계 더 막는다 → link로 병렬 요청.
+            dynamic-subset은 페이지에 쓰인 글자 범위의 woff2만 받는다 */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+        />
+      </head>
       <body className="bookjak bj-body">
         <div id="app-root">
           {children}

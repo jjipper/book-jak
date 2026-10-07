@@ -75,7 +75,7 @@ export default function TestView() {
             </p>
           </div>
 
-          <IllustPlaceholder code="intro_test" alt="BOOKBTI 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" />
+          <IllustPlaceholder code="intro_test" alt="BOOKBTI 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" priority />
 
           <div className="bj-col-10">
             <button onClick={() => { resetTest(); setStarted(true) }} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">

@@ -11,6 +11,8 @@ interface IllustPlaceholderProps {
   fit?: 'cover' | 'contain'
   /** 투명 PNG 뒤 배경. 카드 위에 얹을 땐 카드 표면색을 넘긴다 */
   background?: string
+  /** 첫 화면의 큰 그림(LCP) — 우선 요청. 나머지는 화면에 들어올 때 지연 로드한다 */
+  priority?: boolean
 }
 
 // 코드에서 서브폴더를 자동 해석: type/ covers/ club/ intro/
@@ -31,6 +33,7 @@ export default function IllustPlaceholder({
   className,
   fit = 'cover',
   background = 'var(--color-bg-sunken)',
+  priority = false,
 }: IllustPlaceholderProps) {
   const [failed, setFailed] = useState(false)
   const imgRef = useRef<HTMLImageElement>(null)
@@ -55,6 +58,8 @@ export default function IllustPlaceholder({
           ref={imgRef}
           src={`/assets/illust/${resolveIllustPath(code)}.webp`}
           alt={alt}
+          loading={priority ? 'eager' : 'lazy'}
+          fetchPriority={priority ? 'high' : 'auto'}
           className={`bj-illust-wrap__img bj-illust-wrap__img--${fit === 'contain' ? 'contain' : 'cover'}`}
           onError={() => setFailed(true)}
         />

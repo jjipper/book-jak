@@ -20,6 +20,7 @@ export default function HomeHero({ typeCode }: HomeHeroProps) {
           aspectRatio="1 / 1"
           fit="contain"
           background="transparent"
+          priority
         />
       </div>
       <div className="bj-hero__body">
