@@ -159,7 +159,7 @@ export default function SocialClubDetailView() {
       <div className="bj-club-hero">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={`/assets/illust/club/${clubIllust(club)}.png`}
+          src={`/assets/illust/club/${clubIllust(club)}.webp`}
           alt={club.name}
           className="bj-club-hero__img"
         />

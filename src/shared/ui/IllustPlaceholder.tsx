@@ -53,7 +53,7 @@ export default function IllustPlaceholder({
         // eslint-disable-next-line @next/next/no-img-element
         <img
           ref={imgRef}
-          src={`/assets/illust/${resolveIllustPath(code)}.png`}
+          src={`/assets/illust/${resolveIllustPath(code)}.webp`}
           alt={alt}
           className={`bj-illust-wrap__img bj-illust-wrap__img--${fit === 'contain' ? 'contain' : 'cover'}`}
           onError={() => setFailed(true)}

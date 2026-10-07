@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Badge } from '@/entities/reading-type/model/badges'
 
-/* 배지 한 칸 — /assets/badge/{key}.png.
+/* 배지 한 칸 — /assets/badge/{key}.webp.
    그래픽은 따로 만들어 넣는다. 아직 없으면 등급별 기본 도형 + 이니셜로 대체한다
    (IllustPlaceholder와 같은 onError + naturalWidth 재확인 패턴). */
 

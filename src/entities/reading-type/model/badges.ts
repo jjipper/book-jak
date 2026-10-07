@@ -4,7 +4,7 @@
 //  - 'answer'  : 진단 테스트 4지선다에서 수집되는 12개 (scoring.collectBadges → badgeCandidates)
 //  - 'stat'    : 활동 기록으로 판정되는 나머지 (평가·후기·블라인드·추천·글·모임·팔로우·출석·유형)
 //
-// 그래픽은 /assets/badge/{key}.png. 파일이 없으면 화면이 등급별 기본 도형+이니셜로 대체한다
+// 그래픽은 /assets/badge/{key}.webp. 파일이 없으면 화면이 등급별 기본 도형+이니셜로 대체한다
 // (BadgeMedal, IllustPlaceholder와 같은 onError 패턴) — 깨진 이미지를 내보내지 않는다.
 //
 // 배지는 닉네임 옆에 붙이지 않는다. 프로필·취향 리포트 안에서만 보여준다.
@@ -67,7 +67,7 @@ function badge(
   tier: BadgeTier,
   check?: (s: BadgeStats) => boolean,
 ): Badge {
-  return { key, name, desc, condition, tier, image: `${key}.png`, check }
+  return { key, name, desc, condition, tier, image: `${key}.webp`, check }
 }
 
 export const BADGE_LIST: Badge[] = [

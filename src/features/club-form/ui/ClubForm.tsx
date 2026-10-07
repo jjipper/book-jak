@@ -95,7 +95,7 @@ export default function ClubForm({
                 className={`bj-illust-pick${active ? ' bj-illust-pick--active' : ''}`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/assets/illust/club/${code}.png`} alt={label} className="bj-illust-pick__img" />
+                <img src={`/assets/illust/club/${code}.webp`} alt={label} className="bj-illust-pick__img" />
                 <span className={`bj-caption bj-illust-pick__label${active ? ' bj-illust-pick__label--active' : ''}`}>
                   {label}
                 </span>
