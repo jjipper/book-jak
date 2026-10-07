@@ -45,7 +45,7 @@ export async function pushRating(book: RemoteBookInput, stars: number, review?: 
     publisher: book.publisher ?? null,
     year: book.year ?? null,
     thumbnail: book.thumbnail ?? null,
-  })
+  }, { onConflict: 'id', ignoreDuplicates: true }) // 이미 있는 책은 건드리지 않는다 (남이 등록한 책 덮어쓰기 금지, 0023)
   if (bookError) throw new Error(bookError.message)
 
   const { error } = await sb.from('ratings').upsert(
