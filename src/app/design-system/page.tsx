@@ -92,7 +92,7 @@ export default function DesignSystemPreviewPage() {
   ]
 
   return (
-    <main className="bj-shell" style={{ paddingTop: 32, paddingBottom: 64 }}>
+    <main className="bj-shell bj-frame" style={{ paddingTop: 32, paddingBottom: 64 }}>
       <header style={{ marginBottom: 32 }}>
         <Logo />
         <p className="bj-caption" style={{ margin: '4px 0 0' }}>
