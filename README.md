@@ -5,7 +5,7 @@
 책을 "얼마나 많이 읽었는가"가 아니라 "어떤 취향으로 읽는가"를 중심에 둔 독서 소셜 플랫폼입니다.
 16가지 독서 유형 테스트로 자신의 독서 취향을 진단하고, 취향이 맞는 사람과 책 모임을 통해 연결됩니다.
 
-**라이브** · https://book-jak.vercel.app　|　**디자인 시스템** · https://book-jak.vercel.app/design-system
+**라이브** · https://book-jak.vercel.app　|　**디자인 시스템** · https://book-jak.vercel.app/design-system　|　**Figma** · [북작_v2](https://www.figma.com/design/o9cV3nPv5FfOHYl9L7DGSF/%EB%B6%81%EC%9E%91_v2?node-id=4-5)
 
 | 유형 테스트 | 결과 카드 | 블라인드 북 |
 |---|---|---|
@@ -113,7 +113,7 @@ node scripts/migrate.mjs    # supabase/migrations 중 미적용분 실행
 
 ![디자인 시스템 갤러리](docs/images/design-system.webp)
 
-Figma에서 먼저 설계하고 코드로 옮겼습니다. 파일은 Foundations(색·타이포·효과 스타일) / Components(7개 카테고리, 배리언트·스펙 노트) / Screens(화면 12개를 컴포넌트로) / Flow(화면 인스턴스로 구성한 사용자 흐름 3개 레인)로 나눴습니다. 화면을 컴포넌트로 만들어 두어 시안을 고치면 Flow 다이어그램도 함께 바뀝니다. Figma 효과 스타일 수치는 SVG 내보내기에서 뽑아 `--elevation-floating` 같은 토큰으로 옮겼습니다.
+[Figma](https://www.figma.com/design/o9cV3nPv5FfOHYl9L7DGSF/%EB%B6%81%EC%9E%91_v2?node-id=4-5)에서 먼저 설계하고 코드로 옮겼습니다. 파일은 Foundations(색·타이포·효과 스타일) / Components(7개 카테고리, 배리언트·스펙 노트) / Screens(화면 12개를 컴포넌트로) / Flow(화면 인스턴스로 구성한 사용자 흐름 3개 레인)로 나눴습니다. 화면을 컴포넌트로 만들어 두어 시안을 고치면 Flow 다이어그램도 함께 바뀝니다. Figma 효과 스타일 수치는 SVG 내보내기에서 뽑아 `--elevation-floating` 같은 토큰으로 옮겼습니다.
 
 ### 핵심 규칙
 - **UI 강조는 주황 하나.** 버튼·활성·뱃지 모두 `--color-accent`만 씁니다. 형광색은 일러스트에만 씁니다.

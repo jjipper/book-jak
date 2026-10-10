@@ -22,6 +22,18 @@
 - **실행** `scripts/rls-check.mjs` — 가상 사용자 A·B를 만들고 검사마다 savepoint로 격리해 남의 글 수정·삭제·사칭, 비로그인 쓰기, 집계 컬럼 조작, 본인 전용 테이블 엿보기, 토큰·알림 직접 생성, 책 정보 덮어쓰기를 시도한다. 끝나면 전부 롤백한다.
 - **결과** 데이터를 남기지 않고 정책 회귀를 한 명령으로 확인한다.
 
+### 프로젝트 복구 후 API 역할의 테이블 권한이 사라진 문제 — [`d50092a`](https://github.com/jjipper/book-jak/commit/d50092a)
+- **배경** 일시정지된 Supabase 프로젝트를 복구한 뒤 `rls:check`가 14개 중 5개만 통과했다. 실패 메시지는 정책 위반이 아니라 `permission denied for table`이었다. 비로그인 피드 조회도 같은 오류로 막혀 있었다.
+- **판단** RLS는 "어떤 행"을 거르는 두 번째 관문이고, 그 앞에 표 단위 권한(GRANT)이 먼저 있다. `information_schema`를 보니 public 테이블 대부분에서 `anon`·`authenticated`·`service_role`의 select·insert·update·delete가 빠져 있었다. 컬럼 단위 권한(0016·0019)은 남아 있었다. 기본 권한(default privileges)도 바뀌어 있어서, 앞으로 만드는 테이블도 같은 상태가 될 것이었다.
+- **실행** 0024에서 Supabase 기본 모델로 되돌렸다. anon은 읽기만 하고, 쓰기는 authenticated에게 열어 행 조건은 RLS가 본다. 컬럼 단위로 쓰기를 열어 둔 테이블 5개는 표 단위 insert/update를 다시 주지 않았다. `_migrations`는 계속 닫아 두었다. 운영 DB에 넣기 전에 트랜잭션 안에서 실행해 권한을 확인하고 롤백했다.
+- **결과** 라이브 데이터 기능이 복구됐다. 정책을 손으로 점검했다면 "권한 거부 = 잘 막힘"으로 오판하기 쉬웠는데, 점검 스크립트가 실패 이유까지 출력해서 구분할 수 있었다.
+
+### `notify()` RPC로 남에게 가짜 알림을 만들 수 있던 문제 — [`00eb39e`](https://github.com/jjipper/book-jak/commit/00eb39e)
+- **배경** `notify()`는 `security definer`라 RLS를 우회해 notifications에 쓴다. 실행 권한이 PUBLIC에 열려 있어서, 비로그인 사용자도 `/rpc/notify`로 아무에게나 아무 이름의 알림을 만들 수 있었다. 기존 점검은 테이블 직접 insert만 시도해서 이 경로를 놓쳤다.
+- **판단** 호출처를 찾아보니 7곳 모두 `security definer` 트리거(소유자 권한으로 실행)였고, 앱 코드에서 직접 부르는 곳은 없었다. 그래서 API 역할의 실행 권한만 걷으면 기능은 그대로다.
+- **실행** 0025에서 `revoke execute … from public, anon, authenticated`. `rls:check`에 두 항목을 더했다. 하나는 "RPC로 가짜 알림을 만들 수 없다", 다른 하나는 "팔로우하면 트리거로 알림은 생긴다"다. 처음 짠 검사는 임의의 actor UUID가 외래키에 걸려 실패하는 바람에 잘못된 이유로 통과했다. 그래서 실제 사용자로 바꾸고, 막기 전에는 실패하는 것을 먼저 확인했다.
+- **결과** `rls:check` 16/16 통과.
+
 ### 토큰 지급·차감을 DB에서 원자적으로 — [`ca4af66`](https://github.com/jjipper/book-jak/commit/ca4af66)
 - **배경** 블라인드 북 공개에 토큰 1개가 든다. 클라이언트에서 잔액을 확인하고 차감하면 조작이나 이중 차감(연타·동시 요청)이 가능하다.
 - **실행** 지급(출석·글·댓글)과 차감을 모두 DB 함수·트리거로 옮겼다. `reveal_blind()`가 잔액 확인과 차감을 한 번에 처리하고, 이미 공개한 책은 무료다. 내역은 `token_ledger` 원장에 쌓아 잔액을 파생한다. API는 공개한 책의 정보만 내려줘서, 클라이언트에서 미리 볼 수 없다.
