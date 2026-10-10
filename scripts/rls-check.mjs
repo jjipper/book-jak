@@ -109,6 +109,15 @@ try {
       rejected(await as(tx, B, (s) => s`insert into public.token_ledger (user_id, amount, reason) values (${B}, 100, 'welcome')`)))
     check('알림을 직접 만들 수 없다',
       rejected(await as(tx, A, (s) => s`insert into public.notifications (user_id, actor_id, type) values (${B}, ${A}, 'follow')`)))
+    check('notify() RPC로 남에게 가짜 알림을 만들 수 없다',
+      rejected(await as(tx, A, (s) => s`select public.notify(${B}, ${A}, 'follow', null, null)`)))
+    const followNoti = await as(tx, A, async (s) => {
+      await s`insert into public.follows (follower_id, followee_id) values (${A}, ${B})`
+      await s`select set_config('request.jwt.claims', ${JSON.stringify({ sub: B, role: 'authenticated' })}, true)`
+      await s`select set_config('request.jwt.claim.sub', ${B}, true)`
+      return (await s`select count(*)::int as count from public.notifications where actor_id = ${A}`)[0]
+    })
+    check('팔로우하면 트리거로 알림은 생긴다', followNoti.ok && followNoti.value.count === 1, JSON.stringify(followNoti))
 
     // ── 5. 공용 책 정보 (0023) ──────────────────────────────────────
     const book = await as(tx, B, async (s) => {
