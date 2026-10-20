@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { loadPost, updatePost, isMyPost } from '@/entities/post/api/postsRemote'
 import type { Post } from '@/entities/post/model/posts'
 import { toast } from '@/shared/lib/toast'
-import BackLink from '@/shared/ui/BackLink'
+import SubpageHead from '@/shared/ui/SubpageHead'
 import PostForm from '@/features/post-compose/ui/PostForm'
 
 export default function PostEditView() {
@@ -26,10 +26,7 @@ export default function PostEditView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href={`/posts/${id}`} />
-          <span className="bj-h2">글 수정</span>
-        </header>
+        <SubpageHead title="글 수정" backHref={`/posts/${id}`} />
 
         <div className="bj-content--lg">
           {post === null && <p className="bj-caption bj-text-muted">불러오는 중…</p>}

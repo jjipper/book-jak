@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createPost } from '@/entities/post/api/postsRemote'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
-import BackLink from '@/shared/ui/BackLink'
+import SubpageHead from '@/shared/ui/SubpageHead'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import PostForm from '@/features/post-compose/ui/PostForm'
 
@@ -22,10 +22,7 @@ export default function PostNewView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/home" />
-          <span className="bj-h2">글 쓰기</span>
-        </header>
+        <SubpageHead title="글 쓰기" backHref="/home" />
 
         <div className="bj-content--lg">
           {allowed ? (

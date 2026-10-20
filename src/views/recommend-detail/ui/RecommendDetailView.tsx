@@ -31,25 +31,37 @@ import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
 import BackLink from '@/shared/ui/BackLink'
+import SubpageHead from '@/shared/ui/SubpageHead'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import TypeBadge from '@/shared/ui/TypeBadge'
 import Stars from '@/shared/ui/Stars'
 import StarRating from '@/shared/ui/StarRating'
+import Input from '@/shared/ui/Input'
+import Textarea from '@/shared/ui/Textarea'
+import '@/widgets/book/BookRow.css'
 
-function BookChip({ title, isbn, cover }: { title: string; isbn: string | null; cover: string | null }) {
-  const inner = (
-    <>
+/* 추천 카드 상단 — 책 행 BookRow(표지 60×76 + 제목 14 Bold) 레이아웃. 카드 안이라 면·패딩 없이 */
+function BookHead({ title, isbn, cover, children }: { title: string; isbn: string | null; cover: string | null; children?: React.ReactNode }) {
+  const coverEl = (
+    <div className="bj-book-row__cover">
       {cover && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={cover} alt="" className="bj-post-book__cover" />
+        <img src={cover} alt="" className="bj-cover-img" />
       )}
-      <span className="bj-post-book__title">{title}</span>
-    </>
+    </div>
   )
-  return isbn ? (
-    <Link href={bookDetailHref(isbn)} className="bj-post-book">{inner}</Link>
-  ) : (
-    <div className="bj-post-book">{inner}</div>
+  return (
+    <div className="bj-book-row bj-book-row--bare">
+      {isbn ? <Link href={bookDetailHref(isbn)} className="bj-unstyled-link">{coverEl}</Link> : coverEl}
+      <div className="bj-book-row__body">
+        {isbn ? (
+          <Link href={bookDetailHref(isbn)} className="bj-book-row__title bj-unstyled-link">{title}</Link>
+        ) : (
+          <p className="bj-book-row__title">{title}</p>
+        )}
+        {children}
+      </div>
+    </div>
   )
 }
 
@@ -122,7 +134,15 @@ function RecCard({ rec, showAuthor, myId, onChanged, requireAuth }: RecCardProps
 
   return (
     <div className="bj-card bj-col-10">
-      <BookChip title={rec.bookTitle} isbn={rec.bookIsbn} cover={rec.bookCover} />
+      <BookHead title={rec.bookTitle} isbn={rec.bookIsbn} cover={rec.bookCover}>
+        {/* 이미 읽은 책 — 그 자리에서 별점 16 + 점수 12 */}
+        {bookId && (
+          <div className="bj-book-row__meta-row">
+            <StarRating value={stars} onChange={handleRate} size={16} />
+            {stars > 0 && <span className="bj-book-row__score">{stars.toFixed(1)}</span>}
+          </div>
+        )}
+      </BookHead>
       <p className="bj-body">{rec.reason}</p>
       <div className="bj-row-between">
         {showAuthor
@@ -142,9 +162,8 @@ function RecCard({ rec, showAuthor, myId, onChanged, requireAuth }: RecCardProps
         reviewing ? (
           <div className="bj-col-8">
             <StarRating value={rating} onChange={setRating} />
-            <input
+            <Input
               type="text"
-              className="bj-input"
               placeholder="다 읽어보니 어땠나요"
               maxLength={200}
               value={review}
@@ -172,14 +191,10 @@ function RecCard({ rec, showAuthor, myId, onChanged, requireAuth }: RecCardProps
       )}
 
       {bookId && (
-        <div className="bj-row-between">
-          <button type="button" className="bj-btn bj-btn--text" onClick={handleSave} disabled={saved}>
+        <div>
+          <button type="button" className="bj-btn bj-btn--text bj-btn--sm" onClick={handleSave} disabled={saved}>
             {saved ? '서재에 담김' : '서재에 담기'}
           </button>
-          <div className="bj-meta-row">
-            <span className="bj-caption">이미 읽었어요</span>
-            <StarRating value={stars} onChange={handleRate} size={20} />
-          </div>
         </div>
       )}
 
@@ -288,30 +303,29 @@ export default function RecommendDetailView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/social?tab=recommend" />
-          <span className="bj-h2">{copy.head}</span>
-        </header>
+        <SubpageHead title={copy.head} backHref="/social?tab=recommend" />
 
         <div className="bj-content--lg">
           {/* 타이틀이 주인공 → 추천자는 그 아래 보조 한 줄 */}
           <div className="bj-card bj-col-10">
             <div className="bj-meta-row">
-              <span className={`bj-chip${isShare ? ' bj-chip--active' : ''}`}>{REC_KIND_LABEL[request.kind]}</span>
-              {!isShare && !request.isOpen && <span className="bj-chip bj-chip--done">닫힘</span>}
+              <span className={`bj-chip bj-chip--sm${isShare ? ' bj-chip--active' : ''}`}>{REC_KIND_LABEL[request.kind]}</span>
+              {!isShare && !request.isOpen && <span className="bj-chip bj-chip--sm bj-chip--done">닫힘</span>}
             </div>
-            <p className="bj-h1">{request.title}</p>
-            <PersonLink id={request.authorId} nickname={request.authorNickname} typeCode={request.typeCode} />
+            <p className="bj-heading">{request.title}</p>
+            <div className="bj-meta-row">
+              <PersonLink id={request.authorId} nickname={request.authorNickname} typeCode={request.typeCode} />
+              <span className="bj-caption">
+                담긴 책 {request.recCount}권 · 읽는 중 {request.readerCount}명 · 담음 {request.savedCount}명
+              </span>
+            </div>
             {request.mood && <p className="bj-body">{request.mood}</p>}
-            <div className="bj-col-4">
-              <p className="bj-caption bj-row-between"><span>담긴 책</span><span className="bj-bold">{request.recCount}권</span></p>
-              <p className="bj-caption bj-row-between"><span>읽는 중</span><span className="bj-bold">{request.readerCount}명</span></p>
-              <p className="bj-caption bj-row-between"><span>서재에 담음</span><span className="bj-bold">{request.savedCount}명</span></p>
-            </div>
             {isMine && !isShare && (
-              <button type="button" className="bj-btn bj-btn--text bj-btn--block" onClick={toggleOpen}>
-                {request.isOpen ? '추천 닫기' : '다시 열기'}
-              </button>
+              <div>
+                <button type="button" className="bj-btn bj-btn--text bj-btn--sm" onClick={toggleOpen}>
+                  {request.isOpen ? '추천 닫기' : '다시 열기'}
+                </button>
+              </div>
             )}
           </div>
 
@@ -334,8 +348,7 @@ export default function RecommendDetailView() {
             <section className="bj-col-8">
               <p className="bj-h2">{copy.compose}</p>
               <BookPicker value={book} onChange={setBook} />
-              <textarea
-                className="bj-textarea bj-textarea--sm"
+              <Textarea
                 placeholder="이 책을 권하는 이유"
                 maxLength={300}
                 value={reason}
@@ -343,7 +356,7 @@ export default function RecommendDetailView() {
               />
               <button
                 type="button"
-                className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
+                className="bj-btn bj-btn--primary bj-btn--block"
                 disabled={!book || reason.trim().length < 2 || submitting}
                 onClick={handleRecommend}
               >

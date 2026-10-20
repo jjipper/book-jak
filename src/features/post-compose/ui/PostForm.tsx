@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { PostBook } from '@/entities/post/api/postsRemote'
+import Textarea from '@/shared/ui/Textarea'
 import BookPicker from './BookPicker'
 
 interface PostFormProps {
@@ -36,9 +37,8 @@ export default function PostForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bj-col-14">
-      <textarea
-        className="bj-textarea"
+    <form onSubmit={handleSubmit} className="bj-card bj-col-14">
+      <Textarea
         placeholder="책, 독서, 취향에 대해 자유롭게 써보세요"
         value={content}
         onChange={(e) => setContent(e.target.value)}
@@ -46,7 +46,7 @@ export default function PostForm({
         maxLength={MAX_LENGTH}
         autoFocus
       />
-      <p className="bj-caption bj-text-muted bj-text-right">
+      <p className="bj-caption bj-text-right">
         {content.length}/{MAX_LENGTH}
       </p>
 

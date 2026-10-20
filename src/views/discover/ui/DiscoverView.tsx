@@ -8,6 +8,8 @@ import { fetchTokenBalance } from '@/entities/token/api/tokenRemote'
 import { TOKENS_CHANGED } from '@/entities/token/model/token'
 import BlindBookCard from '@/widgets/blind-book-card/BlindBookCard'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import PageHead from '@/shared/ui/PageHead'
+import TokenBadge from '@/shared/ui/TokenBadge'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
 import RevealSheet from './RevealSheet'
@@ -116,14 +118,11 @@ export default function DiscoverView() {
   return (
     <main className="bj-shell bj-shell--col bj-discover">
       <div className="bj-frame bj-frame--col">
-        <header className="bj-page-head bj-row-between">
-          <div>
-            <span className="bj-display bj-display--lg">발견</span>
-            <p className="bj-caption">오늘의 주제 {today?.theme ?? '…'}</p>
-            <p className="bj-caption">블라인드 북 {books.length || 5}권</p>
-          </div>
-          {tokens !== null && <span className="bj-discover__tokens">토큰 {tokens}</span>}
-        </header>
+        <PageHead
+          title="발견"
+          caption={`오늘의 주제 ${today?.theme ?? '…'} · 블라인드 북 ${books.length || 5}권`}
+          action={tokens !== null ? <TokenBadge count={tokens} /> : undefined}
+        />
 
         {failed ? (
           <div className="bj-day-done bj-text-center">

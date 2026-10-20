@@ -95,7 +95,7 @@ export default function BlindBookCard({ book, tokens, onPass, onReveal }: BlindB
         <p className="bj-blind-card__line">{book.blurb}</p>
         <div className="bj-blind-card__tags">
           {book.tags.map((tag) => (
-            <span key={tag} className="bj-chip">#{tag}</span>
+            <span key={tag} className="bj-chip bj-chip--sm">#{tag}</span>
           ))}
         </div>
 

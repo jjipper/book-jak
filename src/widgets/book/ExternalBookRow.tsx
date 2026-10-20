@@ -11,6 +11,7 @@ import { pushRating, deleteRating } from '@/entities/book-rating/api/ratingsRemo
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
+import './BookRow.css'
 
 interface ExternalBookRowProps {
   book: AladdinBook
@@ -46,9 +47,9 @@ export default function ExternalBookRow({ book, myStars, onRated, next = '/rate'
   }
 
   return (
-    <div className="bj-row">
+    <div className="bj-book-row">
       {/* 표지·제목만 링크 — 별점은 링크 밖에 둬야 별을 눌렀을 때 상세로 튀지 않는다 */}
-      <Link href={`/rate/books/${book.id}`} className="bj-ext-book-cover bj-unstyled-link">
+      <Link href={`/rate/books/${book.id}`} className="bj-book-row__cover bj-unstyled-link">
         {book.cover && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={book.cover} alt={book.title} className="bj-cover-img" />
@@ -56,14 +57,14 @@ export default function ExternalBookRow({ book, myStars, onRated, next = '/rate'
       </Link>
       <div className="bj-book-row__body">
         <Link href={`/rate/books/${book.id}`} className="bj-unstyled-link">
-          <p className="bj-body bj-book-title-sm">{book.title}</p>
-          <p className="bj-caption bj-truncate bj-caption--hint">
+          <p className="bj-book-row__title">{book.title}</p>
+          <p className="bj-book-row__author">
             {[book.author, book.publisher].filter(Boolean).join(' · ')}
           </p>
         </Link>
         <div className="bj-book-row__meta-row">
-          <StarRating value={stars} onChange={handleRate} size={20} />
-          {stars > 0 && <span className="bj-caption bj-bold bj-caption--action">{stars}점 평가함</span>}
+          <StarRating value={stars} onChange={handleRate} size={16} />
+          {stars > 0 && <span className="bj-book-row__score">{stars.toFixed(1)}</span>}
         </div>
       </div>
       <LoginGateSheet open={showGate} onClose={closeGate} next={next} />

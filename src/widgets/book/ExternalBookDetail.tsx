@@ -26,30 +26,29 @@ import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import StarRating from '@/shared/ui/StarRating'
 import Stars from '@/shared/ui/Stars'
+import Textarea from '@/shared/ui/Textarea'
 import { useMounted } from '@/shared/lib/useMounted'
 import Icon from '@/shared/ui/Icon'
+import SectionLabel from '@/shared/ui/SectionLabel'
 import AladinLogo from './AladinLogo'
+import './BookRow.css'
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="bj-section-label">
-      {children}
-    </p>
-  )
-}
-
-// 들어온 화면으로 돌아간다 — 링크로 바로 열린 탭(히스토리 없음)이면 평가 탭으로
-function BackButton() {
+// 서브페이지 헤더(SubpageHead 규격) — 뒤로가기는 href가 아니라 들어온 화면으로 돌아간다.
+// 링크로 바로 열린 탭(히스토리 없음)이면 평가 탭으로
+function Head() {
   const router = useRouter()
   return (
-    <button
-      type="button"
-      className="bj-icon-btn"
-      aria-label="뒤로"
-      onClick={() => (window.history.length > 1 ? router.back() : router.push('/rate'))}
-    >
-      <Icon name="chevron-left" size={24} />
-    </button>
+    <header className="bj-subpage-head">
+      <button
+        type="button"
+        className="bj-icon-btn"
+        aria-label="뒤로"
+        onClick={() => (window.history.length > 1 ? router.back() : router.push('/rate'))}
+      >
+        <Icon name="chevron-left" size={24} />
+      </button>
+      <h1 className="bj-subpage-head__title bj-flex-1">책 정보</h1>
+    </header>
   )
 }
 
@@ -105,10 +104,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
     return (
       <main className="bj-shell">
         <div className="bj-frame">
-          <header className="bj-subpage-head">
-            <BackButton />
-            <span className="bj-h2">책 정보</span>
-          </header>
+          <Head />
           <p className="bj-caption bj-text-muted">책 정보를 불러오는 중…</p>
         </div>
       </main>
@@ -119,10 +115,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
     return (
       <main className="bj-shell">
         <div className="bj-frame">
-          <header className="bj-subpage-head">
-            <BackButton />
-            <span className="bj-h2">책 정보</span>
-          </header>
+          <Head />
           <p className="bj-body bj-text-muted">책 정보를 불러올 수 없어요.</p>
         </div>
       </main>
@@ -195,10 +188,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackButton />
-        <span className="bj-h2">책 정보</span>
-      </header>
+      <Head />
 
       <div className="bj-content--24">
         {/* 책 기본 정보 */}
@@ -232,7 +222,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
                 href={aladdinProductHref(book.isbn13)}
                 target="_blank"
                 rel="noreferrer"
-                className="bj-btn bj-btn--sm bj-book-info-link"
+                className="bj-btn bj-btn--text bj-btn--sm bj-book-info-link"
               >
                 책 정보보기 <AladinLogo />
               </a>
@@ -241,7 +231,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
         </div>
 
         {/* 내 점수 + 내 평가 — 별 아이콘은 내 점수 전용, 평균은 텍스트로 */}
-        <div className="bj-card bj-card--flat bj-col-10 bj-card-flat--p16">
+        <div className="bj-card bj-col-10">
           <span className="bj-caption bj-bold">
             {stats && stats.count > 0
               ? <>평균 별점 <span className="bj-stat-star">★ {stats.avg.toFixed(1)}</span> (북작 {stats.count}명)</>
@@ -262,19 +252,14 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
             </p>
           )}
           {stars > 0 && (
-            <div className="bj-review-input-row">
-              <textarea
-                className="bj-textarea bj-textarea--flex"
+            <div className="bj-col-8">
+              <Textarea
                 placeholder="한 줄 리뷰 남기기 (선택)"
                 value={review}
                 onChange={(e) => setReviewEdit(e.target.value)}
               />
-              <button
-                type="button"
-                onClick={handleSaveReview}
-                className="bj-btn bj-btn--review-save"
-              >
-                저장
+              <button type="button" onClick={handleSaveReview} className="bj-btn bj-btn--primary bj-btn--block">
+                리뷰 저장
               </button>
             </div>
           )}
@@ -338,7 +323,7 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
         {stats && stats.count > 0 && (
           <section>
             <SectionLabel>별점 분포</SectionLabel>
-            <div className="bj-card bj-card--flat bj-dist-card">
+            <div className="bj-card bj-dist-card">
               <div className="bj-dist-avg bj-text-center">
                 <p className="bj-display bj-dist-avg-num">{stats.avg.toFixed(1)}</p>
                 <Stars value={stats.avg} size={13} />
@@ -366,17 +351,19 @@ export default function ExternalBookDetail({ bookId }: ExternalBookDetailProps) 
         {extra && extra.alsoLiked.length > 0 && (
           <section>
             <SectionLabel>다른 독자들은 이 책도 좋아해요</SectionLabel>
-            <div className="bj-rail bj-also-liked">
+            <div className="bj-list">
               {extra.alsoLiked.map((b) => (
-                <Link key={b.id} href={`/rate/books/${b.id}`} className="bj-unstyled-link bj-also-liked__item">
-                  <div className="bj-ext-book-cover bj-also-liked__cover">
+                <Link key={b.id} href={`/rate/books/${b.id}`} className="bj-book-row bj-unstyled-link">
+                  <div className="bj-book-row__cover">
                     {b.thumbnail && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={b.thumbnail} alt={b.title} className="bj-cover-img" />
                     )}
                   </div>
-                  <p className="bj-caption bj-also-liked__title">{b.title}</p>
-                  {b.author && <p className="bj-caption bj-also-liked__author">{b.author}</p>}
+                  <div className="bj-book-row__body">
+                    <p className="bj-book-row__title">{b.title}</p>
+                    {b.author && <p className="bj-book-row__author">{b.author}</p>}
+                  </div>
                 </Link>
               ))}
             </div>

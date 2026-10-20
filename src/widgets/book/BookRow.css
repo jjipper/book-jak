@@ -1,0 +1,48 @@
+/* 평가 행 RateRow · 책 행 BookRow — Figma 02 Components
+   화이트 라운드 12 · 높이 100 · 패딩 16/12 · 표지 60×76 라운드 8 눌림 + 간격 12
+   제목 14 Bold · 작가 12 잉크400 · 별점 16 + 점수 12 주황. 책 행은 별점 슬롯만 없다. */
+.bj-book-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 100px;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  --color-control-surface: var(--color-bg);
+}
+/* 흰 카드 안에 얹을 때 — 면·패딩 없이 레이아웃만 */
+.bj-book-row--bare {
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+}
+.bj-book-row__cover {
+  flex: none;
+  width: 60px;
+  height: 76px;
+  border-radius: var(--radius-sm);
+  background: var(--color-track);
+  overflow: hidden;
+}
+.bj-book-row__title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.bj-book-row__author {
+  font-size: 12px;
+  color: var(--color-text-caption);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bj-book-row__score {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-accent-text);
+}

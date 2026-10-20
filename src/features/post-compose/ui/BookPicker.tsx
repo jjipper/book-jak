@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { searchAladdinBooks, type AladdinBook } from '@/entities/external-book/model/aladdinBooks'
 import type { PostBook } from '@/entities/post/api/postsRemote'
 import Icon from '@/shared/ui/Icon'
+import Input from '@/shared/ui/Input'
 
 interface BookPickerProps {
   value: PostBook | null
@@ -63,8 +64,8 @@ export default function BookPicker({ value, onChange }: BookPickerProps) {
 
   return (
     <div className="bj-col-8">
-      <input
-        className="bj-input"
+      <Input
+        icon={<Icon name="search" size={20} />}
         type="search"
         placeholder="책 제목이나 작가로 검색 (선택)"
         value={query}

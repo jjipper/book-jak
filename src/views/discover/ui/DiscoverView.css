@@ -15,17 +15,6 @@
   padding-bottom: var(--space-md);
 }
 
-/* 상단 내 토큰 수 */
-.bj-discover__tokens {
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent-weak);
-  color: var(--color-accent-text);
-  font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 /* 공개 시트 — 표지 + 제목·저자 */
 .bj-reveal {
   display: flex;

@@ -11,8 +11,12 @@ import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
 import Icon from '@/shared/ui/Icon'
+import Input from '@/shared/ui/Input'
+import Textarea from '@/shared/ui/Textarea'
+import SegTab from '@/shared/ui/SegTab'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import BackLink from '@/shared/ui/BackLink'
+import SubpageHead from '@/shared/ui/SubpageHead'
+import '@/widgets/book/BookRow.css'
 
 // 두 종류는 같은 폼을 쓰고 카피만 다르다 (DB rec_requests.kind). 종류는 등록 때 정하면 못 바꾼다.
 const COPY: Record<RecKind, {
@@ -84,35 +88,23 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/social?tab=recommend" />
-          <span className="bj-h2">추천 쓰기</span>
-        </header>
+        <SubpageHead title="추천 쓰기" backHref="/social?tab=recommend" />
 
         <div className="bj-content--new">
           <div>
             <p className="bj-caption bj-bold bj-mb-8">종류</p>
-            <div className="bj-choice-row" role="tablist">
-              {(['ask', 'share'] as const).map((k) => (
-                <button
-                  key={k}
-                  type="button"
-                  role="tab"
-                  aria-selected={kind === k}
-                  onClick={() => setKind(k)}
-                  className={`bj-choice bj-choice--flex bj-text-center${kind === k ? ' is-active' : ''}`}
-                >
-                  {COPY[k].tab}
-                </button>
-              ))}
-            </div>
+            <SegTab
+              label="종류"
+              items={(['ask', 'share'] as const).map((k) => ({ value: k, label: COPY[k].tab }))}
+              value={kind}
+              onChange={setKind}
+            />
           </div>
 
           <div>
             <p className="bj-caption bj-bold bj-mb-8">제목</p>
-            <input
+            <Input
               type="text"
-              className="bj-input"
               placeholder={copy.titlePlaceholder}
               maxLength={40}
               value={title}
@@ -122,8 +114,7 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
 
           <div>
             <p className="bj-caption bj-bold bj-mb-8">설명 (선택)</p>
-            <textarea
-              className="bj-textarea bj-textarea--sm"
+            <Textarea
               placeholder={copy.descPlaceholder}
               maxLength={500}
               value={desc}
@@ -136,12 +127,14 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
               <p className="bj-caption bj-bold">담을 책 {picks.length}/{REC_LIMIT_PER_USER}</p>
               {picks.map((p, i) => (
                 <div key={`${p.book.isbn ?? p.book.title}-${i}`} className="bj-card bj-col-8">
-                  <div className="bj-book-pick">
-                    {p.book.cover && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={p.book.cover} alt="" className="bj-book-pick__cover" />
-                    )}
-                    <p className="bj-body bj-book-pick__title">{p.book.title}</p>
+                  <div className="bj-book-row bj-book-row--bare">
+                    <div className="bj-book-row__cover">
+                      {p.book.cover && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={p.book.cover} alt="" className="bj-cover-img" />
+                      )}
+                    </div>
+                    <p className="bj-book-row__title bj-flex-1">{p.book.title}</p>
                     <button
                       type="button"
                       className="bj-icon-btn"
@@ -151,8 +144,7 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
                       <Icon name="x" size={18} />
                     </button>
                   </div>
-                  <textarea
-                    className="bj-textarea bj-textarea--sm"
+                  <Textarea
                     placeholder="이 책을 권하는 이유"
                     maxLength={300}
                     value={p.reason}
@@ -175,7 +167,7 @@ export default function RecommendNewView({ kind: initialKind = 'ask' }: { kind?:
             type="button"
             onClick={handleSubmit}
             disabled={!canSubmit}
-            className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
+            className="bj-btn bj-btn--primary bj-btn--block"
           >
             {copy.submit}
           </button>

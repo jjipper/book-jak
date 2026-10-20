@@ -12,8 +12,10 @@ import { bookDetailHref } from '@/entities/external-book/model/aladdinBooks'
 import ModerationSheet from '@/entities/report/ui/ModerationSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
-import BackLink from '@/shared/ui/BackLink'
+import SubpageHead from '@/shared/ui/SubpageHead'
 import Icon from '@/shared/ui/Icon'
+import Input from '@/shared/ui/Input'
+import Textarea from '@/shared/ui/Textarea'
 import TypeBadge from '@/shared/ui/TypeBadge'
 import ConfirmSheet from '@/shared/ui/ConfirmSheet'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
@@ -106,22 +108,22 @@ export default function PostDetailView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/home" />
-          <span className="bj-h2">글</span>
-          {post && (
-            <span className="bj-post-detail__actions">
+        <SubpageHead
+          title="글"
+          backHref="/home"
+          action={post && (
+            <span className="bj-comment-row__actions">
               {mine ? (
                 <>
-                  <Link href={`/posts/${id}/edit`} className="bj-section__action">수정</Link>
-                  <button type="button" className="bj-section__action" onClick={() => setConfirm({ kind: 'post' })}>
+                  <Link href={`/posts/${id}/edit`} className="bj-btn bj-btn--text bj-btn--sm">수정</Link>
+                  <button type="button" className="bj-btn bj-btn--text bj-btn--sm" onClick={() => setConfirm({ kind: 'post' })}>
                     삭제
                   </button>
                 </>
               ) : (
                 <button
                   type="button"
-                  className="bj-section__action"
+                  className="bj-btn bj-btn--text bj-btn--sm"
                   onClick={() => setModerate({ targetType: 'post', targetId: post.id, authorId: post.authorId })}
                 >
                   신고
@@ -129,7 +131,7 @@ export default function PostDetailView() {
               )}
             </span>
           )}
-        </header>
+        />
 
         <div className="bj-content--lg">
           {post === null && <p className="bj-caption bj-text-muted">불러오는 중…</p>}
@@ -137,18 +139,18 @@ export default function PostDetailView() {
 
           {post && (
             <>
-              <article className="bj-card bj-col-12">
+              <article className="bj-card bj-col-8">
                 <div className="bj-post-card__header">
                   <Link href={mine ? '/my' : `/people/${post.authorId}`} className="bj-post-card__author-link">
                     <TypeBadge code={post.authorTypeCode} />
-                    <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
+                    <span className="bj-post-card__author">{post.authorNickname}</span>
                   </Link>
-                  <span className="bj-post-card__time bj-caption">
+                  <span className="bj-post-card__time">
                     {formatRelTime(post.ts)}{post.editedTs ? ' · 수정됨' : ''}
                   </span>
                 </div>
 
-                <p className="bj-body bj-post-detail__content">{post.content}</p>
+                <p className="bj-post-card__content">{post.content}</p>
 
                 {post.bookTitle && (
                   post.bookIsbn ? (
@@ -176,7 +178,7 @@ export default function PostDetailView() {
                     <Icon name={liked ? 'heart-fill' : 'heart'} size={16} />
                     {likeCount > 0 && <span>{likeCount}</span>}
                   </button>
-                  <span className="bj-post-card__comment-count bj-caption">
+                  <span className="bj-post-card__comment-count">
                     <Icon name="comment" size={16} />
                     {comments.length}
                   </span>
@@ -188,54 +190,57 @@ export default function PostDetailView() {
 
                 <div className="bj-col-10">
                   {comments.map((c) => (
-                    <div key={c.id} className="bj-comment">
-                      <div className="bj-post-card__header">
+                    <div key={c.id} className="bj-comment-row">
+                      <span className="bj-avatar-circle bj-comment-row__avatar" aria-hidden="true">
+                        <Icon name="user" size={18} />
+                      </span>
+                      <div className="bj-comment-row__body">
+                      <div className="bj-comment-row__head">
                         <Link
                           href={myIds.has(c.authorId) ? '/my' : `/people/${c.authorId}`}
-                          className="bj-post-card__author-link"
+                          className="bj-comment-row__author"
                         >
+                          <span className="bj-truncate bj-comment-row__name">{c.authorNickname}</span>
                           <TypeBadge code={c.authorTypeCode} />
-                          <span className="bj-post-card__author bj-bold">{c.authorNickname}</span>
                         </Link>
-                        <span className="bj-post-card__time bj-caption">
+                        <span className="bj-post-card__time">
                           {formatRelTime(c.ts)}{c.editedTs ? ' · 수정됨' : ''}
                         </span>
                       </div>
 
                       {editingId === c.id ? (
                         <div className="bj-col-8">
-                          <textarea
-                            className="bj-textarea"
+                          <Textarea
                             value={editDraft}
                             onChange={(e) => setEditDraft(e.target.value)}
                             rows={3}
                             maxLength={300}
                           />
-                          <div className="bj-comment__actions">
-                            <button type="button" className="bj-section__action" onClick={() => setEditingId(null)}>
+                          <div className="bj-comment-row__actions">
+                            <button type="button" className="bj-btn bj-btn--text bj-btn--sm" onClick={() => setEditingId(null)}>
                               취소
                             </button>
-                            <button type="button" className="bj-section__action" onClick={() => void handleSaveEdit(c.id)}>
+                            <button type="button" className="bj-btn bj-btn--text bj-btn--sm" onClick={() => void handleSaveEdit(c.id)}>
                               저장
                             </button>
                           </div>
                         </div>
                       ) : (
                         <>
-                          <p className="bj-body bj-body--sm bj-post-detail__content">{c.content}</p>
-                          <div className="bj-comment__actions">
+                          <p className="bj-comment-row__text">{c.content}</p>
+                          <div className="bj-comment-row__actions">
                             {myIds.has(c.authorId) ? (
                               <>
                                 <button
                                   type="button"
-                                  className="bj-section__action"
+                                  className="bj-btn bj-btn--text bj-btn--sm"
                                   onClick={() => { setEditingId(c.id); setEditDraft(c.content) }}
                                 >
                                   수정
                                 </button>
                                 <button
                                   type="button"
-                                  className="bj-section__action"
+                                  className="bj-btn bj-btn--text bj-btn--sm"
                                   onClick={() => setConfirm({ kind: 'comment', id: c.id })}
                                 >
                                   삭제
@@ -244,7 +249,7 @@ export default function PostDetailView() {
                             ) : (
                               <button
                                 type="button"
-                                className="bj-section__action"
+                                className="bj-btn bj-btn--text bj-btn--sm"
                                 onClick={() => setModerate({ targetType: 'comment', targetId: c.id, authorId: c.authorId })}
                               >
                                 신고
@@ -253,6 +258,7 @@ export default function PostDetailView() {
                           </div>
                         </>
                       )}
+                      </div>
                     </div>
                   ))}
 
@@ -264,12 +270,10 @@ export default function PostDetailView() {
                 </div>
 
                 <form onSubmit={handleAddComment} className="bj-col-8 bj-mt-14">
-                  <textarea
-                    className="bj-textarea"
+                  <Input
                     placeholder="댓글 남기기"
                     value={draft}
                     onChange={(e) => setDraft(e.target.value)}
-                    rows={3}
                     maxLength={300}
                   />
                   <button type="submit" className="bj-btn bj-btn--primary bj-btn--block" disabled={!draft.trim()}>

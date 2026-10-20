@@ -12,6 +12,10 @@ import { loadBookRatings } from '@/entities/book-rating/model/bookRatings'
 import { syncMyRatings } from '@/entities/book-rating/api/ratingsRemote'
 import ExternalBookRow from '@/widgets/book/ExternalBookRow'
 import { useMounted } from '@/shared/lib/useMounted'
+import FilterSelect from '@/shared/ui/FilterSelect'
+import Icon from '@/shared/ui/Icon'
+import Input from '@/shared/ui/Input'
+import PageHead from '@/shared/ui/PageHead'
 
 const QUERY_TYPES = ['Bestseller', 'ItemNewAll', 'BlogBest'] as const
 const BATCH_SIZE = 20
@@ -162,16 +166,18 @@ export default function RateView({ initialQuery }: RateViewProps) {
   return (
     <main className="bj-shell bj-content">
       <div className="bj-frame">
-        <header className="bj-page-head">
-          <span className="bj-display bj-display--lg">평가</span>
-          <p className="bj-caption">별점을 줄수록 내 장르 취향이 선명해져요</p>
-          {ratedCount > 0 && (
-            <p className="bj-caption bj-bold bj-caption--action">지금까지 {ratedCount}권 평가</p>
-          )}
-        </header>
+        <PageHead
+          title="평가"
+          caption={
+            ratedCount > 0
+              ? `지금까지 ${ratedCount}권 평가 · 별점을 줄수록 내 장르 취향이 선명해져요`
+              : '별점을 줄수록 내 장르 취향이 선명해져요'
+          }
+        />
 
-        <input
-          className="bj-input bj-rate-search"
+        <Input
+          className="bj-rate-search"
+          icon={<Icon name="search" size={20} />}
           type="search"
           placeholder="책 제목이나 작가로 검색해서 평가하기"
           value={query}
@@ -202,18 +208,11 @@ export default function RateView({ initialQuery }: RateViewProps) {
         ) : (
         <>
         {/* 카테고리 필터 */}
-        <div className="bj-rail bj-rail--lg-wrap bj-genre-rail">
+        <FilterSelect value={selectedCat} onChange={(e) => setSelectedCat(e.target.value)} aria-label="장르">
           {ALADDIN_CATEGORIES.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => setSelectedCat(c.id)}
-              className={`bj-chip bj-genre-chip${selectedCat === c.id ? ' bj-chip--active' : ''}`}
-            >
-              {c.name}
-            </button>
+            <option key={c.id} value={c.id}>{c.name}</option>
           ))}
-        </div>
+        </FilterSelect>
 
         {/* 책 리스트 — 한 줄에 한 권 */}
         {books.length > 0 && (
