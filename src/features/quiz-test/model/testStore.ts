@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { type TestAnswer, type TestResult, scoreTest, saveResult } from '@/entities/reading-type/model/scoring'
 import { saveTypeCode } from '@/entities/user/api/profileRemote'
+import { track } from '@/shared/lib/analytics'
 
 interface TestStore {
   // 현재 테스트 진행 상태
@@ -36,6 +37,7 @@ export const useTestStore = create<TestStore>((set, get) => ({
     if (isComplete) {
       const result = scoreTest(newAnswers)
       saveResult(result)
+      track('quiz_completed', { type_code: result.typeCode })
       saveTypeCode(result.typeCode).catch(() => {})  // 로그인 상태면 서버 백업, 실패해도 AuthProvider가 다음 방문 때 이관
       set({ result })
     }

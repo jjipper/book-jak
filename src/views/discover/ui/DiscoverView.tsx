@@ -12,6 +12,7 @@ import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
 import RevealSheet from './RevealSheet'
 import './DiscoverView.css'
+import { track } from '@/shared/lib/analytics'
 
 // 다시 보기(review) 중이면 전부, 아니면 아직 안 본 책만 순서대로
 function nextIndex(books: BlindBook[], from: number, review: boolean): number {
@@ -64,6 +65,7 @@ export default function DiscoverView() {
   function handlePass() {
     if (!today || !book) return
     if (book.status === 'new') {
+      track('blind_book_passed')
       recordBlind(today.date, book.index, 'pass') // 비로그인이면 서버가 401 — 진행도만 저장 안 된다
       markStatus(book.index, { status: 'passed' })
     }
@@ -80,6 +82,7 @@ export default function DiscoverView() {
       if (res.ok && res.book) {
         if (typeof res.balance === 'number') setTokens(res.balance)
         markStatus(book.index, { status: 'revealed', book: res.book })
+        track('blind_book_revealed', { isbn: res.book.isbn13 })
         setSheetBook(res.book)
       } else if (!res.ok && res.error === 'NO_TOKEN') {
         setTokens(0)
@@ -105,6 +108,7 @@ export default function DiscoverView() {
         ts: Date.now(),
       })
       recordBlind(today.date, book.index, 'save')
+      track('blind_book_saved', { isbn: b.isbn13 })
       toast.show('서재에 담았어요')
     })
   }

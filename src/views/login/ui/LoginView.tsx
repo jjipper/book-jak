@@ -5,12 +5,14 @@ import Link from "next/link";
 import { createSupabaseBrowser } from "@/shared/api/supabase-browser";
 import Logo from "@/shared/ui/Logo";
 import Icon from "@/shared/ui/Icon";
+import { track } from "@/shared/lib/analytics";
 
 export default function LoginView() {
   const searchParams = useSearchParams();
   const hasError = searchParams.get("error") === "auth";
 
   async function handleKakaoLogin() {
+    track("login_clicked", { next: searchParams.get("next") });
     const sb = createSupabaseBrowser();
     const next = searchParams.get("next") ?? "/home";
     await sb.auth.signInWithOAuth({

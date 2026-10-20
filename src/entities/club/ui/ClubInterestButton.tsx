@@ -6,6 +6,7 @@ import { toggleInterest } from '@/entities/club/model/clubActions'
 import { toast } from '@/shared/lib/toast'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import { track } from '@/shared/lib/analytics'
 
 interface Props {
   clubId: string
@@ -23,6 +24,7 @@ export default function ClubInterestButton({ clubId, interested, onChange }: Pro
     e.stopPropagation()
     void requireAuth(() => {
       const next = !interested
+      track('club_interest_toggled', { club_id: clubId, interested: next })
       onChange(next) // 낙관적 — 실패하면 되돌린다
       toggleInterest(clubId, next).catch((err: Error) => {
         onChange(!next)

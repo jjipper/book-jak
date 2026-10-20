@@ -12,6 +12,7 @@ import Icon, { type IconName } from '@/shared/ui/Icon'
 import ConfirmSheet from '@/shared/ui/ConfirmSheet'
 import Logo from '@/shared/ui/Logo'
 import './TestView.css'
+import { track } from '@/shared/lib/analytics'
 
 const AXIS_LABELS: Record<string, string> = {
   FT: '감정·사유',
@@ -78,7 +79,7 @@ export default function TestView() {
           <IllustPlaceholder code="intro_test" alt="BOOKBTI 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" priority />
 
           <div className="bj-col-10">
-            <button onClick={() => { resetTest(); setStarted(true) }} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">
+            <button onClick={() => { resetTest(); setStarted(true); track('quiz_started', { from_friend: new URLSearchParams(window.location.search).has('from') }) }} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">
               테스트 시작
             </button>
             <p className="bj-caption bj-text-center">

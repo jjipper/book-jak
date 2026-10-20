@@ -13,6 +13,7 @@ import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Icon, { type IconName } from '@/shared/ui/Icon'
 import { useMounted } from '@/shared/lib/useMounted'
 import './ResultDetailView.css'
+import { track } from '@/shared/lib/analytics'
 
 interface ResultDetailViewProps {
   params: Promise<{ typeCode: string }>
@@ -132,6 +133,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
         // 저장 이미지 = 유형 카드(희귀도 포함) + 유형 설명 + 독서 궁합
         filter: (node) => !(node instanceof HTMLElement && 'noCapture' in node.dataset),
       })
+      track('result_image_saved', { type_code: typeCode })
       const a = document.createElement('a'); a.download = `BOOKJAK_${typeCode}.png`; a.href = dataUrl; a.click()
     } catch {
       toast.error('이미지 저장에 실패했어요')
@@ -145,6 +147,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     if (navigator.share) {
       try {
         await navigator.share({ title: '북작 독서 궁합', text: `나는 ${type.name}! 나랑 독서 궁합 볼래?`, url })
+        track('result_shared', { type_code: typeCode, method: 'share_sheet' })
         return
       } catch (e) {
         if (e instanceof DOMException && e.name === 'AbortError') return
@@ -152,6 +155,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     }
     try {
       await navigator.clipboard.writeText(url)
+      track('result_shared', { type_code: typeCode, method: 'copy_link' })
       toast.show('궁합 링크를 복사했어요')
     } catch {
       toast.error('링크 복사에 실패했어요')

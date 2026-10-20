@@ -1,4 +1,5 @@
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
+import { resetIdentity } from '@/shared/lib/analytics'
 
 /**
  * 회원 탈퇴 — 익명화(RPC). 계정·프로필 개인정보는 파기되지만
@@ -9,4 +10,5 @@ export async function deleteMyAccount(): Promise<void> {
   const { error } = await sb.rpc('withdraw_my_account')
   if (error) throw new Error(error.message)
   await sb.auth.signOut()
+  resetIdentity()
 }

@@ -1,4 +1,5 @@
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
+import { resetIdentity } from '@/shared/lib/analytics'
 
 export interface Profile {
   id: string
@@ -49,4 +50,5 @@ export async function saveTypeCode(typeCode: string): Promise<void> {
 export async function signOut(): Promise<void> {
   const sb = createSupabaseBrowser()
   await sb.auth.signOut()
+  resetIdentity()
 }
