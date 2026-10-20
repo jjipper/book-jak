@@ -29,6 +29,7 @@ export default function LoginView() {
 
   return (
     <main className="bj-shell bj-login-shell">
+      <div className="bj-frame bj-login-shell">
       <div className="bj-login-body">
         <div className="bj-login-hero">
           <Logo />
@@ -58,6 +59,7 @@ export default function LoginView() {
             로그인 없이 둘러보기
           </Link>
         </div>
+      </div>
       </div>
     </main>
   );

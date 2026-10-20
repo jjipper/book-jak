@@ -13,19 +13,19 @@ body {
   height: 100%;
 }
 
+/* 루트 배경은 웹 회색 — 크림은 .bj-frame(앱 420 기둥) 안에만 깔린다 */
 #app-root {
   width: 100%;
   min-height: 100dvh;
   position: relative;
   overflow-x: hidden;
-  background: var(--color-bg);
+  background: var(--color-web-bg);
 }
 
-/* 셸은 폭을 정하지 않는다 — 폭은 .bj-frame 한 곳에서만 정한다 */
+/* 셸은 폭·배경을 정하지 않는다 — 둘 다 .bj-frame 한 곳에서만 정한다 */
 .bj-shell {
   width: 100%;
   min-height: 100dvh;
-  background: var(--color-bg);
 }
 
 /* 모션 최소화 환경 존중 (UI_PROMPT §4) */

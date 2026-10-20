@@ -35,6 +35,7 @@
 
   /* 배경 */
   --p-paper-050: #F7EFE6;    /* 크림 — 페이지 배경 & 화이트 면 안의 컨트롤 */
+  --p-grey-100:  #F2F2F2;    /* 웹 배경 — 앱 프레임(420) 바깥에만 */
   --p-paper-100: #F2EEE4;    /* 차트 트랙 — 크림 위·흰 카드 안 어디서든 보이는 바탕 */
   --p-white:     #FFFFFF;
 
@@ -81,6 +82,7 @@
 
   /* surface / bg */
   --color-bg:            var(--p-paper-050);
+  --color-web-bg:        var(--p-grey-100);    /* 420 프레임 바깥(웹) 배경 — 앱 안에서는 쓰지 않는다 */
   --color-bg-sunken:     var(--p-ink-100);     /* 눌린 패널 (블라인드 커버 등) */
   --color-surface:       var(--p-white);
   --color-surface-raised: var(--p-white);
@@ -148,7 +150,8 @@
   --space-lg: var(--p-space-16);
   --space-xl: var(--p-space-24);
 
-  /* 앱 기둥 폭 — 420 아래(폰)에서는 화면 폭에 맞춰 흐르고, 그 위(웹)에서는 420에서 멈춘다.
+  /* 앱 기둥 폭 — 420 아래(폰)에서는 화면 폭에 맞춰 흐르고, 그 위(웹)에서는 420 고정.
+     420 이상에서는 .bj-frame이 크림 라운드 카드(폰 모양)로 떠 있고 바깥은 --color-web-bg.
      프레임·하단탭·바텀시트·토스트·FAB이 전부 이 값을 기준으로 줄을 맞춘다.
      폭 기준을 여기 말고 다른 데서 새로 만들지 않는다. */
   --app-width: 420px;

@@ -54,6 +54,7 @@ export default function TestLoadingView() {
 
   return (
     <main className="bj-shell bj-shell--center">
+      <div className="bj-frame bj-shell--center">
       {/* 스피너 */}
       <div className="bj-spinner-wrap">
         <div className="bj-spinner-ring" />
@@ -84,6 +85,7 @@ export default function TestLoadingView() {
       <style>{`
         @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
       `}</style>
+      </div>
     </main>
   )
 }
