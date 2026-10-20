@@ -1,4 +1,6 @@
-/* 09. CHECK — 체크박스 */
+import Icon from './Icon'
+
+/* 09. CHECK — 체크박스 20×20 라운드 8 · 미체크 눌림 / 체크됨 주황500 + 화이트 체크 */
 
 interface CheckProps {
   checked: boolean
@@ -19,21 +21,7 @@ export default function Check({ checked, label, disabled = false, onToggle }: Ch
       className={`bj-check${checked ? ' bj-check--checked' : ''}`}
       onClick={onToggle}
     >
-      {checked && (
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="3.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="m5 12.5 4.5 4.5L19 7" />
-        </svg>
-      )}
+      {checked && <Icon name="check" size={14} />}
     </button>
   )
 }

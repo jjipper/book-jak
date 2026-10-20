@@ -27,7 +27,7 @@ body.bj-body {
 /* ========== 00. LOGO ========== */
 .bj-logo {
   display: block;
-  height: 32px;
+  height: 30px;
   width: auto;
 }
 
@@ -55,7 +55,8 @@ body.bj-body {
   background: var(--color-accent);
   color: var(--color-text-on-accent);
 }
-.bj-btn--primary:hover {
+.bj-btn--primary:hover,
+.bj-btn--primary:active {
   background: var(--color-accent-hover);
 }
 
@@ -77,6 +78,16 @@ body.bj-body {
 }
 .bj-btn--text:hover {
   text-decoration: underline;
+}
+
+/* 작은 버튼 ButtonSmall — 높이 32 · 좌우 14 · 13 Medium · 폭 hug.
+   헤더·카드 안 보조 액션(다시하기·수정). 면·글자색은 variant가 정한다(기본은 --text). */
+.bj-btn--sm {
+  min-height: 32px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 500;
+  width: auto;
 }
 
 .bj-btn--block {
@@ -104,8 +115,11 @@ body.bj-body {
 .bj-icon-btn:hover {
   background: var(--color-control-surface);
 }
+.bj-icon-btn:active {
+  background: var(--color-track);
+}
 .bj-icon-btn--active {
-  color: var(--color-accent-text);
+  color: var(--color-accent);
 }
 
 /* ========== 02. QUESTION CARD (진단 문항) ========== */
@@ -116,37 +130,49 @@ body.bj-body {
   padding: 24px;
 }
 
-/* 선택지 옵션 (A/B/C/D) */
+/* 선택지 옵션 (A/B/C/D) — 항상 화이트 면.
+   크림 위에선 그대로, 흰 카드 안에선 컨트롤 면(크림) 1px 림으로만 구분한다(outline이라 레이아웃 밀림 없음).
+   선택은 주황500 1.5px outline + 글자 주황 Bold. */
 .bj-option {
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
   text-align: left;
-  background: var(--color-control-surface);
+  background: var(--color-surface);
   border: none;
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 0 16px;
   min-height: 48px;
   margin-bottom: 8px;
+  outline: 1px solid var(--color-control-surface);
+  outline-offset: -1px;
   font-family: var(--font-body); /* button은 폰트 비상속 — 명시 필수 */
   font-size: 14px;
   color: var(--color-text);
   cursor: pointer;
   transition:
-    border-color 0.12s,
+    outline-color 0.12s,
     background-color 0.12s;
 }
 .bj-option:hover {
   background: var(--color-accent-faint);
 }
 .bj-option--selected {
-  background: var(--color-accent-weak);
+  outline: 1.5px solid var(--color-accent);
+  outline-offset: -1.5px;
+  color: var(--color-accent-text);
   font-weight: 700;
+}
+/* 림이 outline이라 포커스 링을 다시 올려준다 */
+.bj-option:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 .bj-option__key {
   /* A/B/C/D 라벨 — Wildgak 허용 대상 */
   font-family: var(--font-display);
+  font-size: 14px;
   font-weight: 700;
   color: var(--color-text-muted);
 }
@@ -167,8 +193,8 @@ body.bj-body {
 }
 .bj-progress__track {
   flex: 1;
-  height: 8px;
-  background: var(--color-track);
+  height: 10px;
+  background: var(--color-chart-track);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -191,7 +217,8 @@ body.bj-body {
   font-family: var(--font-display);
   font-size: 12px;
   line-height: 1.4;
-  padding: 4px 12px;
+  min-height: 28px;
+  padding: 0 12px;
   border-radius: var(--radius-pill);
 }
 /* 색 위계(시안): 흔함=크림, 희귀=주황, 최희귀=잉크 */
@@ -242,9 +269,9 @@ body.bj-body {
 
 .bj-rarity--common {
   color: var(--color-text);
-} /* 흔함: 트랙색 채운 원 (무테) */
+} /* 흔함: 크림 원 (무테) — 흰 카드 안 크림, 크림 위 화이트 */
 .bj-rarity--common .bj-rarity__shape {
-  fill: var(--color-track);
+  fill: var(--color-control-surface);
 }
 .bj-rarity--rare {
   color: var(--color-text);
@@ -296,13 +323,14 @@ body.bj-body {
 }
 .bj-stat__name {
   width: 76px;
+  font-size: 13px;
   font-weight: 500;
   flex: none;
 }
 .bj-stat__track {
   flex: 1;
-  height: 8px;
-  background: var(--color-track);
+  height: 10px;
+  background: var(--color-chart-track);
   border-radius: var(--radius-pill);
   overflow: hidden;
 }
@@ -314,6 +342,7 @@ body.bj-body {
 .bj-stat__value {
   width: 32px;
   text-align: right;
+  font-size: 13px;
   font-weight: 700;
   color: var(--color-accent-text);
   flex: none;
@@ -326,11 +355,15 @@ body.bj-body {
 .bj-question,
 .bj-row,
 .bj-sheet,
+.bj-modal,
 .bj-typecard,
 .bj-post-card,
 .bj-event-card,
 .bj-blind-card,
-.bj-empty-card {
+.bj-empty-card,
+.bj-comment,
+.bj-review-item,
+.bj-people-rail__card {
   --color-control-surface: var(--color-bg);
 }
 
@@ -339,11 +372,12 @@ body.bj-body {
 .bj-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-family: var(--font-body); /* button은 폰트 비상속 — 명시 필수 */
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
-  padding: 8px 16px;
+  min-height: 32px;
+  padding: 0 12px;
   border-radius: var(--radius-pill);
   border: none;
   background: var(--color-control-surface);
@@ -357,12 +391,23 @@ body.bj-body {
   background: var(--color-accent-faint);
 }
 .bj-chip--active {
-  /* 선택된 태그: 주황 채움 + X 아이콘 */
+  /* 선택된 태그: 주황 채움 + X 아이콘 — 바탕과 무관 */
   background: var(--color-accent);
   color: var(--color-text-on-accent);
 }
 .bj-chip--active:hover {
   background: var(--color-accent-hover);
+}
+/* 잉크 칩 — 잉크900 채움 / 화이트. 바탕과 무관 */
+.bj-chip--ink {
+  background: var(--color-text);
+  color: var(--color-text-on-accent);
+}
+/* 작은 칩 — 카드 종류 라벨 (RecCard·ClubCard·BlindCard 상단). 높이 26 · 12 Medium */
+.bj-chip--sm {
+  min-height: 26px;
+  font-size: 12px;
+  gap: 4px;
 }
 .bj-chip__icon,
 .bj-chip__remove {
@@ -429,7 +474,7 @@ body.bj-body {
   background: var(--color-control-surface);
   border: none;
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 12px;
 }
 .bj-input:focus-within {
   outline: 2px solid var(--color-focus-ring);
@@ -467,7 +512,7 @@ body.bj-body {
   background: var(--color-control-surface);
   border: none;
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 12px;
   min-height: 96px;
   resize: vertical;
 }
@@ -480,7 +525,7 @@ body.bj-body {
 
 /* ========== CARD (공통 컨테이너) ========== */
 /* 06.PROFILE / 07.RECOMMENDATION 등이 공유하는 기본 카드
-   기본: 보더 없음 + 연한 베이지 / 강조(spotlight): 흰 배경 + 연한 그레이 보더 */
+   기본: 화이트 · 무테 · 라운드 16 · 패딩 16 */
 .bj-card {
   background: var(--color-surface);
   border: none;
@@ -488,23 +533,25 @@ body.bj-body {
   padding: 16px;
 }
 .bj-card--spotlight {
-  /* 강조 카드 = 주황050 틴트. 테두리 없이 면 색만으로 구분 */
-  background: var(--color-accent-faint);
-  border: none;
+  /* 강조 카드 — 면은 기본 카드와 같게(본문 대비 유지), 주황100 1px 테두리로만 강조. 화면당 1개 */
+  background: var(--color-surface);
+  border: 1px solid var(--color-accent-weak);
 }
 
 /* ========== CALLOUT (인용구/처방/안내 박스) ========== */
 .bj-callout {
-  padding: 12px 16px;
+  min-height: 48px;
+  padding: 14px 16px;
   border-radius: var(--radius-md);
-  background: var(--color-accent-faint);
+  /* 시안은 화이트 — 흰 카드 안에서도 보이도록 담긴 면과 한 단 다른 컨트롤 면을 쓴다 */
+  background: var(--color-control-surface);
   color: var(--color-text);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.5;
 }
 .bj-callout--muted {
-  /* 크림 고정 — 화이트 카드 안에서 "눌린 면"으로 읽힌다 */
-  background: var(--color-bg);
+  /* 눌린 면 + 캡션색 */
+  background: var(--color-track);
   color: var(--color-text-caption);
 }
 
@@ -513,19 +560,20 @@ body.bj-body {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-height: 46px;
   padding: 12px 16px;
   border-radius: var(--radius-md);
   background: var(--color-surface);
 }
 
 /* ========== SEGMENTED (다구간 누적 바) ========== */
-/* 구간 구분은 opacity로만 — 색은 --color-fill 하나 */
+/* 구간 구분은 opacity로만 — 색은 --color-fill 하나. 5번째부터는 트랙색 그대로 */
 .bj-segmented {
   display: flex;
   height: 16px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-pill);
   overflow: hidden;
-  background: var(--color-track);
+  background: var(--color-chart-track);
 }
 .bj-segmented__seg {
   height: 100%;
@@ -559,20 +607,78 @@ body.bj-body {
   max-width: var(--app-width);
   background: var(--color-surface);
   border: none;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  padding: 16px 16px 24px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: 12px 20px 24px;
   max-height: 72vh;
   overflow-y: auto;
 }
-/* 그래버 48×4 */
+/* 그래버 48×4 — 상단 12 */
 .bj-sheet::before {
   content: "";
   display: block;
   width: 48px;
   height: 4px;
-  margin: 0 auto 12px;
+  margin: 0 auto 16px;
   border-radius: var(--radius-pill);
   background: var(--color-track);
+}
+.bj-sheet__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+/* 액션 시트 항목 (수정·삭제·신고) — 행 48 · 14 Medium · 파괴 액션은 에러색 */
+.bj-sheet__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  text-align: left;
+  cursor: pointer;
+}
+.bj-sheet__item--danger {
+  color: var(--color-error);
+}
+
+/* ========== MODAL (확인 모달 — 가운데) ========== */
+.bj-modal__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--color-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.bj-modal {
+  width: min(295px, 100%);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  text-align: center;
+}
+.bj-modal__title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.bj-modal__desc {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.bj-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 20px;
 }
 
 /* ========== 13. BOTTOM NAVIGATION ========== */
@@ -583,7 +689,8 @@ body.bj-body {
   background: var(--color-surface);
   border: none;
   border-radius: var(--radius-pill);
-  padding: 8px 12px;
+  height: 64px;
+  padding: 0 12px;
   /* 스크롤되는 콘텐츠 위에 뜬다 — 흰 카드 위에 오면 면 색으로는 구분이 안 된다 */
   box-shadow: var(--elevation-floating);
 }
@@ -598,13 +705,18 @@ body.bj-body {
   font-family: var(--font-body); /* button/링크 폰트 비상속 — 명시 필수 */
   font-size: 11px;
   font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
   text-decoration: none;
   cursor: pointer;
 }
 .bj-navitem--active {
   color: var(--color-accent-text);
   font-weight: 700;
-  letter-spacing: 0.08em;
+}
+/* 글자는 대비용 주황700, 아이콘(면)은 주황500 */
+.bj-navitem--active svg {
+  color: var(--color-accent);
 }
 
 /* ========== TYPOGRAPHY HELPERS (11) ========== */
@@ -684,7 +796,7 @@ body.bj-body {
 .bj-topbar__actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0; /* 36 히트영역끼리 맞붙여야 24 아이콘 사이가 12 */
 }
 
 /* 알림 dot — .bj-icon-btn 내부에 배치 */
@@ -924,12 +1036,17 @@ body.bj-body {
 
 /* ========== LAYOUT UTILS ========== */
 
-/* 서브페이지 헤더 (뒤로가기 + 제목) */
+/* 서브페이지 헤더 (뒤로가기 + 제목) — 36 히트영역 뒤 간격 0 = 아이콘 24 + 6 */
 .bj-subpage-head {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 0;
   padding: 16px 0 12px;
+}
+.bj-subpage-head__title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
 }
 
 /* 세로 스택 */
@@ -1030,9 +1147,78 @@ body.bj-body {
   gap: 12px;
   padding: 16px 0 12px;
 }
-/* 헤더에 패딩만 있는 단순 변형 */
+/* 페이지 헤드 — 제목행 32 (Wildgak 24 + 우측 아이콘 24) · 간격 6 · 캡션 12 */
 .bj-page-head {
   padding: 16px 0 12px;
+}
+.bj-page-head__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32px;
+}
+.bj-page-head__title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.1;
+}
+.bj-page-head__caption,
+.bj-page-head .bj-caption {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-caption);
+}
+
+/* 세그 탭 SegTab — 크림 pill 40 · 내부 4 · 세그 32 pill 1:1 */
+.bj-segtab {
+  display: flex;
+  height: 40px;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  /* 담긴 면과 무관하게 크림 — 활성 세그가 화이트라 크림 위에서도 구분된다 */
+  background: var(--color-bg);
+}
+.bj-segtab__seg {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-caption);
+  cursor: pointer;
+  transition:
+    background-color 0.12s,
+    color 0.12s;
+}
+.bj-segtab__seg--active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+/* 토큰 배지 TokenBadge — pill 30 · 주황100 · 좌 6 우 12 · 코인 20 + 간격 6 + 개수 14 Bold */
+.bj-token-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 0 12px 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-weak);
+  color: var(--color-accent-text);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.bj-token-badge svg {
+  color: var(--color-accent);
 }
 
 /* ========== REVIEW META ========== */
@@ -1119,7 +1305,7 @@ body.bj-body {
 .bj-star-btn {
   background: none;
   border: none;
-  padding: 2px;
+  padding: 0;
   cursor: pointer;
   line-height: 0;
 }
@@ -1852,10 +2038,10 @@ body.bj-body {
   color: var(--color-accent-text);
 }
 
-/* 빈 상태 카드 (center + 패딩) */
+/* 빈 상태 카드 (center + 패딩 20) */
 .bj-empty-card {
   text-align: center;
-  padding: 32px 20px;
+  padding: 20px;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
 }
@@ -2153,14 +2339,12 @@ body.bj-body {
   flex-shrink: 0;
 }
 
-/* BookRow / ExternalBookRow — 제목 굵기·크기 */
-/* 책 제목은 줄바꿈한다 — 알라딘 제목은 부제까지 붙어 길어서 한 줄로 자르면 안 읽힌다.
-   keep-all로 한국어 단어를 쪼개지 않고, 끊을 수 없는 긴 토큰만 break-word로 넘긴다. */
+/* BookRow / ExternalBookRow — 제목 굵기·크기
+   (책 제목은 한 줄로 자르지 않고 줄바꿈한다 — 알라딘 제목은 부제까지 붙어 길다.
+    어절 단위 줄바꿈은 reset.css의 body 전역 규칙이 담당) */
 .bj-book-title-sm {
   font-weight: 800;
   font-size: 15px;
-  word-break: keep-all;
-  overflow-wrap: break-word;
 }
 
 /* BookRow / ExternalBookRow — 저자/출판사 caption (hint 색) */
@@ -2429,12 +2613,6 @@ body.bj-body {
 .bj-btn--action-md {
   padding: 16px 0;
   font-size: 15px;
-}
-
-/* 버튼 — 소형 8px 14px */
-.bj-btn--sm {
-  padding: 8px 14px;
-  font-size: 12px;
 }
 
 /* ResultCompare — 가운데 VS/% 블록 */
@@ -2787,7 +2965,7 @@ body.bj-body {
 }
 
 .bj-login-tagline {
-  color: var(--color-text-soft);
+  color: var(--color-text-muted);
   text-align: center;
 }
 
@@ -2812,25 +2990,27 @@ body.bj-body {
   display: flex;
   flex-direction: column;
   gap: var(--space-sm);
-  align-items: stretch;
+  align-items: center;
   width: 100%;
   max-width: var(--app-width);
   padding: 0 var(--space-lg);
   pointer-events: none;
 }
 .bj-toast {
-  background: var(--color-text);
-  color: var(--color-surface);
-  padding: var(--space-md) var(--space-lg);
+  /* 주황500 10% 면 ≈ 주황050 */
+  background: var(--color-accent-faint);
+  color: var(--color-accent-text);
+  min-height: 46px;
+  padding: var(--space-md) 46px;
   border-radius: var(--radius-md);
-  font-size: var(--fs-body);
+  font-size: 13px;
   font-family: var(--font-body);
   font-weight: var(--fw-medium);
   text-align: center;
   pointer-events: auto;
   cursor: pointer;
   border: none;
-  width: 100%;
+  max-width: 100%;
 }
 .bj-toast--error {
   background: var(--color-error);
@@ -2949,12 +3129,14 @@ body.bj-body {
 
 
 .bj-post-card__author {
-  font-size: var(--fs-sm);
+  font-size: 12px;
+  font-weight: 700;
   flex: 1;
 }
 
 .bj-post-card__time {
-  color: var(--color-text-muted);
+  font-size: 12px;
+  color: var(--color-text-caption);
   flex-shrink: 0;
 }
 
@@ -3054,19 +3236,28 @@ body.bj-body {
   border: none;
   padding: 0;
   cursor: pointer;
-  color: var(--color-text-muted);
-  font-size: var(--fs-xs);
+  color: var(--color-text-caption);
+  font-size: 12px;
+}
+/* 보조 정보 아이콘은 숫자보다 한 단 더 눌러서(소프트) 같은 톤으로 */
+.bj-post-card__like-btn svg,
+.bj-post-card__comment-count svg {
+  color: var(--color-icon-soft);
 }
 
 .bj-post-card__like-btn--active {
   color: var(--color-accent-text);
+}
+.bj-post-card__like-btn--active svg {
+  color: var(--color-accent);
 }
 
 .bj-post-card__comment-count {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: var(--color-text-muted);
+  color: var(--color-text-caption);
+  font-size: 12px;
   text-decoration: none;
 }
 
@@ -3203,11 +3394,11 @@ body.bj-body {
 }
 
 .bj-event-card__badge {
-  font-size: var(--fs-xs);
+  font-size: 12px;
 }
 
 .bj-event-card__loc {
-  font-size: var(--fs-xs);
+  font-size: 12px;
 }
 
 .bj-chip--online {
@@ -3221,7 +3412,7 @@ body.bj-body {
 }
 
 .bj-event-card__title {
-  font-size: var(--fs-sm);
+  font-size: 14px;
   line-height: 1.3;
 }
 
@@ -3455,7 +3646,6 @@ body.bj-body {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  word-break: keep-all;
 }
 /* 평가 탭 상단 검색창 */
 .bj-rate-search {
@@ -3482,7 +3672,7 @@ body.bj-body {
   padding: 6px 16px;
   display: flex;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 0; /* 36 히트영역끼리 맞붙여야 24 아이콘 사이가 12 */
 }
 .bj-topactions__dot {
   position: absolute;
@@ -3607,19 +3797,20 @@ body.bj-body {
    화살표는 OS 기본을 쓰지 않고 그려 넣어야 면 위에서 보이므로 배경 이미지로 둔다. */
 .bj-select {
   appearance: none;
-  min-height: 32px;
-  padding: 6px 28px 6px 12px;
+  min-height: 28px;
+  padding: 0 30px 0 14px;
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-sm);
   background-color: var(--color-control-surface);
+  /* caret-down 12 면 — 두 대각 그라데이션으로 삼각형 */
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: right 13px center, right 9px center;
-  background-size: 4px 4px, 4px 4px;
+  background-position: right 17px center, right 12px center;
+  background-size: 5px 5px, 5px 5px;
   background-repeat: no-repeat;
   font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 400;
   color: var(--color-text);
   cursor: pointer;
 }

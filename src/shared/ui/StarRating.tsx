@@ -4,33 +4,16 @@
 // 현재 값과 같은 지점을 다시 누르면 취소(0점)된다.
 
 import { useState } from 'react'
+import { Star } from './Stars'
 
 interface StarRatingProps {
   value: number
   onChange: (value: number) => void
+  /** 시안 24 · 간격 6 */
   size?: number
 }
 
-const STAR_POINTS = '12 2 15.09 8.63 22 9.27 16.5 13.97 18.18 21 12 17.27 5.82 21 7.5 13.97 2 9.27 8.91 8.63 12 2'
-
-function Star({ frac, size }: { frac: number; size: number }) {
-  return (
-    <span className="bj-star" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-caption)" strokeWidth="1.5" strokeLinejoin="round">
-        <polygon points={STAR_POINTS} />
-      </svg>
-      {frac > 0 && (
-        <span className="bj-star__fill" style={{ clipPath: `inset(0 ${(1 - frac) * 100}% 0 0)` }}>
-          <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-accent)" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinejoin="round">
-            <polygon points={STAR_POINTS} />
-          </svg>
-        </span>
-      )}
-    </span>
-  )
-}
-
-export default function StarRating({ value, onChange, size = 26 }: StarRatingProps) {
+export default function StarRating({ value, onChange, size = 24 }: StarRatingProps) {
   const [hover, setHover] = useState(0)
   const display = hover || value
 

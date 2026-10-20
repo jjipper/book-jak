@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Icon from './Icon'
 
 interface IllustPlaceholderProps {
   code: string
@@ -66,19 +67,7 @@ export default function IllustPlaceholder({
       ) : (
         // 일러스트가 없을 때 — 흰 면 + 연한 회색 책 아이콘만. 자리만 지키고 눈에 띄지 않게.
         <div role="img" aria-label={alt} className="bj-illust-wrap__empty">
-          <svg
-            className="bj-illust-wrap__empty-icon"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-          </svg>
+          <Icon name="book" className="bj-illust-wrap__empty-icon" />
         </div>
       )}
     </div>

@@ -1,33 +1,38 @@
 // 읽기 전용 별점 표시 — 0.5 단위 반점 렌더링, 입력용은 StarRating 사용
 
+import { STAR_PATH } from './Icon'
+
 interface StarsProps {
   value: number // 0~5, 소수 허용 (0.5 단위로 반올림해서 표시)
+  /** 행 안(RateRow·BookRow)은 16. 입력용 StarRating은 24 */
   size?: number
 }
 
-const STAR_POINTS = '12 2 15.09 8.63 22 9.27 16.5 13.97 18.18 21 12 17.27 5.82 21 7.5 13.97 2 9.27 8.91 8.63 12 2'
+/* 일러스트 별 한 개 — 빈칸 눌림(트랙) / 채움 주황500. frac 만큼 왼쪽부터 채운다 */
+export function Star({ frac, size }: { frac: number; size: number }) {
+  return (
+    <span className="bj-star" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-track)" aria-hidden="true">
+        <path d={STAR_PATH} />
+      </svg>
+      {frac > 0 && (
+        <span className="bj-star__fill" style={{ clipPath: `inset(0 ${(1 - frac) * 100}% 0 0)` }}>
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-accent)" aria-hidden="true">
+            <path d={STAR_PATH} />
+          </svg>
+        </span>
+      )}
+    </span>
+  )
+}
 
-export default function Stars({ value, size = 14 }: StarsProps) {
+export default function Stars({ value, size = 16 }: StarsProps) {
   const rounded = Math.round(value * 2) / 2
   return (
     <span className="bj-stars" aria-label={`별점 ${value}점`}>
-      {[1, 2, 3, 4, 5].map((n) => {
-        const frac = Math.max(0, Math.min(1, rounded - (n - 1)))
-        return (
-          <span key={n} className="bj-star" style={{ width: size, height: size }}>
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="var(--color-text-caption)" strokeWidth="1.5" strokeLinejoin="round">
-              <polygon points={STAR_POINTS} />
-            </svg>
-            {frac > 0 && (
-              <span className="bj-star__fill" style={{ clipPath: `inset(0 ${(1 - frac) * 100}% 0 0)` }}>
-                <svg width={size} height={size} viewBox="0 0 24 24" fill="var(--color-accent)" stroke="var(--color-accent)" strokeWidth="1.5" strokeLinejoin="round">
-                  <polygon points={STAR_POINTS} />
-                </svg>
-              </span>
-            )}
-          </span>
-        )
-      })}
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star key={n} frac={Math.max(0, Math.min(1, rounded - (n - 1)))} size={size} />
+      ))}
     </span>
   )
 }
