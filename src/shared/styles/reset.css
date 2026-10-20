@@ -23,6 +23,11 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* 한국어는 어절 단위로 줄바꿈한다. 기본값(normal)은 글자 단위로 끊어서
+     "머릿속/을" 처럼 단어가 쪼개진다. 끊을 데가 없는 긴 토큰(URL 등)만
+     break-word로 넘긴다. 둘 다 상속되므로 전역에서 한 번만 선언한다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* 이미지·미디어 */

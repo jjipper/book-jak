@@ -123,7 +123,6 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
-  word-break: keep-all;
 }
 /* 한마디 — 위로 꼬리 달린 말풍선 */
 .bj-match__line {
@@ -136,7 +135,6 @@
   font-size: 12px;
   line-height: 1.5;
   color: var(--color-text-muted);
-  word-break: keep-all;
 }
 .bj-match__line::before {
   content: '';
@@ -281,11 +279,9 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 1.35;
-  word-break: keep-all;
 }
 .bj-book-pick__note {
   font-size: 12px;
   line-height: 1.45;
   color: var(--color-text-muted);
-  word-break: keep-all;
 }
