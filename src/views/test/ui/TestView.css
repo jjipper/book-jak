@@ -1,48 +1,43 @@
 /* 테스트 문항 화면 전용 (TestView) */
 
-/* 헤더 가운데 BOOKBTI 타이틀 */
-.bj-test-head__title {
-  flex: 1;
-  text-align: center;
-  font-family: var(--font-display);
-  font-size: 18px;
-  letter-spacing: 0.06em;
-}
-
-/* 진행 점 12개 — 숫자는 우측에 보조로 */
-.bj-test-dots {
-  display: flex;
-  align-items: center;
-  gap: 5px;
+/* 진행률 헤더 ProgressHeader — "1 / 12" 12 잉크400 좌 · "8%" 12 Bold 주황500 우 · 트랙 6 pill.
+   크림 페이지 위라 트랙은 눌림(--color-track). 채움은 공용 .bj-progress__fill */
+.bj-test-progress {
   margin-bottom: 16px;
 }
-.bj-test-dot {
-  flex: 1;
+.bj-test-progress__meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: var(--color-text-caption);
+}
+.bj-test-progress__pct {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+.bj-test-progress__track {
   height: 6px;
   border-radius: var(--radius-pill);
   background: var(--color-track);
-  transition: background 0.2s ease;
-}
-.bj-test-dot--done {
-  background: var(--color-accent);
-}
-.bj-test-dot--current {
-  background: var(--color-accent);
-  box-shadow: 0 0 0 3px var(--color-accent-weak);
-}
-.bj-test-dots__count {
-  flex: none;
-  margin-left: 6px;
+  overflow: hidden;
 }
 
-/* 문항 카드 — 더 크게 + 축 아이콘 */
+/* 축 칩 4개 — 칩 규격은 공용 .bj-chip, 여기선 배치만 */
+.bj-axis-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+/* 문항 카드 — 세로 중앙 + 축 아이콘 (카드 패딩·라운드는 공용 .bj-card) */
 .bj-question-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 4px;
-  padding-block: var(--space-xl);
   min-height: 210px;
   justify-content: center;
 }

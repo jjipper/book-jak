@@ -50,11 +50,11 @@ export default function LoginView() {
           <button
             type="button"
             onClick={handleKakaoLogin}
-            className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
+            className="bj-btn bj-btn--primary bj-btn--block"
           >
             카카오로 3초 만에 시작하기
           </button>
-          <Link href="/home" className="bj-btn bj-btn--ghost bj-btn--block">
+          <Link href="/home" className="bj-btn bj-btn--text bj-btn--block">
             로그인 없이 둘러보기
           </Link>
         </div>

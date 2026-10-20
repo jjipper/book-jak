@@ -1,0 +1,11 @@
+/* 홈 피드 필터 (HomeView 전용) */
+
+/* 전체/팔로잉 세그 탭 — 새 글 점을 pill 안쪽 우상단에 띄우기 위한 기준점 */
+.bj-feed-tabs {
+  position: relative;
+  margin-bottom: 12px;
+}
+.bj-feed-tabs .bj-feed-filter__dot {
+  top: 6px;
+  right: 6px;
+}

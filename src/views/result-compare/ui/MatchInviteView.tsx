@@ -44,7 +44,7 @@ export default function MatchInviteView({ typeCode }: { typeCode: TypeCode }) {
             <TypeCard typeCode={typeCode} />
           </div>
 
-          <Link href={`/test?from=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--block bj-btn--action-lg">
+          <Link href={`/test?from=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--block">
             나도 테스트하고 궁합 보기
           </Link>
         </div>

@@ -11,6 +11,7 @@ import { READING_TYPES, AXIS_KEYWORDS, type StatKey, type TypeCode } from '@/ent
 import TypeCard from '@/entities/reading-type/ui/TypeCard'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Icon, { type IconName } from '@/shared/ui/Icon'
+import SubpageHead from '@/shared/ui/SubpageHead'
 import { useMounted } from '@/shared/lib/useMounted'
 import './ResultDetailView.css'
 import { track } from '@/shared/lib/analytics'
@@ -166,14 +167,15 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
     <main className="bj-shell">
       <div className="bj-frame">
       {/* 헤더 */}
-      <header className="bj-subpage-head--between">
-        <Link href="/home" className="bj-display bj-display--lg">
-          북작
-        </Link>
-        <Link href="/test" className="bj-btn bj-btn--sm">
-          다시 하기
-        </Link>
-      </header>
+      <SubpageHead
+        title="BOOKBTI 결과"
+        backHref="/home"
+        action={
+          <Link href="/test" className="bj-btn bj-btn--text bj-btn--sm">
+            다시 하기
+          </Link>
+        }
+      />
 
       <div className="bj-content--center-20">
 
@@ -183,7 +185,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
             <p className="bj-body bj-text-muted bj-mb-12">
               친구가 공유한 카드예요.<br />나의 유형은 뭘까요? 테스트하고 궁합도 확인해보세요
             </p>
-            <Link href={`/test?from=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--cta">
+            <Link href={`/test?from=${typeCode}`} className="bj-btn bj-btn--primary bj-btn--block">
               테스트 시작
             </Link>
           </div>
@@ -210,7 +212,7 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
             <p className="bj-body bj-text-muted bj-mb-12">
               링크를 보낸 친구의 유형은<br />{READING_TYPES[fromType].emoji} {READING_TYPES[fromType].name}
             </p>
-            <Link href={`/result/compare?type=${fromType}`} className="bj-btn bj-btn--primary bj-btn--cta">
+            <Link href={`/result/compare?type=${fromType}`} className="bj-btn bj-btn--primary bj-btn--block">
               친구와 궁합 보기
             </Link>
           </div>
@@ -305,11 +307,11 @@ export default function ResultDetailView({ params }: ResultDetailViewProps) {
           <div className="bj-col-10 bj-w-full">
             <button
               onClick={handleSaveImage} disabled={saving}
-              className="bj-btn bj-btn--primary bj-btn--block bj-btn--action-lg"
+              className="bj-btn bj-btn--primary bj-btn--block"
             >
               {saving ? '저장 중...' : '내 결과 저장하기'}
             </button>
-            <button onClick={() => void handleShare()} className="bj-btn bj-btn--secondary bj-btn--block bj-btn--action-lg">
+            <button onClick={() => void handleShare()} className="bj-btn bj-btn--secondary bj-btn--block">
               친구와 궁합 보기
             </button>
           </div>

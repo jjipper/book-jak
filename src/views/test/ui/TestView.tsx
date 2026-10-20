@@ -79,7 +79,7 @@ export default function TestView() {
           <IllustPlaceholder code="intro_test" alt="BOOKBTI 테스트" aspectRatio="4 / 3" fit="contain" background="transparent" priority />
 
           <div className="bj-col-10">
-            <button onClick={() => { resetTest(); setStarted(true); track('quiz_started', { from_friend: new URLSearchParams(window.location.search).has('from') }) }} className="bj-btn bj-btn--primary bj-btn--block bj-btn--cta-xl">
+            <button onClick={() => { resetTest(); setStarted(true); track('quiz_started', { from_friend: new URLSearchParams(window.location.search).has('from') }) }} className="bj-btn bj-btn--primary bj-btn--block">
               테스트 시작
             </button>
             <p className="bj-caption bj-text-center">
@@ -129,29 +129,29 @@ export default function TestView() {
           <Icon name="chevron-left" size={24} />
         </button>
 
-        <span className="bj-test-head__title">BOOKBTI</span>
+        <h1 className="bj-subpage-head__title bj-flex-1">BOOKBTI</h1>
 
         <button onClick={() => setQuitOpen(true)} className="bj-icon-btn" aria-label="그만두기">
           <Icon name="x" size={24} />
         </button>
       </header>
 
-      {/* 진행 상황 — 문항 수만큼 점, 숫자는 보조 */}
+      {/* 진행률 헤더 — "n / 12" 좌 · "pct%" 우 · 트랙 6 */}
       <div
-        className="bj-test-dots"
+        className="bj-test-progress"
         role="progressbar"
         aria-valuemin={1}
         aria-valuemax={QUESTIONS.length}
         aria-valuenow={currentStep + 1}
         aria-label={`${QUESTIONS.length}문항 중 ${currentStep + 1}번째`}
       >
-        {QUESTIONS.map((q, i) => (
-          <span
-            key={q.id}
-            className={`bj-test-dot${i < currentStep ? ' bj-test-dot--done' : i === currentStep ? ' bj-test-dot--current' : ''}`}
-          />
-        ))}
-        <span className="bj-caption bj-test-dots__count">{currentStep + 1}/{QUESTIONS.length}</span>
+        <div className="bj-test-progress__meta">
+          <span>{currentStep + 1} / {QUESTIONS.length}</span>
+          <span className="bj-test-progress__pct">{Math.round(((currentStep + 1) / QUESTIONS.length) * 100)}%</span>
+        </div>
+        <div className="bj-test-progress__track">
+          <div className="bj-progress__fill" style={{ width: `${((currentStep + 1) / QUESTIONS.length) * 100}%` }} />
+        </div>
       </div>
 
       {/* 축 인디케이터 */}
@@ -161,7 +161,12 @@ export default function TestView() {
           const isCurrent = i === Math.floor(currentStep / 3)
           return (
             <span key={axis} className={`bj-chip${isDone ? ' bj-chip--done' : isCurrent ? ' bj-chip--active' : ''}`}>
-              {AXIS_LABELS[axis]}{isDone ? ' ✓' : ''}
+              {isDone && (
+                <span className="bj-chip__icon" aria-hidden="true">
+                  <Icon name="check" size={14} />
+                </span>
+              )}
+              {AXIS_LABELS[axis]}
             </span>
           )
         })}

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import BackLink from '@/shared/ui/BackLink'
+import SubpageHead from '@/shared/ui/SubpageHead'
+import SegTab from '@/shared/ui/SegTab'
 import { getFollowingIds } from '@/features/follow/model/follows'
 import { loadFollowingActivity, loadNotifications, markAllRead } from '@/entities/notification/api/notificationsRemote'
 import {
@@ -38,29 +39,16 @@ export default function NotificationsView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/home" />
-          <span className="bj-h2">알림</span>
-        </header>
+        <SubpageHead title="알림" backHref="/home" />
 
         <div className="bj-content">
-          <div className="bj-rail bj-mb-12">
-            <button
-              type="button"
-              onClick={() => setTab('mine')}
-              aria-pressed={tab === 'mine'}
-              className={`bj-chip${tab === 'mine' ? ' bj-chip--active' : ''}`}
-            >
-              내 소식
-            </button>
-            <button
-              type="button"
-              onClick={() => setTab('following')}
-              aria-pressed={tab === 'following'}
-              className={`bj-chip${tab === 'following' ? ' bj-chip--active' : ''}`}
-            >
-              팔로잉 활동
-            </button>
+          <div className="bj-mb-12">
+            <SegTab
+              items={[{ value: 'mine', label: '내 소식' }, { value: 'following', label: '팔로잉 활동' }]}
+              value={tab}
+              onChange={setTab}
+              label="알림 종류"
+            />
           </div>
 
           {tab === 'following' ? (

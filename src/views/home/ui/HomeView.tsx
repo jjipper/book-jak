@@ -10,7 +10,9 @@ import HomeHero from './HomeHero'
 import PostCard from './PostCard'
 import { useMounted } from '@/shared/lib/useMounted'
 import Icon from '@/shared/ui/Icon'
+import SegTab from '@/shared/ui/SegTab'
 import Link from 'next/link'
+import './HomeView.css'
 import { getFollowingIds } from '@/features/follow/model/follows'
 import { getMyId } from '@/entities/user/model/profile'
 import PeopleRail from '@/widgets/people-rail/PeopleRail'
@@ -178,28 +180,20 @@ export default function HomeView() {
               + 만들기
             </Link>
           </div>
+          {/* 전체/팔로잉 — 세그 탭. 새 팔로잉 글 점은 우측(팔로잉) 세그 모서리에 */}
+          {followingIds.length > 0 && (
+            <div className="bj-feed-tabs">
+              <SegTab
+                items={[{ value: 'all', label: '전체' }, { value: 'following', label: '팔로잉' }]}
+                value={scope}
+                onChange={(v) => (v === 'following' ? openFollowing() : setScope('all'))}
+                label="글 범위"
+              />
+              {hasNewFollowing && <span className="bj-feed-filter__dot" aria-label="새 글" />}
+            </div>
+          )}
           <div className="bj-row-between bj-feed-filter">
-            {followingIds.length > 0 ? (
-              <div className="bj-feed-filter__group">
-                <button
-                  type="button"
-                  className={`bj-chip${scope === 'all' ? ' bj-chip--active' : ''}`}
-                  aria-pressed={scope === 'all'}
-                  onClick={() => setScope('all')}
-                >
-                  전체
-                </button>
-                <button
-                  type="button"
-                  className={`bj-chip${scope === 'following' ? ' bj-chip--active' : ''}`}
-                  aria-pressed={scope === 'following'}
-                  onClick={openFollowing}
-                >
-                  팔로잉
-                  {hasNewFollowing && <span className="bj-feed-filter__dot" aria-label="새 글" />}
-                </button>
-              </div>
-            ) : <span />}
+            <span />
             <div className="bj-feed-filter__group">
               {(['latest', 'popular'] as const).map((s) => (
                 <button

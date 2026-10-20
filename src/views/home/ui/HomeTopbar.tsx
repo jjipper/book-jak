@@ -31,12 +31,7 @@ export default function HomeTopbar() {
         </Link>
         <Link href="/notifications" className="bj-icon-btn" aria-label={unread ? `알림 ${unread}개 안읽음` : '알림'}>
           <Icon name="bell" size={24} />
-          {unread > 0 && (
-            <span
-              aria-hidden="true"
-              style={{ position: 'absolute', top: 6, right: 6, width: 8, height: 8, borderRadius: '50%', background: 'var(--color-accent)' }}
-            />
-          )}
+          {unread > 0 && <span className="bj-topactions__dot" aria-hidden="true" />}
         </Link>
       </div>
     </header>

@@ -9,7 +9,8 @@ import { useTestStore } from '@/features/quiz-test/model/testStore'
 import { loadResult } from '@/entities/reading-type/model/scoring'
 import { calcAffinity, affinityLabel } from '@/entities/reading-type/model/affinity'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
-import BackLink from '@/shared/ui/BackLink'
+import Icon from '@/shared/ui/Icon'
+import SubpageHead from '@/shared/ui/SubpageHead'
 
 export default function ResultCompareView() {
   return (
@@ -52,15 +53,10 @@ function CompareContent() {
     <main className="bj-shell">
       <div className="bj-frame">
       {/* 헤더 */}
-      <header className="bj-subpage-head">
-        <BackLink href={myTypeCode ? `/result/${myTypeCode}` : '/home'} />
-        <div>
-          <p className="bj-h2">친구 궁합 비교</p>
-          <p className="bj-caption bj-mt-2">독서 취향이 얼마나 맞을까?</p>
-        </div>
-      </header>
+      <SubpageHead title="친구 궁합 비교" backHref={myTypeCode ? `/result/${myTypeCode}` : '/home'} />
 
       <div className="bj-content--lg">
+        <p className="bj-caption bj-text-muted">독서 취향이 얼마나 맞을까?</p>
 
         {/* 나 vs 친구 */}
         <div className="bj-row-center">
@@ -145,7 +141,7 @@ function CompareContent() {
                 toast.error('링크 복사에 실패했어요')
               }
             }}
-            className="bj-btn bj-btn--ghost"
+            className="bj-btn bj-btn--text bj-btn--block"
           >
             {myTypeCode ? '내 결과 링크 복사하기' : '테스트 링크 복사하기'}
           </button>
@@ -158,11 +154,8 @@ function CompareContent() {
           <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="bj-row-between bj-mb-16">
               <p className="bj-h2">친구 유형 선택</p>
-              <button onClick={() => setShowPicker(false)} className="bj-icon-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+              <button onClick={() => setShowPicker(false)} className="bj-icon-btn" aria-label="닫기">
+                <Icon name="x" size={24} />
               </button>
             </div>
             <div className="bj-grid-2-sheet">
