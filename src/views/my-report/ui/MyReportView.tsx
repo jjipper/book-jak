@@ -21,12 +21,8 @@ import { loadMyComments } from '@/entities/post/api/commentsRemote'
 import { loadClubs, getJoinedIds } from '@/entities/club/model/clubActions'
 import { getMyId } from '@/entities/user/model/profile'
 import { fetchProfile } from '@/entities/user/api/profileRemote'
-import BackLink from '@/shared/ui/BackLink'
-import Icon from '@/shared/ui/Icon'
-import Input from '@/shared/ui/Input'
+import { Icon, Input, RarityBadge, Segmented, SubpageHead, TypeBadge } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
-import TypeBadge from '@/shared/ui/TypeBadge'
-import RarityBadge from '@/shared/ui/RarityBadge'
 import BadgeMedal from './BadgeMedal'
 import { toast } from '@/shared/lib/toast'
 import './MyReportView.css'
@@ -35,17 +31,23 @@ import './MyReportView.css'
    차트 조각들 — SVG 직접. 카드마다 형태를 달리해 스크롤을 지루하지 않게.
    ────────────────────────────────────────────────────────────── */
 
-/** 장르 조각별 주황 농도 — 강조색은 하나라는 규칙을 지키면서 구분은 만든다 */
-function genreTint(i: number, total: number): string {
-  const mix = total <= 1 ? 100 : Math.round(100 - (i / (total - 1)) * 62)
-  return `color-mix(in srgb, var(--color-accent) ${mix}%, var(--color-track))`
+/** 장르 조각별 주황 농도 — 강조색은 하나라는 규칙을 지키면서 구분은 만든다.
+    흰 면에 섞어 시안 4단계(#F0562E → #F58B6B → #F9B9A4 → #FBDFD5)가 나오는 비율, 5번째부터는 차트 트랙 */
+const DONUT_DENSITY = [100, 67, 40, 27]
+function genreTint(i: number): string {
+  const mix = DONUT_DENSITY[i]
+  return mix === undefined
+    ? 'var(--color-chart-track)'
+    : `color-mix(in srgb, var(--color-accent) ${mix}%, var(--color-surface))`
 }
 
-const DONUT_R = 54
+/* 도넛 160 · 링 22 → 반지름 69 · 조각 사이 2° */
+const DONUT_R = 69
 const DONUT_C = 2 * Math.PI * DONUT_R
+const DONUT_GAP = DONUT_C * (2 / 360)
 
 function GenreDonut({ slices }: { slices: GenreSlice[] }) {
-  // 조각 시작 지점은 앞 조각들의 길이 합
+  // 조각 시작 지점은 앞 조각들의 길이 합. 간격은 조각 양끝에서 반씩 뺀다
   const arcs = slices.reduce<{ name: string; len: number; offset: number }[]>((acc, s) => {
     const prev = acc[acc.length - 1]
     const offset = prev ? prev.offset + prev.len : 0
@@ -54,59 +56,53 @@ function GenreDonut({ slices }: { slices: GenreSlice[] }) {
   }, [])
 
   return (
-    <svg viewBox="0 0 140 140" className="bj-donut" role="img"
+    <svg viewBox="0 0 160 160" className="bj-donut" role="img"
       aria-label={slices.map((s) => `${s.name} ${s.pct}%`).join(', ')}>
-      <circle cx="70" cy="70" r={DONUT_R} className="bj-donut__track" />
-      {arcs.map((a, i) => (
-        <circle
-          key={a.name}
-          cx="70" cy="70" r={DONUT_R}
-          className="bj-donut__arc"
-          style={{ stroke: genreTint(i, arcs.length) }}
-          strokeDasharray={`${a.len} ${DONUT_C - a.len}`}
-          strokeDashoffset={-a.offset}
-        />
-      ))}
-      <text x="70" y="64" className="bj-donut__center-num">{slices[0]?.pct ?? 0}%</text>
-      <text x="70" y="82" className="bj-donut__center-label">{slices[0]?.name ?? ''}</text>
+      {arcs.map((a, i) => {
+        const len = Math.max(0, a.len - DONUT_GAP)
+        return (
+          <circle
+            key={a.name}
+            cx="80" cy="80" r={DONUT_R}
+            className="bj-donut__arc"
+            style={{ stroke: genreTint(i) }}
+            strokeDasharray={`${len} ${DONUT_C - len}`}
+            strokeDashoffset={-(a.offset + DONUT_GAP / 2)}
+          />
+        )
+      })}
+      <text x="80" y="72" className="bj-donut__center-label">{slices[0]?.name ?? ''}</text>
+      <text x="80" y="98" className="bj-donut__center-num">{slices[0]?.pct ?? 0}%</text>
     </svg>
   )
 }
 
-function StarColumns({ distribution }: { distribution: readonly number[] }) {
-  const max = Math.max(1, ...distribution)
+/** 별점 분포 — 세그먼티드 pill. ★5부터 진한 주황 순 */
+function StarSegments({ distribution }: { distribution: readonly number[] }) {
+  const desc = [...distribution].reverse()
   return (
-    <div className="bj-starcols" role="img"
-      aria-label={distribution.map((n, i) => `${i + 1}점 ${n}권`).join(', ')}>
-      {distribution.map((n, i) => (
-        <div key={i} className="bj-starcols__col">
-          <span className="bj-starcols__num">{n}</span>
-          <div className="bj-starcols__track">
-            <div className="bj-starcols__fill" style={{ height: `${(n / max) * 100}%` }} />
-          </div>
-          <span className="bj-starcols__label">★{i + 1}</span>
-        </div>
-      ))}
+    <div className="bj-col-6">
+      <Segmented segments={desc} label={desc.map((n, i) => `${5 - i}점 ${n}권`).join(', ')} />
+      <ul className="bj-report-seg-labels">
+        {desc.map((n, i) => <li key={i}>★{5 - i} {n}</li>)}
+      </ul>
     </div>
   )
 }
 
-/** 반원 게이지 — 담기 비율 */
-function DiscoveryGauge({ pct }: { pct: number }) {
-  const r = 58
-  const len = Math.PI * r
+/** 가로 게이지 — 라벨 14 + 우측 칩 · 바 10 · 값 20 Bold */
+function DiscoveryGauge({ pct, chip }: { pct: number; chip: string }) {
   return (
-    <svg viewBox="0 0 140 82" className="bj-gauge" role="img" aria-label={`담기 비율 ${pct}%`}>
-      <path d={`M 12 70 A ${r} ${r} 0 0 1 128 70`} className="bj-gauge__track" />
-      <path
-        d={`M 12 70 A ${r} ${r} 0 0 1 128 70`}
-        className="bj-gauge__fill"
-        strokeDasharray={`${(pct / 100) * len} ${len}`}
-      />
-      <text x="70" y="62" className="bj-gauge__num">{pct}%</text>
-      <text x="14" y="80" className="bj-gauge__end">신중</text>
-      <text x="126" y="80" textAnchor="end" className="bj-gauge__end">모험</text>
-    </svg>
+    <div className="bj-gauge" role="img" aria-label={`담기 비율 ${pct}%`}>
+      <div className="bj-gauge__head">
+        <span>담기 비율</span>
+        <span className="bj-gauge__chip">{chip}</span>
+      </div>
+      <div className="bj-gauge__track">
+        <div className="bj-gauge__fill" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="bj-gauge__num">{pct}%</p>
+    </div>
   )
 }
 
@@ -276,16 +272,13 @@ export default function MyReportView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/my" />
-          <span className="bj-h2">취향 리포트</span>
-        </header>
+        <SubpageHead title="취향 리포트" backHref="/my" />
 
         <div className="bj-content--lg">
 
           {/* 1. BOOKBTI — 유형 + 알파벳 코드 + 4축 스펙트럼 */}
           {myType && result ? (
-            <section className="bj-card bj-report-hero">
+            <section className="bj-card bj-card--spotlight bj-report-hero">
               <div className="bj-report-hero__top">
                 <div className="bj-report-hero__thumb">
                   <IllustPlaceholder code={myType.code} alt={myType.name} aspectRatio="1 / 1" />
@@ -322,7 +315,7 @@ export default function MyReportView() {
                   <ul className="bj-donut-legend">
                     {slices.map((s, i) => (
                       <li key={s.name} className="bj-donut-legend__item">
-                        <span className="bj-donut-legend__dot" style={{ background: genreTint(i, slices.length) }} />
+                        <span className="bj-donut-legend__dot" style={{ background: genreTint(i) }} />
                         <span className="bj-donut-legend__name">{s.name}</span>
                         <span className="bj-donut-legend__pct">{s.pct}%</span>
                       </li>
@@ -348,7 +341,7 @@ export default function MyReportView() {
                 <p className="bj-caption">{starProfile.note}</p>
               </div>
             </div>
-            <StarColumns distribution={starProfile.distribution} />
+            <StarSegments distribution={starProfile.distribution} />
           </SectionCard>
 
           {/* 4. 인생책 3권 — 점수와 무관하게 직접 고른다 */}
@@ -443,9 +436,8 @@ export default function MyReportView() {
           {/* 6. 발견 성향 — 반원 게이지 */}
           <SectionCard tag="발견 성향">
             <div className="bj-report-gauge-row">
-              <DiscoveryGauge pct={discovery.savePct} />
+              <DiscoveryGauge pct={discovery.savePct} chip={discovery.label} />
               <div>
-                <p className="bj-body bj-bold">{discovery.label}</p>
                 <p className="bj-caption">{discovery.note}</p>
                 <p className="bj-caption bj-mt-4">{discovery.saved}권 담고 {discovery.passed}권 넘겼어요</p>
               </div>

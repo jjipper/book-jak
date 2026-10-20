@@ -7,9 +7,9 @@ import type { Person } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getFollowerIds, getFollowingIds, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
+import { SubpageHead } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowersView() {
   const [people, setPeople] = useState<Person[] | null>(null)
@@ -37,10 +37,7 @@ export default function MyFollowersView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">팔로워</span>
-      </header>
+      <SubpageHead title="팔로워" backHref="/my" />
 
       <div className="bj-content">
         {people === null ? (
@@ -71,7 +68,7 @@ export default function MyFollowersView() {
                 <button
                   type="button"
                   onClick={() => handleToggleFollow(person.id)}
-                  className={`bj-chip${following ? ' bj-chip--active bj-follow-chip--active' : ' bj-follow-chip'}`}
+                  className={`bj-chip bj-shrink-0${following ? ' bj-chip--active' : ''}`}
                 >
                   {following ? '팔로잉' : '팔로우'}
                 </button>

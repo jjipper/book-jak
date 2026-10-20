@@ -1,11 +1,22 @@
-/* 마이 전용 — 취향 리포트 진입 카드 */
+/* 마이 전용 — 취향 리포트 진입 카드 (활동 행·리포트 스탯은 공용 components.css) */
 
 .bj-report-teaser {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  gap: 12px;
   text-decoration: none;
   color: inherit;
+}
+
+.bj-report-teaser__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.bj-report-teaser__stats {
+  display: flex;
+  gap: 8px;
 }
 
 .bj-report-teaser__mini {
@@ -19,7 +30,7 @@
 .bj-report-teaser__bar {
   height: 7px;
   border-radius: var(--radius-pill);
-  background: var(--color-track);
+  background: var(--color-chart-track);
   overflow: hidden;
 }
 
@@ -33,11 +44,4 @@
 .bj-report-teaser__body {
   flex: 1;
   min-width: 0;
-}
-
-.bj-report-teaser__facts {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 10px;
-  margin-top: 6px;
 }

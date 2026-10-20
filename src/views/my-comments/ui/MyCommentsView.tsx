@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { loadMyComments } from '@/entities/post/api/commentsRemote'
 import type { PostComment } from '@/entities/post/model/comments'
-import BackLink from '@/shared/ui/BackLink'
+import { formatRelTime } from '@/entities/post/model/relTime'
+import { SubpageHead } from '@/shared/ui'
 
 export default function MyCommentsView() {
   const [comments, setComments] = useState<PostComment[] | null>(null)
@@ -16,10 +17,7 @@ export default function MyCommentsView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">남긴 댓글</span>
-      </header>
+      <SubpageHead title="남긴 댓글" backHref="/my" />
 
       <div className="bj-content">
         {comments === null ? (
@@ -33,10 +31,9 @@ export default function MyCommentsView() {
           </div>
         ) : (
           comments.map((c) => (
-            <Link key={c.id} href={`/posts/${c.postId}`} className="bj-row bj-row--top bj-unstyled-link">
-              <div className="bj-flex-1">
-                <p className="bj-body bj-body--sm bj-clamp-3">{c.content}</p>
-              </div>
+            <Link key={c.id} href={`/posts/${c.postId}`} className="bj-comment bj-unstyled-link">
+              <p className="bj-body bj-body--sm bj-clamp-3">{c.content}</p>
+              <span className="bj-caption">{formatRelTime(c.ts)}</span>
             </Link>
           ))
         )}

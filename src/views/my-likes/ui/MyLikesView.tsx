@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { loadLikedPosts } from '@/entities/post/api/myPostsRemote'
 import type { Post } from '@/entities/post/model/posts'
-import BackLink from '@/shared/ui/BackLink'
+import { formatRelTime } from '@/entities/post/model/relTime'
+import { Icon, SubpageHead, TypeBadge } from '@/shared/ui'
 
 export default function MyLikesView() {
   const [posts, setPosts] = useState<Post[] | null>(null)
@@ -16,10 +17,7 @@ export default function MyLikesView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">좋아요 한 글</span>
-      </header>
+      <SubpageHead title="좋아요 한 글" backHref="/my" />
 
       <div className="bj-content">
         {posts === null ? (
@@ -33,13 +31,27 @@ export default function MyLikesView() {
           </div>
         ) : (
           posts.map((p) => (
-            <Link key={p.id} href={`/posts/${p.id}`} className="bj-row bj-row--top bj-unstyled-link">
-              <div className="bj-flex-1">
-                {p.bookTitle && <p className="bj-caption bj-bold bj-mb-4">{p.bookTitle}</p>}
-                <p className="bj-body bj-body--sm bj-mb-6 bj-clamp-3">{p.content}</p>
-                <p className="bj-caption">{p.authorNickname} · 댓글 {p.commentCount}개</p>
+            <article key={p.id} className="bj-post-card">
+              <div className="bj-post-card__header">
+                <TypeBadge code={p.authorTypeCode} />
+                <span className="bj-post-card__author">{p.authorNickname}</span>
+                <span className="bj-post-card__time">{formatRelTime(p.ts)}</span>
               </div>
-            </Link>
+              <Link href={`/posts/${p.id}`} className="bj-post-card__link">
+                <div className="bj-post-card__body">
+                  <p className="bj-post-card__content bj-clamp-3">{p.content}</p>
+                  {p.bookTitle && (
+                    <span className="bj-post-book bj-post-book--aside">
+                      <span className="bj-post-book__title">{p.bookTitle}</span>
+                    </span>
+                  )}
+                </div>
+              </Link>
+              <div className="bj-post-card__footer">
+                <span className="bj-post-card__like-btn"><Icon name="heart" size={16} />{p.likeCount}</span>
+                <span className="bj-post-card__comment-count"><Icon name="comment" size={16} />{p.commentCount}</span>
+              </div>
+            </article>
           ))
         )}
       </div>

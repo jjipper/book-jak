@@ -6,8 +6,8 @@ import { loadPeopleByIds } from '@/entities/person/api/personRemote'
 import type { Person } from '@/entities/person/model/people'
 import { READING_TYPES } from '@/entities/reading-type/model/readingTypes'
 import { getFollowingIds, unfollowPerson } from '@/features/follow/model/follows'
+import { SubpageHead } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
-import BackLink from '@/shared/ui/BackLink'
 
 export default function MyFollowingView() {
   const [people, setPeople] = useState<Person[] | null>(null)
@@ -27,10 +27,7 @@ export default function MyFollowingView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">팔로잉</span>
-      </header>
+      <SubpageHead title="팔로잉" backHref="/my" />
 
       <div className="bj-content">
         {people === null ? (
@@ -60,7 +57,7 @@ export default function MyFollowingView() {
                 <button
                   type="button"
                   onClick={() => void handleUnfollow(person.id)}
-                  className="bj-chip bj-chip--active bj-follow-chip--active"
+                  className="bj-chip bj-chip--active bj-shrink-0"
                 >
                   팔로잉
                 </button>

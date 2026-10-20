@@ -5,9 +5,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { loadWishlist, removeFromWishlist, syncWishlist, type WishlistRecord } from '@/features/wishlist/model/wishlist'
+import { Button, SubpageHead } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { useMounted } from '@/shared/lib/useMounted'
-import BackLink from '@/shared/ui/BackLink'
+import '@/widgets/book/BookRow.css'
 
 export default function MyWishlistView() {
   const mounted = useMounted()
@@ -32,10 +33,7 @@ export default function MyWishlistView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">서재에 담은 책</span>
-      </header>
+      <SubpageHead title="서재에 담은 책" backHref="/my" />
 
       <div className="bj-content">
         {!mounted ? (
@@ -52,34 +50,30 @@ export default function MyWishlistView() {
           items.map((r) => {
             const body = (
               <>
-                <div className="bj-book-cover">
-                  <IllustPlaceholder code={r.illustCode ?? r.bookId} alt={r.title} aspectRatio="3 / 4" />
+                <div className="bj-book-row__cover">
+                  <IllustPlaceholder code={r.illustCode ?? r.bookId} alt={r.title} aspectRatio="60 / 76" />
                 </div>
-                <div className="bj-book-info bj-flex-1">
-                  <p className="bj-body bj-bold bj-truncate bj-body--sm">
-                    {r.title}
-                  </p>
-                  <p className="bj-caption">
+                <div className="bj-book-row__body">
+                  <p className="bj-book-row__title">{r.title}</p>
+                  <p className="bj-book-row__author">
                     {r.author ?? '작자 미상'}{r.publisher ? ` · ${r.publisher}` : ''}
                   </p>
                 </div>
               </>
             )
             return (
-            <div key={r.bookId} className="bj-row bj-wishlist-row">
+            <div key={r.bookId} className="bj-book-row">
               {/* 'blind-{id}'는 상세 페이지가 없는 블라인드 책이라 링크 없음 — Phase 2에서 실제 책으로 교체 예정 */}
               {r.bookId.startsWith('isbn-') ? (
-                <Link href={`/rate/books/${r.bookId}`} className="bj-unstyled-link bj-wishlist-row bj-flex-1">
+                <Link href={`/rate/books/${r.bookId}`} className="bj-unstyled-link bj-row-center bj-flex-1">
                   {body}
                 </Link>
-              ) : body}
-              <button
-                type="button"
-                onClick={() => handleRemove(r.bookId)}
-                className="bj-btn bj-btn--ghost bj-btn--remove"
-              >
+              ) : (
+                <div className="bj-row-center bj-flex-1">{body}</div>
+              )}
+              <Button variant="text" size="sm" onClick={() => handleRemove(r.bookId)}>
                 빼기
-              </button>
+              </Button>
             </div>
             )
           })

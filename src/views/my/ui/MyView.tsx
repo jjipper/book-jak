@@ -19,20 +19,27 @@ import { loadWishlist } from '@/features/wishlist/model/wishlist'
 import { getMyId } from '@/entities/user/model/profile'
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import ProfileAvatar from '@/entities/user/ui/ProfileAvatar'
-import ConfirmSheet from '@/shared/ui/ConfirmSheet'
-import Icon from '@/shared/ui/Icon'
-import TypeBadge from '@/shared/ui/TypeBadge'
+import { ConfirmSheet, Icon, IconButton, PageHead, TypeBadge } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { toast } from '@/shared/lib/toast'
 import './MyView.css'
 
-function ActivityRow({ href, label, count }: { href: string; label: string; count: number }) {
+function ActivityRow({ href, label, count }: { href: string; label: string; count: number | string }) {
   return (
-    <Link href={href} className="bj-row bj-row--compact bj-unstyled-link">
-      <p className="bj-activity-label">{label}</p>
-      <span className="bj-caption bj-bold">{count}</span>
+    <Link href={href} className="bj-activity-row">
+      <p className="bj-activity-row__label">{label}</p>
+      <span className="bj-activity-row__count">{count}</span>
       <span className="bj-icon-hint"><Icon name="chevron-right" size={16} /></span>
     </Link>
+  )
+}
+
+function ReportStat({ num, label }: { num: string | number; label: string }) {
+  return (
+    <div className="bj-report-stat-tile">
+      <span className="bj-report-stat-tile__num">{num}</span>
+      <span className="bj-report-stat-tile__label">{label}</span>
+    </div>
   )
 }
 
@@ -149,17 +156,15 @@ export default function MyView() {
     <main className="bj-shell">
       <div className="bj-frame">
       {/* 헤더 */}
-      <header className="bj-page-head">
-        <div className="bj-my-header">
-          <span className="bj-display bj-display--lg">마이</span>
-          <button className="bj-icon-btn" onClick={() => setShowSettings(true)} aria-label="설정">
+      <PageHead
+        title="마이"
+        caption={nickname || '취향 리포트와 내 서재'}
+        action={
+          <IconButton label="설정" onClick={() => setShowSettings(true)}>
             <Icon name="settings" size={24} />
-          </button>
-        </div>
-        <p className="bj-caption">
-          {nickname || '취향 리포트와 내 서재'}
-        </p>
-      </header>
+          </IconButton>
+        }
+      />
 
       <div className="bj-content--lg">
 
@@ -227,11 +232,7 @@ export default function MyView() {
 
         {/* 이번 주 랭킹 */}
         {loggedIn && (
-          <Link href="/my/ranking" className="bj-row bj-row--compact bj-unstyled-link">
-            <p className="bj-activity-label">이번 주 독서 랭킹</p>
-            <span className="bj-caption bj-bold">{myRank ? `내 순위 ${myRank}위` : '순위 없음'}</span>
-            <span className="bj-icon-hint"><Icon name="chevron-right" size={16} /></span>
-          </Link>
+          <ActivityRow href="/my/ranking" label="이번 주 독서 랭킹" count={myRank ? `${myRank}위` : '순위 없음'} />
         )}
 
         {/* 취향 리포트 — 요약만. 본편은 /my/report */}
@@ -243,24 +244,26 @@ export default function MyView() {
             <LoginRequiredNote />
           ) : ratedCount > 0 || myType ? (
             <Link href="/my/report" className="bj-report-teaser">
-              <div className="bj-report-teaser__mini" aria-hidden="true">
-                {(topGenres.length ? topGenres : [{ name: '', count: 1 }]).slice(0, 4).map((g, i) => (
-                  <span key={g.name || i} className="bj-report-teaser__bar">
-                    <i style={{ width: `${Math.round((g.count / (topGenres[0]?.count ?? 1)) * 100)}%` }} />
-                  </span>
-                ))}
-              </div>
-              <div className="bj-report-teaser__body">
-                <p className="bj-body bj-bold">
-                  {myType ? myType.name : '내 독서 취향 한눈에'}
-                </p>
-                <div className="bj-report-teaser__facts">
-                  {myType && <span className="bj-caption">BOOKBTI {myType.code}</span>}
-                  <span className="bj-caption">평가 {ratedCount}권</span>
-                  <span className="bj-caption">평균 ★{avgStars.toFixed(1)}</span>
-                  <span className="bj-caption">발견 담기 {discoverSaved}</span>
+              <div className="bj-report-teaser__row">
+                <div className="bj-report-teaser__mini" aria-hidden="true">
+                  {(topGenres.length ? topGenres : [{ name: '', count: 1 }]).slice(0, 4).map((g, i) => (
+                    <span key={g.name || i} className="bj-report-teaser__bar">
+                      <i style={{ width: `${Math.round((g.count / (topGenres[0]?.count ?? 1)) * 100)}%` }} />
+                    </span>
+                  ))}
                 </div>
-                <p className="bj-caption bj-mt-4">자세히 보기 →</p>
+                <div className="bj-report-teaser__body">
+                  <p className="bj-body bj-bold">
+                    {myType ? myType.name : '내 독서 취향 한눈에'}
+                  </p>
+                  {myType && <p className="bj-caption">BOOKBTI {myType.code}</p>}
+                  <p className="bj-caption bj-mt-4">자세히 보기 →</p>
+                </div>
+              </div>
+              <div className="bj-report-teaser__stats">
+                <ReportStat num={ratedCount} label="평가한 책" />
+                <ReportStat num={`★${avgStars.toFixed(1)}`} label="평균 별점" />
+                <ReportStat num={discoverSaved} label="발견 담기" />
               </div>
             </Link>
           ) : (
@@ -335,11 +338,9 @@ export default function MyView() {
           <div className="bj-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="bj-sheet-header">
               <p className="bj-h2">설정</p>
-              <button onClick={() => setShowSettings(false)} className="bj-icon-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              </button>
+              <IconButton label="닫기" onClick={() => setShowSettings(false)}>
+                <Icon name="x" size={24} />
+              </IconButton>
             </div>
 
             <div className="bj-col-16">

@@ -2,10 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react'
 import type { Badge } from '@/entities/reading-type/model/badges'
+import Icon from '@/shared/ui/Icon'
 
-/* 배지 한 칸 — /assets/badge/{key}.webp.
-   그래픽은 따로 만들어 넣는다. 아직 없으면 등급별 기본 도형 + 이니셜로 대체한다
-   (IllustPlaceholder와 같은 onError + naturalWidth 재확인 패턴). */
+/* 배지 한 칸 — Figma 02 Components > 배지 메달 BadgeMedal
+   88 원 + 간격 6 + 이름 14. 획득은 /assets/badge/{key}.webp,
+   아직 없으면 등급별 기본 도형 + 이니셜로 대체한다
+   (IllustPlaceholder와 같은 onError + naturalWidth 재확인 패턴).
+   미획득은 차트 트랙 원 + lock 아이콘만 — 그림은 숨긴다. */
 
 /** 한글은 첫 글자, 영문 key는 첫 두 글자 */
 function initial(badge: Badge): string {
@@ -24,7 +27,9 @@ export default function BadgeMedal({ badge, unlocked }: { badge: Badge; unlocked
   return (
     <div className={`bj-medal bj-medal--${badge.tier}${unlocked ? '' : ' bj-medal--locked'}`}>
       <div className="bj-medal__art">
-        {!failed ? (
+        {!unlocked ? (
+          <Icon name="lock" size={24} />
+        ) : !failed ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             ref={imgRef}
@@ -43,12 +48,6 @@ export default function BadgeMedal({ badge, unlocked }: { badge: Badge; unlocked
               <circle cx="32" cy="32" r="28" />
             )}
             <text x="32" y="32" className="bj-medal__fallback-text">{initial(badge)}</text>
-          </svg>
-        )}
-        {!unlocked && (
-          <svg viewBox="0 0 24 24" className="bj-medal__lock" aria-hidden="true">
-            <rect x="4" y="11" width="16" height="10" rx="2" />
-            <path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" strokeWidth="2" />
           </svg>
         )}
       </div>

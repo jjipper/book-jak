@@ -8,24 +8,31 @@ import {
   Card,
   Check,
   Chip,
+  ConfirmSheet,
+  FilterSelect,
   IconButton,
   Input,
   Logo,
   NavItem,
   Option,
+  PageHead,
   Progress,
   RarityBadge,
   RarityTag,
   Row,
   SectionLabel,
+  SegTab,
   Segmented,
   Sheet,
   StatBar,
+  SubpageHead,
   Textarea,
   Toggle,
+  TokenBadge,
+  TypeBadge,
 } from '@/shared/ui'
 import Icon, { ICON_NAMES } from '@/shared/ui/Icon'
-import TypeBadge from '@/shared/ui/TypeBadge'
+/* ActivityRow · ReportStat 스펙 클래스는 마이 탭 전용 CSS에 있다 */
 
 /* STEP 1 아토믹 컴포넌트 갤러리 (승인용 미리보기)
    화면 조합 아님 — 각 단위를 독립 전시. 인라인 스타일은 갤러리 배치 전용. */
@@ -83,6 +90,8 @@ export default function DesignSystemPreviewPage() {
   const [activeChip, setActiveChip] = useState('보관함')
   const [activeNav, setActiveNav] = useState('홈')
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [segTab, setSegTab] = useState<'joined' | 'interested'>('joined')
 
   const chips = [
     { label: '몰입수집가', icon: BookIcon },
@@ -113,6 +122,8 @@ export default function DesignSystemPreviewPage() {
               <Button variant="primary" block>블록 버튼</Button>
             </div>
             <div style={row}>
+              <Button variant="text" size="sm">다시하기</Button>
+              <Button variant="text" size="sm">수정</Button>
               <IconButton label="좋아요" active>{HeartIcon}</IconButton>
               <IconButton label="댓글">{CommentIcon}</IconButton>
             </div>
@@ -169,17 +180,34 @@ export default function DesignSystemPreviewPage() {
         </Section>
 
         <Section title="08. Chip / Tag">
+          <div style={stack}>
+            <div style={row}>
+              {chips.map(({ label, icon }) => (
+                <Chip
+                  key={label}
+                  icon={icon}
+                  active={activeChip === label}
+                  onClick={() => setActiveChip(label)}
+                >
+                  {label}
+                </Chip>
+              ))}
+            </div>
+            <div style={row}>
+              <Chip ink>잉크 칩</Chip>
+              <Chip size="sm">책 추천</Chip>
+              <Chip size="sm" ink>모임</Chip>
+            </div>
+          </div>
+        </Section>
+
+        <Section title="08b. FilterSelect · TokenBadge">
           <div style={row}>
-            {chips.map(({ label, icon }) => (
-              <Chip
-                key={label}
-                icon={icon}
-                active={activeChip === label}
-                onClick={() => setActiveChip(label)}
-              >
-                {label}
-              </Chip>
-            ))}
+            <FilterSelect defaultValue="latest" aria-label="정렬">
+              <option value="latest">최신순</option>
+              <option value="popular">인기순</option>
+            </FilterSelect>
+            <TokenBadge count={12} />
           </div>
         </Section>
 
@@ -201,8 +229,8 @@ export default function DesignSystemPreviewPage() {
 
         <Section title="Card (공통 컨테이너)">
           <div style={stack}>
-            <Card>기본 카드 — 보더 없음 + 연한 베이지</Card>
-            <Card spotlight>강조 카드 — 주황050 면 (무테)</Card>
+            <Card>기본 카드 — 화이트 · 무테 · 라운드 16</Card>
+            <Card spotlight>강조 카드 — 화이트 + 주황100 1px (화면당 1개)</Card>
           </div>
         </Section>
 
@@ -238,13 +266,24 @@ export default function DesignSystemPreviewPage() {
           <SectionLabel>Today&apos;s Pick</SectionLabel>
         </Section>
 
-        <Section title="Sheet (바텀시트)">
-          <Button variant="secondary" onClick={() => setSheetOpen(true)}>시트 열기</Button>
+        <Section title="Sheet (바텀시트) · Modal (확인 모달)">
+          <div style={row}>
+            <Button variant="secondary" onClick={() => setSheetOpen(true)}>시트 열기</Button>
+            <Button variant="secondary" onClick={() => setModalOpen(true)}>모달 열기</Button>
+          </div>
           <Sheet open={sheetOpen} onClose={() => setSheetOpen(false)}>
-            <p className="bj-title" style={{ margin: '0 0 12px' }}>유형 선택</p>
+            <p className="bj-sheet__title">유형 선택</p>
             <Option optionKey="A" selected onSelect={() => setSheetOpen(false)}>심해 독서가</Option>
             <Option optionKey="B" onSelect={() => setSheetOpen(false)}>책벌레 학자</Option>
           </Sheet>
+          <ConfirmSheet
+            open={modalOpen}
+            message="글을 삭제할까요?"
+            description="삭제한 글은 되돌릴 수 없어요"
+            confirmLabel="삭제"
+            onConfirm={() => setModalOpen(false)}
+            onCancel={() => setModalOpen(false)}
+          />
         </Section>
 
         <Section title="11. Typography">
@@ -260,7 +299,7 @@ export default function DesignSystemPreviewPage() {
         </Section>
       </div>
 
-      <Section title="14. Icon — 24×24 · stroke 2 · currentColor 상속 (34종)">
+      <Section title="14. Icon — 24×24 · 전부 면(채움) · currentColor 상속 (34종)">
         <Card>
           <div
             style={{
@@ -306,15 +345,28 @@ export default function DesignSystemPreviewPage() {
         </Card>
       </Section>
 
-      <Section title="17. 화면 공통 요소 — Topbar / ProgressHeader / SubpageHead / SectionHead">
+      <Section title="17. 화면 공통 요소 — Topbar / ProgressHeader / PageHead / SegTab / SubpageHead / SectionHead">
         <div style={stack}>
           <div className="bj-topbar">
             <Logo />
-            <div style={{ ...row, gap: 4 }}>
-              <IconButton label="검색"><Icon name="search" size={22} /></IconButton>
-              <IconButton label="알림"><Icon name="bell" size={22} /></IconButton>
+            <div style={{ ...row, gap: 0 }}>
+              <IconButton label="검색"><Icon name="search" size={24} /></IconButton>
+              <IconButton label="알림"><Icon name="bell" size={24} /></IconButton>
             </div>
           </div>
+
+          <PageHead
+            title="마이"
+            caption="취향 리포트와 내 서재"
+            action={<IconButton label="설정"><Icon name="settings" size={24} /></IconButton>}
+          />
+
+          <SegTab
+            label="내 모임"
+            items={[{ value: 'joined', label: '참여한 모임' }, { value: 'interested', label: '관심 모임' }]}
+            value={segTab}
+            onChange={setSegTab}
+          />
 
           <div className="bj-progress-head">
             <div className="bj-row-between bj-mb-8">
@@ -324,10 +376,7 @@ export default function DesignSystemPreviewPage() {
             <Progress value={6} max={12} />
           </div>
 
-          <div className="bj-subpage-head">
-            <IconButton label="뒤로"><Icon name="chevron-left" size={22} /></IconButton>
-            <span className="bj-heading">서브페이지 제목</span>
-          </div>
+          <SubpageHead title="서브페이지 제목" backHref="/design-system" action={<Button variant="text" size="sm">수정</Button>} />
 
           <Card>
             <div className="bj-card-section-head">
@@ -400,23 +449,23 @@ export default function DesignSystemPreviewPage() {
             <p className="bj-caption">밤샘독서가 주최 · 8/12명</p>
           </div>
 
-          <Card>
-            <div className="bj-row bj-row--compact">
-              <p className="bj-activity-label">내가 쓴 글</p>
-              <span className="bj-caption bj-bold">24</span>
+          <div style={stack}>
+            <div className="bj-activity-row">
+              <p className="bj-activity-row__label">내가 쓴 글</p>
+              <span className="bj-activity-row__count">24</span>
               <span className="bj-icon-hint"><Icon name="chevron-right" size={16} /></span>
             </div>
-            <div className="bj-report-stats">
-              <div className="bj-report-stat">
-                <span className="bj-display bj-display--lg">128</span>
-                <span className="bj-caption">읽은 책</span>
+            <div style={row}>
+              <div className="bj-report-stat-tile">
+                <span className="bj-report-stat-tile__num">128</span>
+                <span className="bj-report-stat-tile__label">읽은 책</span>
               </div>
-              <div className="bj-report-stat">
-                <span className="bj-display bj-display--lg">4.2</span>
-                <span className="bj-caption">평균 별점</span>
+              <div className="bj-report-stat-tile">
+                <span className="bj-report-stat-tile__num">4.2</span>
+                <span className="bj-report-stat-tile__label">평균 별점</span>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       </Section>
 

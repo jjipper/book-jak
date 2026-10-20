@@ -5,10 +5,11 @@
 import { useMemo } from 'react'
 import Link from 'next/link'
 import { loadBookRatings, type BookRatingRecord } from '@/entities/book-rating/model/bookRatings'
+import { SubpageHead } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import Stars from '@/shared/ui/Stars'
 import { useMounted } from '@/shared/lib/useMounted'
-import BackLink from '@/shared/ui/BackLink'
+import '@/widgets/book/BookRow.css'
 
 export default function MyRatedView() {
   const mounted = useMounted()
@@ -20,10 +21,7 @@ export default function MyRatedView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">별점 준 책</span>
-      </header>
+      <SubpageHead title="별점 준 책" backHref="/my" />
 
       <div className="bj-content">
         {!mounted ? (
@@ -39,20 +37,18 @@ export default function MyRatedView() {
           ratings.map((r) => {
             const title = r.title ?? '제목 없음'
             return (
-              <Link key={r.bookId} href={`/rate/books/${r.bookId}`} className="bj-row bj-book-link">
-                <div className="bj-book-cover">
-                  <IllustPlaceholder code={r.bookId} alt={title} aspectRatio="3 / 4" />
+              <Link key={r.bookId} href={`/rate/books/${r.bookId}`} className="bj-book-row bj-unstyled-link">
+                <div className="bj-book-row__cover">
+                  <IllustPlaceholder code={r.bookId} alt={title} aspectRatio="60 / 76" />
                 </div>
-                <div className="bj-book-info bj-flex-1">
-                  <p className="bj-body bj-bold bj-truncate bj-body--sm">
-                    {title}
-                  </p>
-                  <div className="bj-meta-row">
-                    <Stars value={r.stars} size={12} />
-                    <span className="bj-caption bj-bold bj-caption--action">{r.stars}점</span>
+                <div className="bj-book-row__body">
+                  <p className="bj-book-row__title">{title}</p>
+                  <div className="bj-book-row__meta-row">
+                    <Stars value={r.stars} size={16} />
+                    <span className="bj-book-row__score">{r.stars}점</span>
                   </div>
                   {r.review && (
-                    <p className="bj-caption bj-truncate">&ldquo;{r.review}&rdquo;</p>
+                    <p className="bj-book-row__author">&ldquo;{r.review}&rdquo;</p>
                   )}
                 </div>
               </Link>

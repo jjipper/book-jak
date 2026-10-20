@@ -10,11 +10,11 @@ import { affinityLabel } from '@/entities/reading-type/model/affinity'
 import { getPersonInsight, type PersonInsight } from '@/features/people-match/model/peopleMatch'
 import { getFollowingIds, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
-import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
-import LoginGateSheet from '@/shared/ui/LoginGateSheet'
+import { Button, Icon, LoginGateSheet, StatBar, SubpageHead, TypeBadge } from '@/shared/ui'
 import BackLink from '@/shared/ui/BackLink'
-import TypeBadge from '@/shared/ui/TypeBadge'
+import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { loadSharedHighRated, type SharedBooks } from '@/entities/profile-report/api/reportRemote'
+import '@/widgets/book/BookRow.css'
 import './PersonDetailView.css'
 
 export default function PersonDetailView() {
@@ -63,10 +63,7 @@ export default function PersonDetailView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/social/people" />
-        <span className="bj-h2 bj-truncate">{person.nickname}</span>
-      </header>
+      <SubpageHead title={person.nickname} backHref="/social/people" />
 
       <div className="bj-content--lg">
 
@@ -91,13 +88,9 @@ export default function PersonDetailView() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={handleToggleFollow}
-          className={`bj-btn bj-btn--block ${following ? 'bj-btn--secondary' : 'bj-btn--primary'}`}
-        >
+        <Button block variant={following ? 'secondary' : 'primary'} onClick={handleToggleFollow}>
           {following ? '팔로잉' : '팔로우'}
-        </button>
+        </Button>
 
         {/* 나와의 궁합 */}
         <div className="bj-card">
@@ -112,23 +105,21 @@ export default function PersonDetailView() {
                 <p className="bj-body bj-affinity-label">{affinityLabel(insight.affinity)}</p>
               </div>
 
-              <div className="bj-match-facts">
-                <div className="bj-match-fact">
-                  <span className="bj-match-fact__num">{insight.affinity}</span>
-                  <span className="bj-caption">성향 궁합</span>
-                </div>
-                <div className="bj-match-fact">
-                  <span className="bj-match-fact__num">{shared.count}권</span>
-                  <span className="bj-caption">같이 높게 준 책</span>
-                </div>
+              <div className="bj-mb-16">
+                <StatBar name="성향 궁합" value={insight.affinity} />
               </div>
 
               {shared.count > 0 && (
-                <div>
-                  <p className="bj-caption bj-bold bj-mb-6">둘 다 별 4개 이상</p>
+                <div className="bj-mb-16">
+                  <p className="bj-caption bj-bold bj-mb-6">같이 높게 준 책 {shared.count}권 · 둘 다 별 4개 이상</p>
                   <ul className="bj-match-books">
                     {shared.titles.slice(0, 5).map((title) => (
-                      <li key={title} className="bj-match-book">{title}</li>
+                      <li key={title} className="bj-book-row bj-book-row--bare">
+                        <span className="bj-book-row__cover bj-match-book__cover" aria-hidden="true">
+                          <Icon name="book" size={24} />
+                        </span>
+                        <p className="bj-book-row__title">{title}</p>
+                      </li>
                     ))}
                   </ul>
                   {shared.count > 5 && (

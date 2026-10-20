@@ -5,8 +5,8 @@ import Link from 'next/link'
 import { loadRanking, type RankingEntry } from '@/entities/person/api/personRemote'
 import { READING_TYPES, type TypeCode } from '@/entities/reading-type/model/readingTypes'
 import { createSupabaseBrowser } from '@/shared/api/supabase-browser'
+import { SubpageHead } from '@/shared/ui'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
-import BackLink from '@/shared/ui/BackLink'
 
 // 점수 산식은 Postgres 뷰(reading_ranking_weekly, supabase/migrations/0011_drop_discussion_weekly_ranking.sql)에 있다.
 // 여기서는 그 집계를 그대로 보여주기만 한다.
@@ -40,15 +40,12 @@ export default function MyRankingView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">이번 주 독서 랭킹</span>
-      </header>
+      <SubpageHead title="이번 주 독서 랭킹" backHref="/my" />
 
       <div className="bj-content--lg">
         {ranked !== null && (
-          <div className="bj-card--flat">
-            <p className="bj-body bj-semibold bj-mb-6">이번 주 내 활동</p>
+          <div className="bj-card">
+            <p className="bj-body bj-bold bj-mb-6">이번 주 내 활동</p>
             {summaryEntries.length > 0 ? (
               <div className="bj-col-8">
                 {summaryEntries.map(({ key, label }) => (
