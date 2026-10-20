@@ -22,6 +22,16 @@ body {
   background: var(--color-web-bg);
 }
 
+/* 폰(420 이하)에선 프레임이 화면을 꽉 채우므로 바깥 회색이 보일 이유가 없다 —
+   셸 하단 패딩·고정 하단바 뒤처럼 프레임이 못 덮는 자리까지 크림으로 */
+@media (max-width: 420px) {
+  html,
+  body,
+  #app-root {
+    background: var(--color-bg);
+  }
+}
+
 /* 셸은 폭·배경을 정하지 않는다 — 둘 다 .bj-frame 한 곳에서만 정한다 */
 .bj-shell {
   width: 100%;
