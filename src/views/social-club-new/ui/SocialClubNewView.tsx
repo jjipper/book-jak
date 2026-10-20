@@ -7,7 +7,7 @@ import { useRequireNickname } from '@/features/nickname-gate/hooks/useRequireNic
 import NicknameSheet from '@/features/nickname-gate/ui/NicknameSheet'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import BackLink from '@/shared/ui/BackLink'
+import { SubpageHead } from '@/shared/ui'
 import { toast } from '@/shared/lib/toast'
 
 export default function SocialClubNewView() {
@@ -31,10 +31,7 @@ export default function SocialClubNewView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href="/social" />
-          <span className="bj-h2">모임 만들기</span>
-        </header>
+        <SubpageHead title="모임 만들기" backHref="/social" />
 
         <ClubForm submitLabel="모임 만들기" onSubmit={handleSubmit} />
 

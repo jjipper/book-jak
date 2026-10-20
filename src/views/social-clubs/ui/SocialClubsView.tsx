@@ -7,7 +7,7 @@ import { resolveAuthor } from '@/features/resolve-author/model/author'
 import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
-import BackLink from '@/shared/ui/BackLink'
+import { SubpageHead } from '@/shared/ui'
 
 export default function SocialClubsView() {
   const [clubs, setClubs] = useState<BookClub[] | null>(null)
@@ -25,13 +25,10 @@ export default function SocialClubsView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/social" />
-        <span className="bj-h2">모임</span>
-      </header>
+      <SubpageHead title="모임" backHref="/social" />
 
       <div className="bj-content--lg">
-        <Link href="/social/clubs/new" className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall">
+        <Link href="/social/clubs/new" className="bj-btn bj-btn--primary bj-btn--block">
           모임 만들기
         </Link>
 
@@ -59,13 +56,13 @@ export default function SocialClubsView() {
                 />
                 <div className="bj-flex-1">
                   <div className="bj-meta-row bj-mb-4">
-                    {club.isOfficial && <span className="bj-chip bj-chip--active">공식</span>}
+                    {club.isOfficial && <span className="bj-chip bj-chip--sm bj-chip--active">공식</span>}
                     <p className="bj-body bj-bold bj-discuss-text">{club.name}</p>
-                    <span className="bj-chip">{club.format}</span>
+                    <span className="bj-chip bj-chip--sm">{club.format}</span>
                   </div>
                   <p className="bj-caption bj-mb-6 bj-clamp-3">{club.description}</p>
                   <div className="bj-tag-group">
-                    {club.tags.map((tag) => <span key={tag} className="bj-chip bj-chip--active">{tag}</span>)}
+                    {club.tags.map((tag) => <span key={tag} className="bj-chip bj-chip--sm bj-chip--active">{tag}</span>)}
                   </div>
                 </div>
                 <div className="bj-club-count">

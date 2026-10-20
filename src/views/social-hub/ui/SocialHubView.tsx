@@ -9,8 +9,7 @@ import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
 import { REC_FILTER_LABEL, REC_KIND_LABEL, type RecFilter, type RecRequest, type RecSort } from '@/entities/recommendation/model/recommendations'
-import TypeBadge from '@/shared/ui/TypeBadge'
-import Icon from '@/shared/ui/Icon'
+import { FilterSelect, Icon, PageHead, SegTab, TypeBadge } from '@/shared/ui'
 
 type HubTab = 'clubs' | 'recommend'
 
@@ -26,9 +25,9 @@ function ClubCard({ club, interested, onInterest }: {
   return (
     <Link href={`/social/clubs/${club.id}`} className="bj-event-card bj-unstyled-link">
       <div className="bj-event-card__head">
-        {club.isOfficial && <span className="bj-chip bj-chip--active bj-event-card__badge">공식</span>}
-        <span className="bj-chip">{club.format}</span>
-        {isFull && <span className="bj-chip bj-event-card__full">마감</span>}
+        {club.isOfficial && <span className="bj-chip bj-chip--sm bj-chip--active">공식</span>}
+        <span className="bj-chip bj-chip--sm">{club.format}</span>
+        {isFull && <span className="bj-chip bj-chip--sm bj-chip--done">마감</span>}
       </div>
       <div className="bj-club-card__body">
         <IllustPlaceholder
@@ -58,10 +57,10 @@ function RecRequestCard({ req }: { req: RecRequest }) {
   return (
     <div className="bj-event-card">
       <div className="bj-event-card__head">
-        <span className={`bj-chip${isShare ? ' bj-chip--active' : ''} bj-event-card__badge`}>
+        <span className={`bj-chip bj-chip--sm${isShare ? ' bj-chip--active' : ''}`}>
           {REC_KIND_LABEL[req.kind]}
         </span>
-        {!isShare && !req.isOpen && <span className="bj-chip bj-chip--done bj-event-card__badge">닫힘</span>}
+        {!isShare && !req.isOpen && <span className="bj-chip bj-chip--sm bj-chip--done">닫힘</span>}
       </div>
       <Link href={`/social/recommend/${req.id}`} className="bj-unstyled-link">
         <p className="bj-h2 bj-event-card__title--lead">{req.title}</p>
@@ -89,7 +88,7 @@ function ClubsTab() {
   return (
     <section>
       <div className="bj-section__head">
-        <p className="bj-h2">모임</p>
+        <p className="bj-heading">모임</p>
       </div>
       {clubs === null ? (
         <p className="bj-caption bj-text-muted">불러오는 중…</p>
@@ -129,8 +128,7 @@ function RecommendTab({ filter, setFilter }: { filter: RecFilter; setFilter: (f:
   return (
     <section className="bj-col-10">
       <div className="bj-section__head">
-        <select
-          className="bj-select"
+        <FilterSelect
           aria-label="추천 종류"
           value={filter}
           onChange={(e) => setFilter(e.target.value as RecFilter)}
@@ -138,7 +136,7 @@ function RecommendTab({ filter, setFilter }: { filter: RecFilter; setFilter: (f:
           {(['all', 'ask', 'share'] as const).map((f) => (
             <option key={f} value={f}>{REC_FILTER_LABEL[f]}</option>
           ))}
-        </select>
+        </FilterSelect>
         <div className="bj-meta-row">
           {(['latest', 'popular'] as const).map((s) => (
             <button
@@ -182,26 +180,15 @@ export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: H
   return (
     <main className="bj-shell bj-shell--pb">
       <div className="bj-frame">
-        <header className="bj-page-head">
-          <span className="bj-display bj-display--lg">모임</span>
-          <p className="bj-caption">함께 읽고, 서로 권하고</p>
-        </header>
+        <PageHead title="모임" caption="함께 읽고, 서로 권하고" />
 
         <div className="bj-col-16">
-          <div className="bj-choice-row" role="tablist">
-            {(['clubs', 'recommend'] as const).map((t) => (
-              <button
-                key={t}
-                type="button"
-                role="tab"
-                aria-selected={tab === t}
-                onClick={() => setTab(t)}
-                className={`bj-choice bj-choice--flex bj-text-center${tab === t ? ' is-active' : ''}`}
-              >
-                {t === 'clubs' ? '모임' : '추천'}
-              </button>
-            ))}
-          </div>
+          <SegTab
+            label="모임·추천"
+            items={[{ value: 'clubs', label: '모임' }, { value: 'recommend', label: '추천' }]}
+            value={tab}
+            onChange={setTab}
+          />
 
           {tab === 'clubs' ? <ClubsTab /> : <RecommendTab filter={filter} setFilter={setFilter} />}
         </div>
@@ -209,7 +196,7 @@ export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: H
 
       {/* 만들기 FAB — 보고 있는 필터가 작성 화면의 기본값이 된다 */}
       <Link href={newHref} className="bj-fab" aria-label={tab === 'clubs' ? '모임 만들기' : '추천 쓰기'}>
-        <Icon name="plus" size={24} />
+        <Icon name="edit" size={22} />
       </Link>
     </main>
   )

@@ -7,7 +7,7 @@ import type { BookClub } from '@/entities/club/model/clubs'
 import ClubForm from '@/features/club-form/ui/ClubForm'
 import { getMyId } from '@/entities/user/model/profile'
 import { toast } from '@/shared/lib/toast'
-import BackLink from '@/shared/ui/BackLink'
+import { SubpageHead } from '@/shared/ui'
 
 export default function SocialClubEditView() {
   const params = useParams<{ id: string }>()
@@ -30,10 +30,7 @@ export default function SocialClubEditView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-        <header className="bj-subpage-head">
-          <BackLink href={detail} />
-          <span className="bj-h2">모임 수정</span>
-        </header>
+        <SubpageHead title="모임 수정" backHref={detail} />
 
         {club && (
           <ClubForm

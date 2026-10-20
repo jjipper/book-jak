@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { CLUB_TAGS, CLUB_ILLUSTS, type ClubFormat, type ClubIllustCode } from '@/entities/club/model/clubs'
 import type { ClubInput } from '@/entities/club/model/clubActions'
+import { Button, Chip, Input, Textarea } from '@/shared/ui'
 
 const CAPACITY_OPTIONS = [4, 6, 8, 10]
 const FORMAT_OPTIONS: ClubFormat[] = ['온라인', '오프라인']
@@ -60,9 +61,8 @@ export default function ClubForm({
     <div className="bj-content--new">
       <div>
         <p className="bj-caption bj-bold bj-mb-8">모임 이름</p>
-        <input
+        <Input
           type="text"
-          className="bj-input"
           placeholder="예: 새벽 판타지 클럽"
           maxLength={24}
           value={name}
@@ -72,8 +72,8 @@ export default function ClubForm({
 
       <div>
         <p className="bj-caption bj-bold bj-mb-8">모임 소개</p>
-        <textarea
-          className="bj-textarea bj-textarea--tall"
+        <Textarea
+          className="bj-textarea--tall"
           placeholder={'어떤 모임인지 자세히 알려주세요\n어떤 책을 읽는지, 언제 어떻게 만나는지, 어떤 사람과 함께하고 싶은지'}
           maxLength={2000}
           value={description}
@@ -144,9 +144,8 @@ export default function ClubForm({
       {format === '오프라인' && (
         <div>
           <p className="bj-caption bj-bold bj-mb-8">지역</p>
-          <input
+          <Input
             type="text"
-            className="bj-input"
             placeholder="예: 서울 합정"
             maxLength={40}
             value={region}
@@ -157,9 +156,8 @@ export default function ClubForm({
 
       <div>
         <p className="bj-caption bj-bold bj-mb-8">일시 (선택)</p>
-        <input
+        <Input
           type="datetime-local"
-          className="bj-input"
           value={startsAt}
           onChange={(e) => setStartsAt(e.target.value)}
         />
@@ -169,26 +167,16 @@ export default function ClubForm({
         <p className="bj-caption bj-bold bj-mb-8">태그 (여러 개 가능)</p>
         <div className="bj-tag-group">
           {CLUB_TAGS.map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              onClick={() => toggleTag(tag)}
-              className={`bj-chip bj-chip--outline${tags.includes(tag) ? ' bj-chip--active' : ''}`}
-            >
+            <Chip key={tag} active={tags.includes(tag)} onClick={() => toggleTag(tag)}>
               {tag}
-            </button>
+            </Chip>
           ))}
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={!canSubmit}
-        className="bj-btn bj-btn--primary bj-btn--block bj-btn--tall"
-      >
+      <Button block onClick={handleSubmit} disabled={!canSubmit}>
         {submitLabel}
-      </button>
+      </Button>
     </div>
   )
 }

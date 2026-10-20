@@ -10,7 +10,7 @@ import { getFollowingIds, toggleFollow } from '@/features/follow/model/follows'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import BackLink from '@/shared/ui/BackLink'
+import { SubpageHead } from '@/shared/ui'
 
 export default function SocialPeopleView() {
   const [ranked, setRanked] = useState<MatchedPerson[] | null>(null)
@@ -40,10 +40,7 @@ export default function SocialPeopleView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/social" />
-        <span className="bj-h2">취향 맞는 사람 찾기</span>
-      </header>
+      <SubpageHead title="취향 맞는 사람 찾기" backHref="/social" />
 
       <div className="bj-content--new">
         {!hasType ? (

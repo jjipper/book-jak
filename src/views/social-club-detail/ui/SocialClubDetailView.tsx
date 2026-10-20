@@ -10,10 +10,10 @@ import { toast } from '@/shared/lib/toast'
 import { getMyId } from '@/entities/user/model/profile'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
-import TypeBadge from '@/shared/ui/TypeBadge'
+import { Button, Icon, SubpageHead, Textarea, TypeBadge } from '@/shared/ui'
+import BackLink from '@/shared/ui/BackLink'
 import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import { clubIllust, type BookClub, type ClubMember, type ClubPost } from '@/entities/club/model/clubs'
-import BackLink from '@/shared/ui/BackLink'
 import './SocialClubDetailView.css'
 
 function formatStartsAt(iso: string): string {
@@ -29,21 +29,26 @@ function QnaPost({ post, organizerId, myId, onDelete }: {
 }) {
   const byOrganizer = post.authorId === organizerId
   return (
-    <div className={`bj-comment${byOrganizer ? ' bj-qna--organizer' : ''}`}>
-      <div className="bj-post-card__header">
-        <Link href={`/people/${post.authorId}`} className="bj-post-card__author-link">
-          <TypeBadge code={post.authorTypeCode} />
-          <span className="bj-post-card__author bj-bold">{post.authorNickname}</span>
-        </Link>
-        {byOrganizer && <span className="bj-chip bj-chip--active">주최자</span>}
-        <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
+    <div className={`bj-comment-row${byOrganizer ? ' bj-qna--organizer' : ''}`}>
+      <div className="bj-avatar-circle bj-comment-row__avatar">
+        <Icon name="user" size={18} />
       </div>
-      <p className="bj-body bj-body--sm bj-post-detail__content">{post.content}</p>
-      {post.authorId === myId && (
-        <div className="bj-comment__actions">
-          <button type="button" className="bj-section__action" onClick={onDelete}>삭제</button>
+      <div className="bj-comment-row__body">
+        <div className="bj-post-card__header">
+          <Link href={`/people/${post.authorId}`} className="bj-post-card__author-link">
+            <TypeBadge code={post.authorTypeCode} />
+            <span className="bj-comment-row__name">{post.authorNickname}</span>
+          </Link>
+          {byOrganizer && <span className="bj-chip bj-chip--sm bj-chip--active">주최자</span>}
+          <span className="bj-post-card__time bj-caption">{formatRelTime(post.ts)}</span>
         </div>
-      )}
+        <p className="bj-comment-row__text">{post.content}</p>
+        {post.authorId === myId && (
+          <div className="bj-comment__actions">
+            <button type="button" className="bj-section__action" onClick={onDelete}>삭제</button>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
@@ -167,17 +172,14 @@ export default function SocialClubDetailView() {
       </div>
 
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/social" />
-        <span className="bj-h2">모임 상세</span>
-      </header>
+      <SubpageHead title="모임 상세" backHref="/social" />
 
       <div className="bj-content--lg">
         <div className="bj-card">
           <div className="bj-meta-row bj-mb-8">
-            {club.isOfficial && <span className="bj-chip bj-chip--active">공식</span>}
+            {club.isOfficial && <span className="bj-chip bj-chip--sm bj-chip--active">공식</span>}
             <p className="bj-h1">{club.name}</p>
-            <span className="bj-chip">{club.format}</span>
+            <span className="bj-chip bj-chip--sm">{club.format}</span>
           </div>
           {(club.startsAt || club.region) && (
             <p className="bj-caption bj-mb-8">
@@ -195,7 +197,7 @@ export default function SocialClubDetailView() {
             )}
           </div>
           <div className="bj-tag-group bj-mb-16">
-            {club.tags.map((tag) => <span key={tag} className="bj-chip bj-chip--active">{tag}</span>)}
+            {club.tags.map((tag) => <span key={tag} className="bj-chip bj-chip--sm bj-chip--active">{tag}</span>)}
           </div>
           <div className="bj-row">
             <div className="bj-flex-1">
@@ -211,57 +213,52 @@ export default function SocialClubDetailView() {
 
         <div className="bj-club-actions">
           {isMine ? (
-            <Link href={`/social/clubs/${club.id}/edit`} className="bj-btn bj-btn--tall bj-flex-1 bj-text-center">
+            <Link href={`/social/clubs/${club.id}/edit`} className="bj-btn bj-btn--secondary bj-flex-1">
               모임 수정
             </Link>
           ) : (
-            <button
-              type="button"
+            <Button
+              variant={joined ? 'secondary' : 'primary'}
               onClick={handleToggleJoin}
               disabled={!joined && isFull}
-              className={`bj-btn ${joined ? '' : 'bj-btn--primary'} bj-btn--tall bj-flex-1`}
-              style={{ opacity: !joined && isFull ? 0.4 : 1 }}
+              className="bj-flex-1"
             >
               {joined ? '참여 취소' : isFull ? '정원 마감' : '참여하기'}
-            </button>
+            </Button>
           )}
           <ClubInterestButton clubId={club.id} interested={interested} onChange={setInterested} />
         </div>
 
         <section className="bj-col-8">
-          <p className="bj-h2">참여자 {memberCount}/{club.capacity}</p>
+          <p className="bj-heading">참여자 {memberCount}/{club.capacity}</p>
           {members.map((m) => (
-            <Link key={m.id} href={`/people/${m.id}`} className="bj-row bj-people-link">
-              <div className="bj-avatar-circle bj-flex-none" style={{ width: 44, height: 44 }}>
-                {m.avatarUrl && (
+            <Link key={m.id} href={`/people/${m.id}`} className="bj-member-row">
+              <div className="bj-avatar-circle bj-member-row__avatar">
+                {m.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={m.avatarUrl} alt="" className="bj-avatar-img" />
+                ) : (
+                  <Icon name="user" size={18} />
                 )}
               </div>
-              <p className="bj-body bj-bold bj-body--sm bj-flex-1">{m.nickname}</p>
-              {m.id === club.organizerId && <span className="bj-chip bj-chip--active">주최자</span>}
+              <p className="bj-body bj-body--sm bj-flex-1">{m.nickname}</p>
+              {m.id === club.organizerId && <span className="bj-caption">주최자</span>}
             </Link>
           ))}
         </section>
 
         <section className="bj-col-8">
-          <p className="bj-h2">궁금한 점</p>
+          <p className="bj-heading">궁금한 점</p>
           <p className="bj-caption bj-text-muted">주최자와 참여자가 답해줘요</p>
-          <textarea
-            className="bj-textarea bj-textarea--sm"
+          <Textarea
             placeholder="궁금한 점을 남겨보세요"
             maxLength={1000}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
-          <button
-            type="button"
-            className="bj-btn bj-btn--primary bj-btn--block"
-            disabled={draft.trim().length === 0}
-            onClick={() => handlePost(draft.trim())}
-          >
+          <Button block disabled={draft.trim().length === 0} onClick={() => handlePost(draft.trim())}>
             질문 남기기
-          </button>
+          </Button>
           {threads.length === 0 && <p className="bj-caption bj-text-muted">아직 질문이 없어요</p>}
           {threads.map(({ question, replies }) => (
             <div key={question.id} className="bj-qna">
@@ -287,8 +284,7 @@ export default function SocialClubDetailView() {
               <div className="bj-qna__replies">
                 {replyTo === question.id ? (
                   <>
-                    <textarea
-                      className="bj-textarea bj-textarea--sm"
+                    <Textarea
                       placeholder="답글을 남겨보세요"
                       maxLength={1000}
                       autoFocus

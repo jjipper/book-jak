@@ -7,7 +7,7 @@ import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import { getMyId } from '@/entities/user/model/profile'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
-import BackLink from '@/shared/ui/BackLink'
+import { SegTab, SubpageHead } from '@/shared/ui'
 
 type Tab = 'joined' | 'interested'
 
@@ -38,26 +38,15 @@ export default function MyClubsView() {
   return (
     <main className="bj-shell">
       <div className="bj-frame">
-      <header className="bj-subpage-head">
-        <BackLink href="/my" />
-        <span className="bj-h2">모임</span>
-      </header>
+      <SubpageHead title="모임" backHref="/my" />
 
       <div className="bj-content">
-        <div className="bj-choice-row" role="tablist">
-          {(['joined', 'interested'] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              role="tab"
-              aria-selected={tab === t}
-              onClick={() => setTab(t)}
-              className={`bj-choice bj-choice--flex bj-text-center${tab === t ? ' is-active' : ''}`}
-            >
-              {t === 'joined' ? '참여한 모임' : '관심 모임'}
-            </button>
-          ))}
-        </div>
+        <SegTab
+          label="내 모임"
+          items={[{ value: 'joined', label: '참여한 모임' }, { value: 'interested', label: '관심 모임' }]}
+          value={tab}
+          onChange={setTab}
+        />
 
         {clubs === null ? (
           <p className="bj-caption bj-text-muted">불러오는 중…</p>
@@ -86,9 +75,9 @@ export default function MyClubsView() {
                 <div className="bj-flex-1">
                   <div className="bj-meta-row bj-mb-4">
                     <p className="bj-body bj-bold bj-body--sm">{club.name}</p>
-                    <span className="bj-chip">{club.format}</span>
-                    {club.isOfficial && <span className="bj-chip bj-chip--active">공식</span>}
-                    {isMine && <span className="bj-chip bj-chip--active">내가 만든 모임</span>}
+                    <span className="bj-chip bj-chip--sm">{club.format}</span>
+                    {club.isOfficial && <span className="bj-chip bj-chip--sm bj-chip--active">공식</span>}
+                    {isMine && <span className="bj-chip bj-chip--sm bj-chip--active">내가 만든 모임</span>}
                   </div>
                   <p className="bj-caption bj-clamp-3">{club.description}</p>
                 </div>
