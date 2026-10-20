@@ -3096,7 +3096,7 @@ body.bj-body {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   border: none;
-  padding: var(--space-md);
+  padding: var(--space-lg);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -3272,18 +3272,141 @@ body.bj-body {
   line-height: 1.7;
 }
 
-/* 댓글 한 칸 */
+/* 댓글 한 칸 (목록용 — 아바타 없이 본문만) */
 .bj-comment {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 12px;
+  padding: 16px;
   border-radius: var(--radius-md);
   background: var(--color-surface);
 }
 .bj-comment__actions {
   display: flex;
   gap: 12px;
+}
+
+/* ── 댓글 행 CommentRow — Figma 02 Components ───────────────
+   화이트 라운드 12 · 패딩 16 · 아바타 32 + 간격 10 · 닉네임 14 잉크600 · 시각 12 · 본문 14 (행간 21).
+   글 상세 댓글·모임 질문/답글이 같이 쓴다. 답글 들여쓰기는 호출부가 margin-left 42(아바타+간격)로. */
+.bj-comment-row {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.bj-comment-row__avatar {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+.bj-comment-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.bj-comment-row__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bj-comment-row__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin-right: auto;
+  text-decoration: none;
+  color: inherit;
+}
+.bj-comment-row__name {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+.bj-comment-row__text {
+  font-size: 14px;
+  line-height: 21px;
+  white-space: pre-wrap;
+}
+/* 본문 뒤 수정·삭제·신고 — 작은 버튼 ButtonSmall 묶음 */
+.bj-comment-row__actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* ── 참여자 행 MemberRow — 48h · 패딩 8/16 · 아바타 32 + 닉네임 14 · 우측 역할 12 캡션 ── */
+.bj-member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+}
+.bj-member-row__avatar {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+
+/* ── 활동 행 ActivityRow — 38h · 패딩 14/10 · 라벨 14 Regular · 카운트 14 Bold 주황 + chevron ── */
+.bj-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: inherit;
+  text-decoration: none;
+}
+.bj-activity-row__label {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+}
+.bj-activity-row__count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-accent-text);
+}
+
+/* ── 리포트 스탯 ReportStat — 80×65 · 숫자 20 Bold · 라벨 11 캡션. 면은 담긴 면과 한 단 다르게 ── */
+.bj-report-stat-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: 80px;
+  height: 65px;
+  border-radius: var(--radius-md);
+  background: var(--color-control-surface);
+  text-align: center;
+}
+.bj-report-stat-tile__num {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.bj-report-stat-tile__label {
+  font-size: 11px;
+  color: var(--color-text-caption);
+}
+
+/* 궁합 비교 피커 빈 자리("?" / "+") */
+.bj-pick-placeholder {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text-caption);
+  text-align: center;
 }
 
 /* ── 글쓰기 책 첨부 피커 ──────────────────────────────── */
