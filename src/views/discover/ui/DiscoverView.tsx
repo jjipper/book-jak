@@ -122,14 +122,14 @@ export default function DiscoverView() {
         <PageHead
           title="발견"
           action={
-            <>
+            <span className="bj-page-head__actions">
               {tokens !== null && <TokenBadge count={tokens} />}
               <PageHelp
                 id="discover"
                 title="발견 탭은 이렇게 써요"
                 description={'표지와 제목을 가린 책을 하루 5권 보여줘요.\n문장만 보고 끌리면 토큰으로 공개하거나\n그대로 서재에 담아두세요.\n토큰은 매일 출석·글쓰기로 모여요.'}
               />
-            </>
+            </span>
           }
         />
 

@@ -1156,6 +1156,12 @@ body.bj-body {
   justify-content: space-between;
   min-height: 32px;
 }
+/* 우측 액션이 둘 이상일 때(토큰 배지 + ?) 오른쪽에 모아 붙인다 */
+.bj-page-head__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .bj-page-head__title {
   font-family: var(--font-display);
   font-size: 24px;
