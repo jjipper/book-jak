@@ -9,6 +9,7 @@ import { TOKENS_CHANGED } from '@/entities/token/model/token'
 import BlindBookCard from '@/widgets/blind-book-card/BlindBookCard'
 import LoginGateSheet from '@/shared/ui/LoginGateSheet'
 import PageHead from '@/shared/ui/PageHead'
+import PageHelp from '@/shared/ui/PageHelp'
 import TokenBadge from '@/shared/ui/TokenBadge'
 import { useAuthGate } from '@/shared/lib/useAuthGate'
 import { toast } from '@/shared/lib/toast'
@@ -120,8 +121,16 @@ export default function DiscoverView() {
       <div className="bj-frame bj-frame--col">
         <PageHead
           title="발견"
-          caption={`오늘의 주제 ${today?.theme ?? '…'} · 블라인드 북 ${books.length || 5}권`}
-          action={tokens !== null ? <TokenBadge count={tokens} /> : undefined}
+          action={
+            <>
+              {tokens !== null && <TokenBadge count={tokens} />}
+              <PageHelp
+                id="discover"
+                title="발견 탭은 이렇게 써요"
+                description={'표지와 제목을 가린 책을 하루 5권 보여줘요.\n문장만 보고 끌리면 토큰으로 공개하거나\n그대로 서재에 담아두세요.\n토큰은 매일 출석·글쓰기로 모여요.'}
+              />
+            </>
+          }
         />
 
         {failed ? (
@@ -137,7 +146,7 @@ export default function DiscoverView() {
           <div className="bj-discover__stage">
             <div className="bj-progress-head">
               <div className="bj-row-between bj-mb-6">
-                <span className="bj-caption">{doneCount} / {books.length}</span>
+                <span className="bj-caption">오늘은 {today?.theme ?? '…'} · {doneCount} / {books.length}</span>
                 <span className="bj-caption bj-bold bj-text-action">{progressPct}%</span>
               </div>
               <div className="bj-progress__track">

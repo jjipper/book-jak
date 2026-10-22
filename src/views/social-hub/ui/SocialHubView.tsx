@@ -9,7 +9,7 @@ import ClubInterestButton from '@/entities/club/ui/ClubInterestButton'
 import IllustPlaceholder from '@/shared/ui/IllustPlaceholder'
 import { clubIllust, type BookClub } from '@/entities/club/model/clubs'
 import { REC_FILTER_LABEL, REC_KIND_LABEL, type RecFilter, type RecRequest, type RecSort } from '@/entities/recommendation/model/recommendations'
-import { FilterSelect, Icon, PageHead, SegTab, TypeBadge } from '@/shared/ui'
+import { FilterSelect, Icon, PageHead, SegTab, TypeBadge, PageHelp } from '@/shared/ui'
 
 type HubTab = 'clubs' | 'recommend'
 
@@ -180,7 +180,16 @@ export default function SocialHubView({ initialTab = 'clubs' }: { initialTab?: H
   return (
     <main className="bj-shell bj-shell--pb">
       <div className="bj-frame">
-        <PageHead title="모임" caption="함께 읽고, 서로 권하고" />
+        <PageHead
+          title="모임"
+          action={
+            <PageHelp
+              id="social"
+              title="모임 탭은 이렇게 써요"
+              description={'모임 — 같이 읽을 사람을 모으거나 참여해요.\n추천 — 책을 추천받거나, 남의 요청에 책을 권해요.\n둘 다 글쓰기 버튼(연필)으로 새로 만들 수 있어요.'}
+            />
+          }
+        />
 
         <div className="bj-col-16">
           <SegTab

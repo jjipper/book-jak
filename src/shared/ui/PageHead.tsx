@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 
 /* 페이지 헤드 PageHead — 탭 루트 화면 상단.
-   제목행 32 (Wildgak 24 + 우측 아이콘 24, 마이=settings) · 간격 6 · 캡션 12 (없으면 숨김). */
+   제목행 32 (Wildgak 24 + 우측 아이콘 24, 마이=settings · 그 외=PageHelp "?").
+   캡션은 쓰지 않는다 — 설명이 필요하면 PageHelp 모달로 (2026-10-22). prop은 호환용으로만 남김. */
 
 interface PageHeadProps {
   title: string

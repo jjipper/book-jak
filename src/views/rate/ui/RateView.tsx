@@ -16,6 +16,7 @@ import FilterSelect from '@/shared/ui/FilterSelect'
 import Icon from '@/shared/ui/Icon'
 import Input from '@/shared/ui/Input'
 import PageHead from '@/shared/ui/PageHead'
+import PageHelp from '@/shared/ui/PageHelp'
 
 const QUERY_TYPES = ['Bestseller', 'ItemNewAll', 'BlogBest'] as const
 const BATCH_SIZE = 20
@@ -168,10 +169,12 @@ export default function RateView({ initialQuery }: RateViewProps) {
       <div className="bj-frame">
         <PageHead
           title="평가"
-          caption={
-            ratedCount > 0
-              ? `지금까지 ${ratedCount}권 평가 · 별점을 줄수록 내 장르 취향이 선명해져요`
-              : '별점을 줄수록 내 장르 취향이 선명해져요'
+          action={
+            <PageHelp
+              id="rate"
+              title="평가 탭은 이렇게 써요"
+              description={`읽은 책에 별점을 남겨요.${ratedCount > 0 ? ` 지금까지 ${ratedCount}권.` : ''}\n별점을 줄수록 취향 리포트의 장르 비율이 선명해지고,\n같은 책을 좋아한 사람을 더 잘 찾아줘요.`}
+            />
           }
         />
 

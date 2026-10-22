@@ -673,6 +673,7 @@ body.bj-body {
   margin-top: 6px;
   font-size: 14px;
   color: var(--color-text-muted);
+  white-space: pre-line; /* 기능 안내처럼 여러 줄 설명 */
 }
 .bj-modal__actions {
   display: flex;

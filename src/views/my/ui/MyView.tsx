@@ -158,7 +158,6 @@ export default function MyView() {
       {/* 헤더 */}
       <PageHead
         title="마이"
-        caption={nickname || '취향 리포트와 내 서재'}
         action={
           <IconButton label="설정" onClick={() => setShowSettings(true)}>
             <Icon name="settings" size={24} />
